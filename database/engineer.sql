@@ -16,4 +16,9 @@ INSERT INTO `engineer` (`engineer_id`, `engineer_name`, `course_completed`) VALU
 ('100002', 'Daniel', NULL),
 ('100003', 'Rachel', '111'),
 ('100004', 'Clare', NULL),
-('100005', 'Nat', NULL);
+('100005', 'Nat', NULL),
+('100006', 'Ping', NULL),
+('100007', 'Min', NULL),
+('100008', 'Noi', '111'),
+('100009', 'Nom', NULL),
+('100010', 'Igle', NULL);
