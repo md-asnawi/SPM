@@ -1,0 +1,23 @@
+CREATE DATABASE IF NOT EXISTS `is212`;
+USE `is212`;
+
+DROP TABLE IF EXISTS `lesson`;
+
+CREATE TABLE IF NOT EXISTS `lesson` (
+  `course_name` VARCHAR(45) NOT NULL,
+  `class_id` INT NOT NULL,
+  `lesson_id` INT NOT NULL,
+  `material_id` INT NOT NULL, 
+  `ungraded_quiz` BOOLEAN NOT NULL, 
+  `completion_status` INT NOT NULL,
+  PRIMARY KEY (`course_name`, `class_id`, `lesson_id`),
+  FOREIGN KEY (`course_name`, `class_id`) REFERENCES `class`(`course_name`, `class_id`)
+  FOREIGN KEY (`material_id`) REFERENCES `course_material`(`material_id`)
+);
+
+INSERT INTO `lesson` (`course_name`, `class_id`, `lesson_id`, `material_id`, `ungraded_quiz`, `completion_status`) VALUES
+('Course 111', '1', '1', '898456', 'TRUE', '100'),
+('Course 111', '1', '2', '898456', 'TRUE', '0'),
+('Course 222', '1', '3', '364252', 'TRUE', '0'),
+('Course 222', '1', '4', '364253', 'TRUE', '20'),
+('Course 555', '1', '5', '135495', 'TRUE', '40');

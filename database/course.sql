@@ -8,13 +8,15 @@ CREATE TABLE IF NOT EXISTS `course` (
   `course_name` VARCHAR(45) NULL,
   `description` VARCHAR(45) NULL,
   `prerequisite` INT NULL,
+  `enrolmentstartdate` DATE NOT NULL,
+  `enrolmentenddate` DATE NOT NULL,
   PRIMARY KEY (`course_id`),
   FOREIGN KEY (`prereq`) REFERENCES `course`(`course_id`)
 );
 
-INSERT INTO `course` (`course_id`, `course_name`, `description`, `prerequisite`) VALUES
-('111', 'Course 111', 'This is Course 111', NULL),
-('222', 'Course 222', 'This is Course 222', NULL),
-('333', 'Course 333', 'This is Course 333', '111'),
-('444', 'Course 444', 'This is Course 444', '333'),
-('555', 'Course 555', 'This is Course 555', NULL);
+INSERT INTO `course` (`course_id`, `course_name`, `description`, `prerequisite`, `enrolmentstartdate`, `enrolmentenddate`) VALUES
+('111', 'Course 111', 'This is Course 111', NULL, '2021-01-01', '2021-04-01'),
+('222', 'Course 222', 'This is Course 222', NULL, '2021-01-01', '2021-04-01'),
+('333', 'Course 333', 'This is Course 333', '111', '2021-01-01', '2021-04-01'),
+('444', 'Course 444', 'This is Course 444', '333', '2021-01-01', '2021-04-01'),
+('555', 'Course 555', 'This is Course 555', NULL, '2021-01-01', '2021-04-01');
