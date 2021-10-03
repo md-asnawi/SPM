@@ -16,5 +16,5 @@ INSERT INTO `course_material` (`material_id`, `material_name`, `material_type`, 
 ('898456', 'Material 111', 'docx', 'Course 111'),
 ('564866', 'Material 222', 'pptx', 'Course 111'),
 ('364252', 'Material 333', 'pdf', 'Course 222'),
-('441462', 'Material 444', 'mp4', 'Course 333'),
+('364253', 'Material 444', 'mp4', 'Course 222'),
 ('135495', 'Material 555', 'hyperlinks', 'Course 444');

@@ -20,4 +20,4 @@ INSERT INTO `engineer_material` (`course_id`, `engineer_id`, `material_id`, `sta
 ('111', '100005', '1', 'Incomplete'),
 ('333', '100003', '1', 'Incomplete'),
 ('555', '100003', '1', 'Incomplete'),
-('555', '100002', '1', 'Completed')
+('555', '100002', '1', 'Completed');
