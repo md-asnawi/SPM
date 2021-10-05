@@ -1,24 +1,17 @@
 # Learning Material
 class LearningMaterial:
-    def __init__(self, documents, videos, hyperlinks):
-        self.documents = documents
-        self.videos = videos
-        self.hyperlinks = hyperlinks
+    def __init__(self, type, file_name):
+        self.type = type
+        self.file_name = file_name
 
-    def get_documents(self):
-        return self.documents
+    def get_type(self):
+        return self.type
 
-    def set_documents(self, documents):
-        self.documents = documents
+    def set_type(self, type):
+        self.type = type
 
-    def get_videos(self):
-        return self.videos
+    def get_file_name(self):
+        return self.file_name
 
-    def set_video(self, video):
-        self.video = video
-
-    def get_hyperlinks(self):
-        return self.hyperlinks
-
-    def set_hyperlinks(self, hyperlinks):
-        self.hyperlinks = hyperlinks
+    def set_file_name(self, file_name):
+        self.file_name = file_name
