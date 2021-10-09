@@ -4,6 +4,7 @@
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from Engineer_class import Engineer_Class
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/is212'
@@ -85,26 +86,70 @@ def get_all():
             }
         )
 
-# @app.route("/course/<eid:engineer_id>", methods=["GET"])
-# def get_available(engineer_id):
-#     courselist = Course.query.all() 
-#     engineer_course_completed = Engineer.query.filter_by(engineer_id=engineer_id).all()
+@app.route("/course/available/<int:engineer_id>", methods=["GET"])
+def get_available(engineer_id):
 
-#     ## if course_completed, should remove from courselist..
-#     for course in courselist:
-#         for course_completed in engineer_course_completed:
-#             if course == course_completed:
-#                 courselist.remove(course)
+    unavailable_array = []
+    available_course = []
 
-#     if len(courselist):
-#         return jsonify(
-#             {
-#                 "code": 200,
-#                 "data": {
-#                     "course": [course.json() for course in engineer_course_completed]
-#                 }
-#             }
-#         )
+    courselist = Course.query.all()
+
+    ## get engineer course completed
+    engineer_class = Engineer_Class(db.Model).query.filter_by(engineer_id=engineer_id).all()
+
+    for eachrow in engineer_class:
+        # if in the engineer_class and not withdrawn, means unavailable
+        if eachrow.json()["withdrawal"] == False:
+            unavailable_array.append(eachrow.json()["course_name"])
+    
+    ## if course not in completed array,, append to available array.
+    if len(courselist):
+        for course in courselist:
+            if course.json()["course_name"] not in unavailable_array:
+                available_course.append(course)
+                
+    ## display available array    
+    if len(available_course):
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "course": [course.json() for course in available_course]
+                }
+            }
+        )
+
+@app.route("/course/completed/<int:engineer_id>", methods=["GET"])
+def get_completed(engineer_id):
+
+    completed_array = []
+    completed_course = []
+    courselist = Course.query.all()
+
+    ## get engineer course completed
+    engineer_class = Engineer_Class(db.Model).query.filter_by(engineer_id=engineer_id).all()
+
+    for eachrow in engineer_class:
+        # if in the engineer_class and progress 100, means completed
+        if eachrow.json()["progress"] == 100:
+            completed_array.append(eachrow.json()["course_name"])
+
+    ## if course completed, append to completed array.
+    if len(courselist):
+        for course in courselist:
+            if course.json()["course_name"] in completed_array:
+                completed_course.append(course)
+                
+    ## display available array    
+    if len(completed_course):
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "course": [course.json() for course in completed_course]
+                }
+            }
+        )
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001, debug=True)
