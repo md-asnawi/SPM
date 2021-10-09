@@ -8,13 +8,13 @@ CREATE TABLE IF NOT EXISTS `course` (
   `course_name` VARCHAR(45) NULL,
   `description` VARCHAR(45) NULL,
   `prerequisite` INT NULL,
-  `enrolmentstartdate` DATE NOT NULL,
-  `enrolmentenddate` DATE NOT NULL,
+  `enrolment_start_date` DATE NOT NULL,
+  `enrolment_end_date` DATE NOT NULL,
   PRIMARY KEY (`course_id`),
-  FOREIGN KEY (`prereq`) REFERENCES `course`(`course_id`)
+  FOREIGN KEY (`prerequisite`) REFERENCES `course`(`course_id`)
 );
 
-INSERT INTO `course` (`course_id`, `course_name`, `description`, `prerequisite`, `enrolmentstartdate`, `enrolmentenddate`) VALUES
+INSERT INTO `course` (`course_id`, `course_name`, `description`, `prerequisite`, `enrolment_start_date`, `enrolment_end_date`) VALUES
 ('111', 'Course 111', 'This is Course 111', NULL, '2021-01-01', '2021-04-01'),
 ('222', 'Course 222', 'This is Course 222', NULL, '2021-01-01', '2021-04-01'),
 ('333', 'Course 333', 'This is Course 333', '111', '2021-01-01', '2021-04-01'),
