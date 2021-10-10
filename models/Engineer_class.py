@@ -1,14 +1,3 @@
-# `course_name` VARCHAR(45) NOT NULL,
-#   `class_id` INT NOT NULL,
-#   `engineer_id` INT NOT NULL,
-#   `date_assigned` DATETIME NOT NULL,
-#   `start_date` DATETIME NOT NULL,
-#   `end_date` DATETIME NOT NULL,
-#   `progress` INT NOT NULL,
-#   `enrolment_status` VARCHAR(45) NOT NULL,
-#   `preassigned` BOOLEAN NOT NULL,
-#   `withdrawal` BOOLEAN NOT NULL
-
 # Engineer & Class enrolment class
 
 from flask import Flask, request, jsonify
