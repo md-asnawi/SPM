@@ -121,9 +121,9 @@ def get_available(learner_id):
 
     else:
         return jsonify({
-            "code": 500,
+            "code": 404,
             "message": "No Available Course"
-        }), 500
+        }), 404
 
 @app.route("/course/completed/<int:learner_id>", methods=["GET"])
 def get_completed(learner_id):
@@ -158,10 +158,9 @@ def get_completed(learner_id):
         )
     else:
         return jsonify({
-            "code": 500,
+            "code": 404,
             "message": "No Course Completed"
-        }), 500
-
+        }), 404
     
 
 if __name__ == '__main__':

@@ -4,45 +4,104 @@
 <script>
 
     window.onload = function (e) {
-        all_courses();
+        learner_id = 999;
+        all_courses(learner_id);
     }
 
-    async function all_courses() {
+    async function all_courses(learner_id) {
 
         // Create empty array
-        all_course = []
+        all = []
+        available = []
         cards = []
 
-        url = `http://127.0.0.1:5001/course`;
-
-        var course = await fetch(url, {method: "GET"}).then(res => res.json());
-
-        course_array = course.data.course;
-
-        for (i=0; i < course_array.length; i++ ) {
-            all_course.push(course_array[i]);
-        }
+        all_url = `http://127.0.0.1:5001/course`;
+        available_url = `http://127.0.0.1:5001/course/available/` + learner_id;
         
-        for (let i = 0; i < all_course.length; i++) {
-            let course = all_course[i]
+        var all_course = await fetch(all_url, {method: "GET"}).then(res => res.json());
+        var available_course = await fetch(available_url, {method: "GET"}).then(res => res.json());
 
-            cards.push(`
-                <div class="col-md-6 col-lg-3">
-                    <div class="card">
-                        <img class="img-fluid" src="images/big/img2.jpg" alt="">
-                        <div class="card-body">
-                            <h5 class="card-title">${course.course_name}</h5>
-                            <p class="card-text">${course.description}</p>
-                            <a href="#" class="btn btn-dark">Add</a>
+        if (available_course.code == 200) {
+    
+            all_course_array = all_course.data.course;
+            available_course_array = available_course.data.course;
+
+            for (i=0; i < all_course_array.length; i++ ) {
+                all.push(all_course_array[i]);
+            }
+
+            for (i=0; i < available_course_array.length; i++ ) {
+                available.push(available_course_array[i]);
+            }
+
+            for (let i = 0; i < all.length; i++) {
+                let course = all[i]
+
+                // check if the course stringify is part of available stringify
+                
+                // if it is, include add button
+                if (JSON.stringify(available).includes(JSON.stringify(course))) {
+                    cards.push(`
+                        <div class="col-md-6 col-lg-3">
+                            <div class="card">
+                                <img class="img-fluid" src="images/big/img2.jpg" alt="">
+                                <div class="card-body">
+                                    <h5 class="card-title">${course.course_name}</h5>
+                                    <p class="card-text">${course.description}</p>
+                                    <a href="#" class="btn btn-dark">Add</a>
+                                </div>
+                            </div>
+                        </div>
+                    `);
+                }
+
+                // else, exclude add button
+                else {
+                    cards.push(`
+                        <div class="col-md-6 col-lg-3">
+                            <div class="card">
+                                <img class="img-fluid" src="images/big/img2.jpg" alt="">
+                                <div class="card-body">
+                                    <h5 class="card-title">${course.course_name}</h5>
+                                    <p class="card-text">${course.description}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `);
+                }
+            }
+        }
+
+        else {
+            all_course_array = all_course.data.course;
+
+            console.log(all_course_array);
+            console.log(all_course_array);
+
+            for (i=0; i < all_course_array.length; i++ ) {
+                all.push(all_course_array[i]);
+            }
+
+            for (let i = 0; i < all.length; i++) {
+                let course = all[i]
+
+                cards.push(`
+                    <div class="col-md-6 col-lg-3">
+                        <div class="card">
+                            <img class="img-fluid" src="images/big/img2.jpg" alt="">
+                            <div class="card-body">
+                                <h5 class="card-title">${course.course_name}</h5>
+                                <p class="card-text">${course.description}</p>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `);
+                `);
+            }
         }
 
         // display it within the id
         document.getElementById("allcourse").innerHTML = cards;
-        document.getElementById("newactive").innerHTML = `<li class="active"><a href="#" onclick="all_courses();">All Courses</a></li>
+        document.getElementById("newactive").innerHTML = `<li class="active"><a href="#" onclick="all_courses(999);">All Courses</a></li>
                                                             <li><a href="#" onclick="available_courses(999);">Available Courses</a></li>
                                                             <li><a href="#" onclick="completed_courses(999);">Completed Courses</a></li>`;
     }
@@ -92,7 +151,7 @@
 
         // display it within the id
         document.getElementById("allcourse").innerHTML = cards;
-        document.getElementById("newactive").innerHTML = `<li><a href="#" onclick="all_courses();">All Courses</a></li>
+        document.getElementById("newactive").innerHTML = `<li><a href="#" onclick="all_courses(999);">All Courses</a></li>
                                                             <li class="active"><a href="#" onclick="available_courses(999);">Available Courses</a></li>
                                                             <li><a href="#" onclick="completed_courses(999);">Completed Courses</a></li>`;
     }
@@ -125,7 +184,6 @@
                                 <div class="card-body">
                                     <h5 class="card-title">${course.course_name}</h5>
                                     <p class="card-text">${course.description}</p>
-                                    <a href="#" class="btn btn-dark">Add</a>
                                 </div>
                             </div>
                         </div>
@@ -141,11 +199,14 @@
 
         // display it within the id
         document.getElementById("allcourse").innerHTML = cards;
-        document.getElementById("newactive").innerHTML = `<li><a href="#" onclick="all_courses();">All Courses</a></li>
+        document.getElementById("newactive").innerHTML = `<li><a href="#" onclick="all_courses(999);">All Courses</a></li>
                                                             <li><a href="#" onclick="available_courses(999);">Available Courses</a></li>
                                                             <li class="active"><a href="#" onclick="completed_courses(999);">Completed Courses</a></li>`;
     }
-
+    
+    async function add_course_to() {
+        
+    }
 
 </script>
 
