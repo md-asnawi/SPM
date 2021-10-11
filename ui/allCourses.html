@@ -17,11 +17,7 @@
 
         var course = await fetch(url, {method: "GET"}).then(res => res.json());
 
-        console.log(course);
-
         course_array = course.data.course;
-
-        console.log(course_array);
 
         for (i=0; i < course_array.length; i++ ) {
             all_course.push(course_array[i]);
@@ -61,37 +57,35 @@
 
         var course = await fetch(url, {method: "GET"}).then(res => res.json());
 
-        console.log(course);
+        if (course.code == 200) {
+            course_array = course.data.course;
 
-        course_array = course.data.course;
+            for (i=0; i < course_array.length; i++ ) {
+                available_course.push(course_array[i]);
+            }
+            
+            if (available_course){
+                for (let i = 0; i < available_course.length; i++) {
+                    let course = available_course[i]
 
-        console.log(course_array);
-
-        for (i=0; i < course_array.length; i++ ) {
-            available_course.push(course_array[i]);
-        }
-        
-        if (available_course){
-            for (let i = 0; i < available_course.length; i++) {
-                let course = available_course[i]
-
-                cards.push(`
-                    <div class="col-md-6 col-lg-3">
-                        <div class="card">
-                            <img class="img-fluid" src="images/big/img2.jpg" alt="">
-                            <div class="card-body">
-                                <h5 class="card-title">${course.course_name}</h5>
-                                <p class="card-text">${course.description}</p>
-                                <a href="#" class="btn btn-dark">Add</a>
+                    cards.push(`
+                        <div class="col-md-6 col-lg-3">
+                            <div class="card">
+                                <img class="img-fluid" src="images/big/img2.jpg" alt="">
+                                <div class="card-body">
+                                    <h5 class="card-title">${course.course_name}</h5>
+                                    <p class="card-text">${course.description}</p>
+                                    <a href="#" class="btn btn-dark">Add</a>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                `);
+                    `);
+                }
             }
         }
 
         else {
-            cards.push(``);
+            cards.push(`<h5>No Available Course</h5>`);
         }
 
         
@@ -113,37 +107,35 @@
         
         var course = await fetch(url, {method: "GET"}).then(res => res.json());
 
-        console.log(course);
+        if (course.code == 200) {
+            course_array = course.data.course;
 
-        course_array = course.data.course;
+            for (i=0; i < course_array.length; i++ ) {
+                completed_course.push(course_array[i]);
+            }
+            
+            if (completed_course){
+                for (let i = 0; i < completed_course.length; i++) {
+                    let course = completed_course[i]
 
-        console.log(course_array);
-
-        for (i=0; i < course_array.length; i++ ) {
-            completed_course.push(course_array[i]);
-        }
-        
-        if (completed_course){
-            for (let i = 0; i < completed_course.length; i++) {
-                let course = completed_course[i]
-
-                cards.push(`
-                    <div class="col-md-6 col-lg-3">
-                        <div class="card">
-                            <img class="img-fluid" src="images/big/img2.jpg" alt="">
-                            <div class="card-body">
-                                <h5 class="card-title">${course.course_name}</h5>
-                                <p class="card-text">${course.description}</p>
-                                <a href="#" class="btn btn-dark">Add</a>
+                    cards.push(`
+                        <div class="col-md-6 col-lg-3">
+                            <div class="card">
+                                <img class="img-fluid" src="images/big/img2.jpg" alt="">
+                                <div class="card-body">
+                                    <h5 class="card-title">${course.course_name}</h5>
+                                    <p class="card-text">${course.description}</p>
+                                    <a href="#" class="btn btn-dark">Add</a>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                `);
+                    `);
+                }
             }
         }
 
         else {
-            cards.push(``);
+            cards.push(`<h5>No Completed Course</h5>`);
         }
 
 
@@ -495,7 +487,7 @@
                         <!-- tabs -->
                         
                         <!-- end of tabs -->
-                        <p><h4 class="d-inline">All Courses</h4></p>
+                        <p><h4 class="d-inline"></h4></p>
                         <div class="row" id="allcourse">
                              <!--Course Card-->
                              <div class="col-md-6 col-lg-3">
