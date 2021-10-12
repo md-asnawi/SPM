@@ -16,6 +16,12 @@
     <!-- Custom Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
 
+    <style>
+        #enrol{
+            margin: 12px 5px -5px 12px;
+        }
+    </style>
+
 </head>
 
 <body>
@@ -324,9 +330,10 @@
                     </ol>
                 </div>
             </div>
-            <!-- row -->
 
+            <!--Tab Nav Bar for Courses-->
             <div class="container-fluid">
+<<<<<<< Updated upstream
                 <!-- End Row -->
                 <ul class="nav nav-tabs">
                             <li class="active"><a href="#">All Courses</a></li>
@@ -343,6 +350,22 @@
                         <div class="row">
                             <!--Course Card-->
                             <div class="col-md-6 col-lg-3">
+=======
+
+                <ul class="nav nav-tabs" id="newactive">
+                    <li class="active"><a href="#" onclick="all_courses();">All Courses</a></li>
+                    <li><a href="#" onclick="available_courses(999);">Available Courses</a></li>
+                    <li><a href="#" onclick="completed_courses(999);">Completed Courses</a></li>
+                </ul>
+
+                <div class="row">
+                    <div class="col-9 m-b-30">
+
+                        <p><h4 class="d-inline"></h4></p>
+                        <div class="row" id="allcourse">
+                             <!--Course Card-->
+                             <div class="col-md-6 col-lg-3">
+>>>>>>> Stashed changes
                                 <div class="card">
                                     <img class="img-fluid" src="images/big/img1.jpg" alt="">
                                     <div class="card-body">
@@ -361,7 +384,7 @@
                                     <div class="card-body">
                                         <h5 class="card-title">Advanced IBM Printers</h5>
                                         <p class="card-text">This is a wider card with supporting text and below as a natural lead-in to the additional content. This content is a little bit longer.</p>
-                                        <a href="#" class="btn btn-dark">Add</a>
+                                        <a href="#" class="btn btn-primary">Add</a>
                                     </div>
                                 </div>
                             </div>
@@ -395,6 +418,35 @@
                             
                         </div>
                     </div>
+
+                    <!--Cart-->
+                    <div class="col-3 m-b-30">
+                        <div class="card">
+                            <div class="card-body px-0">
+                                <h1 class="card-title px-4 mb-3 text-primary">Course Checkout</h1>
+                                <div class="todo-list">
+                                    <div class="tdl-holder">
+                                        <div class="tdl-content">
+                                            <ul id="cart">
+                                                <li>
+                                                    <label>Intro to Ink Practices
+                                                        <a href='#' class="ti-trash"></a> <!--Delete button-->
+                                                    </label>
+                                                </li>
+                                                <li>
+                                                    <label>Printing System Design
+                                                        <a href='#' class="ti-trash"></a> <!--Delete button-->
+                                                    </label>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <a href="#" class="btn btn-success" id="enrol">Confirm Enrolment</a>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
                 
             </div>
