@@ -93,7 +93,7 @@
         ***********************************-->
         <div class="nav-header">
             <div class="brand-logo">
-                <a href="index.html">
+                <a href="hr.html">
                     <b class="logo-abbr"><img src="images/logo.png" alt=""> </b>
                     <span class="logo-compact"><img src="./images/logo-compact.png" alt=""></span>
                     <span class="brand-title">
@@ -299,58 +299,22 @@
                 <ul class="metismenu" id="menu">
                     <li>
                         <a href="hr.html" aria-expanded="false">
-                            <i class="icon-speedometer menu-icon"></i><span class="nav-text">Overview</span>
+                            <i class="icon-speedometer menu-icon"></i><span class="nav-text">Home</span>
                         </a>
                     </li>
-                    <li class="mega-menu mega-menu-sm">
-                        <a href="hr_enrol.html" aria-expanded="false">
-                            <i class="icon-globe-alt menu-icon"></i><span class="nav-text">Hr en </span>
-                        </a>
-
-                    </li>
+                    
                     <li>
                         <a class="has-arrow" href="javascript:void()" aria-expanded="false">
-                            <i class="icon-envelope menu-icon"></i> <span class="nav-text">Message</span>
+                            <i class="icon-envelope menu-icon"></i> <span class="nav-text">Enrollment</span>
                         </a>
                         <ul aria-expanded="false">
-                            <li><a href="./email-inbox.html">Inbox</a></li>
-                            <li><a href="./email-read.html">Read</a></li>
-                            <li><a href="./email-compose.html">Compose</a></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a class="has-arrow" href="javascript:void()" aria-expanded="false">
-                            <i class="icon-screen-tablet menu-icon"></i><span class="nav-text">Apps</span>
-                        </a>
-                        <ul aria-expanded="false">
-                            <li><a href="./app-profile.html">Profile</a></li>
-                            <li><a href="./app-calender.html">Calender</a></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a class="has-arrow" href="javascript:void()" aria-expanded="false">
-                            <i class="icon-graph menu-icon"></i> <span class="nav-text">Charts</span>
-                        </a>
-                        <ul aria-expanded="false">
-                            <li><a href="./chart-flot.html">Flot</a></li>
-                            <li><a href="./chart-morris.html">Morris</a></li>
-                            <li><a href="./chart-chartjs.html">Chartjs</a></li>
-                            <li><a href="./chart-chartist.html">Chartist</a></li>
-                            <li><a href="./chart-sparkline.html">Sparkline</a></li>
-                            <li><a href="./chart-peity.html">Peity</a></li>
+                            <li><a href="hr_enrol.html">Enrol</a></li>
+                            <li><a href="hr_requests.html">Requests</a></li>
+                            
                         </ul>
                     </li>
                     
-                        <!-- </ul>
-                    </li>
-                    <li>
-                        <a class="has-arrow" href="javascript:void()" aria-expanded="false">
-                            <i class="icon-layers menu-icon"></i><span class="nav-text">Components</span>
-                        </a>
-                        <ul aria-expanded="false"> -->
-                           
-                        </ul>
-                    </li>
+                            
                 </ul>
             </div>
         </div>
@@ -367,8 +331,8 @@
             <div class="row page-titles mx-0">
                 <div class="col p-md-0">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="javascript:void(0)">Overview</a></li>
-                        <li class="breadcrumb-item active"><a href="javascript:void(0)">All Courses</a></li>
+                        <li class="breadcrumb-item"><a href="javascript:void(0)">HR</a></li>
+                        <li class="breadcrumb-item active"><a href="javascript:void(0)">Enrol</a></li>
                     </ol>
                 </div>
             </div>
@@ -382,21 +346,20 @@
                         <!-- tabs -->
                         
                         <!-- end of tabs -->
-                        <p><h3 class="d-inline">Welcome, please select a course to begin enrolling...</h3></p>
+                        <p><h3 class="d-inline">Welcome, select a course to begin enrolling!</h3></p>
                         <div></div>
                         <br>
-                        <div class="dropdown">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                              Course
-                            </button>
-                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                              <a class="dropdown-item" href="#">Intro to Ink Practices</a>
-                              <a class="dropdown-item" href="#">Advanced IBM Printers</a>
-                              <a class="dropdown-item" href="#">Xerox 500</a>
-                            </div>
-                          </div>
-                          <br>
-                          <p><h3 class="d-inline">Classlist</h3></p>      
+                        <!-- PULL COURSE NAME INTO CHECKBOX -->
+                        <label for="course">Choose a Course:</label>
+                            <select name="course" id="course">
+                            <option value="course1">{{Course1}}</option>
+                            <option value="course2">{{Course2}}</option>
+                            <option value="course3">{{Course3}}</option>
+                            
+                            </select>
+                        
+                          <br><br>
+                          <p><h4 class="d-inline">Select Learners:</h4></p>      
                           <div class="row">
                             <div class="col-lg-8">
                                 <div class="card">
@@ -407,35 +370,28 @@
                                                     <thead>
                                                         <tr>
                                                         
-                                                            <th>Student</th>
-                                                            <th>Progress</th>
+                                                            <th>Name</th>
+                                                            <th>ID</th>
+                                                            <th>Enrol</th>
                                                         </tr>
                                                     </thead>
+                                                <!-- INSERT LEARNERS DATA HERE -->
                                                     <tbody>
-                                                        <tr>
-                                                            <td><a href="course1.html">Art of Ink 101</a></td>
-                                                            <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">John Watson</td>
-                                                            <td>
-                                                                <div>
-                                                                    <span class="float-right">60%</span>
-                                                                    <div class="progress" style="height: 6px">
-                                                                        <div class="progress-bar bg-success" style="width: 50%" role="progressbar"></div>
-                                                                    </div>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Art of Ink 101</td>
-                                                            <td><img src="./images/avatar/2.jpg" class=" rounded-circle mr-3" alt="">Perry Platypus</td>
-                                                            <td>
-                                                                <div>
-                                                                    <span class="float-right">50%</span>
-                                                                    <div class="progress" style="height: 6px">
-                                                                        <div class="progress-bar bg-success" style="width: 50%" role="progressbar"></div>
-                                                                    </div>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
+                                                            <tr>
+                                                            <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">{{Learner}}</td>
+                                                            <td>{{ID}}</td>
+                                                            <td><div class="form-check">
+                                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                                            </div></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">{{Learner2}}</td>
+                                                                <td>{{ID2}}</td>
+                                                                <td><div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                                                </div></td>
+                                                            </tr>
+                                                        
                                           
                                                     </tbody>
                                                 </table>
@@ -447,13 +403,13 @@
         
                         
                     </div>       
-                          <div class="row" id="allcourse">
-                             
+                    <!-- INSERT ENROL REQUEST HERE -->
+                          <div class="row">
+                            <button class="btn btn-primary" type="submit">Enrol</button>
                         </div>
-                    </div>
-                </div>
-                
-            </div>
+                  </div>
+                  </div>
+                  </div>
             <!-- #/ container -->
         </div>
         <!--**********************************
