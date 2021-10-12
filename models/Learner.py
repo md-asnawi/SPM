@@ -15,6 +15,7 @@ CORS(app)
 class Learner(Engineer):
 
     __tablename__ = 'learner'
+    __mapper_args__ = {'polymorphic_identity': 'learner'}
 
     learner_id = db.Column(db.Integer, primary_key = True)
     engineer_id = db.Column(db.Integer, db.ForeignKey(Engineer.engineer_id), nullable=False)
