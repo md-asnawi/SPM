@@ -14,6 +14,7 @@ CORS(app)
 class Engineer(db.Model):
 
     __tablename__ = 'engineer'
+    __mapper_args__ = {'polymorphic_identity': 'engineer'}
 
     engineer_id = db.Column(db.Integer, primary_key = True)
     engineer_name = db.Column(db.String(45), nullable=False)
