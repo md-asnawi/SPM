@@ -36,9 +36,11 @@ class Class(db.Model):
         self.trainer_name = trainer_name
 
     def json(self):
-        return{"course_name": self.course_name, "class_id": self.class_id, "class_size": self.class_size, 
+        return {
+                "course_name": self.course_name, "class_id": self.class_id, "class_size": self.class_size, 
                 "start_date": self.start_date, "end_date": self.end_date, "start_time": str(self.start_time),
-                "end_time": str(self.end_time), "trainer_name": self.trainer_name}
+                "end_time": str(self.end_time), "trainer_name": self.trainer_name
+        }
 
     def get_course_name(self):
         return self.course_name
@@ -121,13 +123,13 @@ def get_all_classes_in_course(course_name):
                 }
             }
         )
-    else:
-        return jsonify(
-            {
-                "code": 404,
-                "message": "Course not found."
-            }
-        )
+
+    return jsonify(
+        {
+            "code": 404,
+            "message": "Course not found."
+        }
+    )
 
 
 # GET 1 class given course name & class id
@@ -145,13 +147,13 @@ def get_one_class(course_name, class_id):
                 }
             }
         )
-    else:
-        return jsonify(
-            {
-                "code": 404,
-                "message": "Class not found."
-            }
-        )
+
+    return jsonify(
+        {
+            "code": 404,
+            "message": "Class not found."
+        }
+    )
 
 # CREATE new class
 @app.route("/class", methods=['POST'])
