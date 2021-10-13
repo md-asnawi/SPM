@@ -1,53 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<!-- <script>
+<script>
 
-    window.onload = function (e) {
-        all_courses();
+    // Alert for successful enrolment
+    function myAlert(){
+        alert("Enrolment Successful!")
     }
 
-    async function all_courses() {
+    // window.onload = function (e) {
+    //     all_courses();
+    // }
 
-        // Create empty array
-        all_course = []
-        cards = []
+    // async function all_courses() {
 
-        url = `http://127.0.0.1:5001/course`;
+    //     // Create empty array
+    //     all_course = []
+    //     cards = []
 
-        var course = await fetch(url, {method: "GET"}).then(res => res.json());
+    //     url = `http://127.0.0.1:5001/course`;
 
-        console.log(course);
+    //     var course = await fetch(url, {method: "GET"}).then(res => res.json());
 
-        course_array = course.data.course;
+    //     console.log(course);
 
-        console.log(course_array);
+    //     course_array = course.data.course;
 
-        for (i=0; i < course_array.length; i++ ) {
-            all_course.push(course_array[i]);
-        }
+    //     console.log(course_array);
+
+    //     for (i=0; i < course_array.length; i++ ) {
+    //         all_course.push(course_array[i]);
+    //     }
         
-        for (let i = 0; i < all_course.length; i++) {
-            let course = all_course[i]
+    //     for (let i = 0; i < all_course.length; i++) {
+    //         let course = all_course[i]
 
-            cards.push(`
-                <div class="col-md-6 col-lg-3">
-                    <div class="card">
-                        <img class="img-fluid" src="images/big/img2.jpg" alt="">
-                        <div class="card-body">
-                            <h5 class="card-title">${course.course_name}</h5>
-                            <p class="card-text">${course.description}</p>
-                            <a href="#" class="btn btn-dark">Add</a>
-                        </div>
-                    </div>
-                </div>
-            `);
-        }
+    //         cards.push(`
+    //             <div class="col-md-6 col-lg-3">
+    //                 <div class="card">
+    //                     <img class="img-fluid" src="images/big/img2.jpg" alt="">
+    //                     <div class="card-body">
+    //                         <h5 class="card-title">${course.course_name}</h5>
+    //                         <p class="card-text">${course.description}</p>
+    //                         <a href="#" class="btn btn-dark">Add</a>
+    //                     </div>
+    //                 </div>
+    //             </div>
+    //         `);
+    //     }
 
-        // display it within the id
-        document.getElementById("allcourse").innerHTML = cards;
-    }
-</script> -->
+    //     // display it within the id
+    //     document.getElementById("allcourse").innerHTML = cards;
+    // }
+</script>
 
 <head>
     <meta charset="utf-8">
@@ -405,7 +410,7 @@
                     </div>       
                     <!-- INSERT ENROL REQUEST HERE -->
                           <div class="row">
-                            <button class="btn btn-primary" type="submit">Enrol</button>
+                            <button class="btn btn-primary" type="submit" onclick="myAlert()">Enrol</button>
                         </div>
                   </div>
                   </div>
