@@ -4,7 +4,7 @@
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-from Engineer_class import Engineer_Class
+from Learner_class import Learner_Class
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/is212'
@@ -86,23 +86,23 @@ def get_all():
             }
         )
 
-@app.route("/course/available/<int:engineer_id>", methods=["GET"])
-def get_available(engineer_id):
+@app.route("/course/available/<int:learner_id>", methods=["GET"])
+def get_available(learner_id):
 
     unavailable_array = []
     available_course = []
 
     courselist = Course.query.all()
 
-    ## get engineer course completed
-    engineer_class = Engineer_Class(db.Model).query.filter_by(engineer_id=engineer_id).all()
+    ## get learner course completed
+    learner_class = Learner_Class(db.Model).query.filter_by(learner_id=learner_id).all()
 
-    for eachrow in engineer_class:
-        # if in the engineer_class and not withdrawn, means unavailable
+    for eachrow in learner_class:
+        # if in the learner_class and not withdrawn, means unavailable
         if eachrow.json()["withdrawal"] == False:
             unavailable_array.append(eachrow.json()["course_name"])
     
-    ## if course not in completed array,, append to available array.
+    ## if course not in completed array, append to available array.
     if len(courselist):
         for course in courselist:
             if course.json()["course_name"] not in unavailable_array:
@@ -119,18 +119,24 @@ def get_available(engineer_id):
             }
         )
 
-@app.route("/course/completed/<int:engineer_id>", methods=["GET"])
-def get_completed(engineer_id):
+    else:
+        return jsonify({
+            "code": 404,
+            "message": "No Available Course"
+        }), 404
+
+@app.route("/course/completed/<int:learner_id>", methods=["GET"])
+def get_completed(learner_id):
 
     completed_array = []
     completed_course = []
     courselist = Course.query.all()
 
-    ## get engineer course completed
-    engineer_class = Engineer_Class(db.Model).query.filter_by(engineer_id=engineer_id).all()
+    ## get learner course completed
+    learner_class = Learner_Class(db.Model).query.filter_by(learner_id=learner_id).all()
 
-    for eachrow in engineer_class:
-        # if in the engineer_class and progress 100, means completed
+    for eachrow in learner_class:
+        # if in the learner_class and progress 100, means completed
         if eachrow.json()["progress"] == 100:
             completed_array.append(eachrow.json()["course_name"])
 
@@ -150,6 +156,12 @@ def get_completed(engineer_id):
                 }
             }
         )
+    else:
+        return jsonify({
+            "code": 404,
+            "message": "No Course Completed"
+        }), 404
+    
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001, debug=True)

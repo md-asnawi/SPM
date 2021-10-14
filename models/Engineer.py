@@ -14,22 +14,23 @@ CORS(app)
 class Engineer(db.Model):
 
     __tablename__ = 'engineer'
+    __mapper_args__ = {'polymorphic_identity': 'engineer'}
 
     engineer_id = db.Column(db.Integer, primary_key = True)
     engineer_name = db.Column(db.String(45), nullable=False)
     
-    def __init__(self, name = "", engineer_id = ""):
-        self.name = name
+    def __init__(self, engineer_name = "", engineer_id = ""):
+        self.engineer_name = engineer_name
         self.engineer_id = engineer_id
 
     def json(self):
         return{"engineer_id": self.engineer_id, "engineer_name": self.engineer_name}
 
-    def get_name(self):
-        return self.name
+    def get_engineer_name(self):
+        return self.engineer_name
     
-    def set_name(self, name):
-        self.name = name
+    def set_engineer_name(self, engineer_name):
+        self.name = engineer_name
 
     def get_engineer_id(self):
         return self.engineer_id

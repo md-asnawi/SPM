@@ -1,20 +1,8 @@
-# `course_name` VARCHAR(45) NOT NULL,
-#   `class_id` INT NOT NULL,
-#   `engineer_id` INT NOT NULL,
-#   `date_assigned` DATETIME NOT NULL,
-#   `start_date` DATETIME NOT NULL,
-#   `end_date` DATETIME NOT NULL,
-#   `progress` INT NOT NULL,
-#   `enrolment_status` VARCHAR(45) NOT NULL,
-#   `preassigned` BOOLEAN NOT NULL,
-#   `withdrawal` BOOLEAN NOT NULL
-
-# Engineer & Class enrolment class
+# Learner & Class enrolment class
 
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-from Engineer import Engineer
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/is212'
@@ -24,13 +12,13 @@ app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_size': 100, 'pool_recycle': 280
 db = SQLAlchemy(app)
 CORS(app)
 
-class Engineer_Class(db.Model):
+class Learner_Class(db.Model):
 
-    __tablename__ = 'engineer_class'
+    __tablename__ = 'learner_class'
 
     course_name = db.Column(db.String(45), nullable=False, primary_key = True)
     class_id = db.Column(db.Integer, primary_key = True)
-    engineer_id = db.Column(db.Integer, nullable=False, primary_key = True)
+    learner_id = db.Column(db.Integer, nullable=False, primary_key = True)
     date_assigned = db.Column(db.Date, nullable=False)
     start_date = db.Column(db.Date, nullable=False)
     end_date = db.Column(db.Date, nullable=False)
@@ -39,11 +27,11 @@ class Engineer_Class(db.Model):
     preassigned = db.Column(db.Boolean, nullable=False)
     withdrawal = db.Column(db.Boolean, nullable=False)
 
-    def __init__(self, course_name = "", class_id = "", engineer_id = "", date_assigned = "", start_date = "", end_date = "", 
+    def __init__(self, course_name = "", class_id = "", learner_id = "", date_assigned = "", start_date = "", end_date = "", 
                     progress = "", enrolment_status = "", preassigned = "", withdrawal = ""):
         self.course_name = course_name
         self.class_id = class_id
-        self.engineer_id = engineer_id
+        self.learner_id = learner_id
         self.date_assigned = date_assigned
         self.start_date = start_date
         self.end_date = end_date
@@ -53,7 +41,7 @@ class Engineer_Class(db.Model):
         self.withdrawal = withdrawal
 
     def json(self):
-        return{"course_name": self.course_name, "class_id": self.class_id, "engineer_id": self.engineer_id, "date_assigned": self.date_assigned,
+        return{"course_name": self.course_name, "class_id": self.class_id, "learner_id": self.learner_id, "date_assigned": self.date_assigned,
                 "start_date": self.start_date, "end_date": self.end_date, "progress": self.progress, "enrolment_status": self.enrolment_status, 
                 "preassigned": self.preassigned, "withdrawal": self.withdrawal}
 
@@ -69,11 +57,11 @@ class Engineer_Class(db.Model):
     def set_class_id(self, class_id):
         self.class_id = class_id
 
-    def get_engineer_id(self):
-        return self.engineer_id
+    def get_learner_id(self):
+        return self.learner_id
 
-    def set_engineer_id(self, engineer_id):
-        self.engineer_id = engineer_id
+    def get_learner_id(self, learner_id):
+        self.learner_id = learner_id
 
     def get_date_assigned(self):
         return self.date_assigned
