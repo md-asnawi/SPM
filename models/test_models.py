@@ -1,4 +1,4 @@
-from Course import Course
+from course import Course
 from Class import Class
 import datetime
 
