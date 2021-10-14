@@ -1,220 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<script>
+<!-- <script>
 
     window.onload = function (e) {
-        learner_id = 999;
-        all_courses(learner_id);
+        all_courses();
     }
 
-    async function all_courses(learner_id) {
+    async function all_courses() {
 
         // Create empty array
-        all = []
-        available = []
+        all_course = []
         cards = []
 
-        all_url = `http://127.0.0.1:5001/course`;
-        available_url = `http://127.0.0.1:5001/course/available/` + learner_id;
-        
-        var all_course = await fetch(all_url, {method: "GET"}).then(res => res.json());
-        var available_course = await fetch(available_url, {method: "GET"}).then(res => res.json());
+        url = `http://127.0.0.1:5001/course`;
 
-        if (available_course.code == 200) {
-    
-            all_course_array = all_course.data.course;
-            available_course_array = available_course.data.course;
+        var course = await fetch(url, {method: "GET"}).then(res => res.json());
 
-            for (i=0; i < all_course_array.length; i++ ) {
-                all.push(all_course_array[i]);
-            }
+        console.log(course);
 
-            for (i=0; i < available_course_array.length; i++ ) {
-                available.push(available_course_array[i]);
-            }
+        course_array = course.data.course;
 
-            for (let i = 0; i < all.length; i++) {
-                let course = all[i]
+        console.log(course_array);
 
-                // check if the course stringify is part of available stringify
-                
-                // if it is, include add button
-                if (JSON.stringify(available).includes(JSON.stringify(course))) {
-                    cards.push(`
-                        <div class="col-md-6 col-lg-3">
-                            <div class="card">
-                                <img class="img-fluid" src="images/big/img2.jpg" alt="">
-                                <div class="card-body">
-                                    <h5 class="card-title">${course.course_name}</h5>
-                                    <p class="card-text">${course.description}</p>
-                                    <a href="#" class="btn btn-dark">Add</a>
-                                </div>
-                            </div>
-                        </div>
-                    `);
-                }
-
-                // else, exclude add button
-                else {
-                    cards.push(`
-                        <div class="col-md-6 col-lg-3">
-                            <div class="card">
-                                <img class="img-fluid" src="images/big/img2.jpg" alt="">
-                                <div class="card-body">
-                                    <h5 class="card-title">${course.course_name}</h5>
-                                    <p class="card-text">${course.description}</p>
-                                </div>
-                            </div>
-                        </div>
-                    `);
-                }
-            }
+        for (i=0; i < course_array.length; i++ ) {
+            all_course.push(course_array[i]);
         }
+        
+        for (let i = 0; i < all_course.length; i++) {
+            let course = all_course[i]
 
-        else {
-            all_course_array = all_course.data.course;
-
-            console.log(all_course_array);
-            console.log(all_course_array);
-
-            for (i=0; i < all_course_array.length; i++ ) {
-                all.push(all_course_array[i]);
-            }
-
-            for (let i = 0; i < all.length; i++) {
-                let course = all[i]
-
-                cards.push(`
-                    <div class="col-md-6 col-lg-3">
-                        <div class="card">
-                            <img class="img-fluid" src="images/big/img2.jpg" alt="">
-                            <div class="card-body">
-                                <h5 class="card-title">${course.course_name}</h5>
-                                <p class="card-text">${course.description}</p>
-                            </div>
+            cards.push(`
+                <div class="col-md-6 col-lg-3">
+                    <div class="card">
+                        <img class="img-fluid" src="images/big/img2.jpg" alt="">
+                        <div class="card-body">
+                            <h5 class="card-title">${course.course_name}</h5>
+                            <p class="card-text">${course.description}</p>
+                            <a href="#" class="btn btn-dark">Add</a>
                         </div>
                     </div>
-                `);
-            }
+                </div>
+            `);
         }
 
         // display it within the id
         document.getElementById("allcourse").innerHTML = cards;
-        document.getElementById("newactive").innerHTML = `<li class="active"><a href="#" onclick="all_courses(999);">All Courses</a></li>
-                                                            <li><a href="#" onclick="available_courses(999);">Available Courses</a></li>
-                                                            <li><a href="#" onclick="completed_courses(999);">Completed Courses</a></li>`;
     }
-
-    async function available_courses(learner_id) {
-
-        // Create empty array
-        available_course = []
-        cards = []
-
-        url = `http://127.0.0.1:5001/course/available/` + learner_id;
-
-        var course = await fetch(url, {method: "GET"}).then(res => res.json());
-
-        if (course.code == 200) {
-            course_array = course.data.course;
-
-            for (i=0; i < course_array.length; i++ ) {
-                available_course.push(course_array[i]);
-            }
-            
-            if (available_course){
-                for (let i = 0; i < available_course.length; i++) {
-                    let course = available_course[i]
-
-                    cards.push(`
-                        <div class="col-md-6 col-lg-3">
-                            <div class="card">
-                                <img class="img-fluid" src="images/big/img2.jpg" alt="">
-                                <div class="card-body">
-                                    <h5 class="card-title">${course.course_name}</h5>
-                                    <p class="card-text">${course.description}</p>
-                                    <a href="#" class="btn btn-dark">Add</a>
-                                </div>
-                            </div>
-                        </div>
-                    `);
-                }
-            }
-        }
-
-        else {
-            cards.push(`<h5>No Available Course</h5>`);
-        }
-
-        
-
-        // display it within the id
-        document.getElementById("allcourse").innerHTML = cards;
-        document.getElementById("newactive").innerHTML = `<li><a href="#" onclick="all_courses(999);">All Courses</a></li>
-                                                            <li class="active"><a href="#" onclick="available_courses(999);">Available Courses</a></li>
-                                                            <li><a href="#" onclick="completed_courses(999);">Completed Courses</a></li>`;
-    }
-
-    async function completed_courses(learner_id) {
-
-        // Create empty array
-        completed_course = []
-        cards = []
-
-        url = `http://127.0.0.1:5001/course/completed/` + learner_id;
-        
-        var course = await fetch(url, {method: "GET"}).then(res => res.json());
-
-        if (course.code == 200) {
-            course_array = course.data.course;
-
-            for (i=0; i < course_array.length; i++ ) {
-                completed_course.push(course_array[i]);
-            }
-            
-            if (completed_course){
-                for (let i = 0; i < completed_course.length; i++) {
-                    let course = completed_course[i]
-
-                    cards.push(`
-                        <div class="col-md-6 col-lg-3">
-                            <div class="card">
-                                <img class="img-fluid" src="images/big/img2.jpg" alt="">
-                                <div class="card-body">
-                                    <h5 class="card-title">${course.course_name}</h5>
-                                    <p class="card-text">${course.description}</p>
-                                </div>
-                            </div>
-                        </div>
-                    `);
-                }
-            }
-        }
-
-        else {
-            cards.push(`<h5>No Completed Course</h5>`);
-        }
-
-
-        // display it within the id
-        document.getElementById("allcourse").innerHTML = cards;
-        document.getElementById("newactive").innerHTML = `<li><a href="#" onclick="all_courses(999);">All Courses</a></li>
-                                                            <li><a href="#" onclick="available_courses(999);">Available Courses</a></li>
-                                                            <li class="active"><a href="#" onclick="completed_courses(999);">Completed Courses</a></li>`;
-    }
-    
-    async function add_course_to() {
-        
-    }
-
-</script>
+</script> -->
 
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>LMS - All Courses</title>
+    <title>Enrol</title>
     <!-- Favicon icon -->
     <link rel="icon" type="image/png" sizes="16x16" href="images/favicon.png">
     <!-- Pignose Calender -->
@@ -224,12 +63,6 @@
     <link rel="stylesheet" href="./plugins/chartist-plugin-tooltips/css/chartist-plugin-tooltip.css">
     <!-- Custom Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
-
-    <style>
-        #enrol{
-            margin: 12px 5px -5px 12px;
-        }
-    </style>
 
 </head>
 
@@ -465,13 +298,13 @@
             <div class="nk-nav-scroll">
                 <ul class="metismenu" id="menu">
                     <li>
-                        <a href="index.html" aria-expanded="false">
+                        <a href="hr.html" aria-expanded="false">
                             <i class="icon-speedometer menu-icon"></i><span class="nav-text">Overview</span>
                         </a>
                     </li>
                     <li class="mega-menu mega-menu-sm">
-                        <a href="allCourses.html" aria-expanded="false">
-                            <i class="icon-globe-alt menu-icon"></i><span class="nav-text">All Courses</span>
+                        <a href="hr_enrol.html" aria-expanded="false">
+                            <i class="icon-globe-alt menu-icon"></i><span class="nav-text">Hr en </span>
                         </a>
 
                     </li>
@@ -539,103 +372,85 @@
                     </ol>
                 </div>
             </div>
+            <!-- row -->
 
-            <!--Tab Nav Bar for Courses-->
             <div class="container-fluid">
-
-                <ul class="nav nav-tabs" id="newactive">
-                    <li class="active"><a href="#" onclick="all_courses();">All Courses</a></li>
-                    <li><a href="#" onclick="available_courses(999);">Available Courses</a></li>
-                    <li><a href="#" onclick="completed_courses(999);">Completed Courses</a></li>
-                </ul>
+                <!-- End Row -->
 
                 <div class="row">
-                    <div class="col-9 m-b-30">
-
-                        <p><h4 class="d-inline"></h4></p>
-                        <div class="row" id="allcourse">
-                             <!--Course Card-->
-                             <div class="col-md-6 col-lg-3">
-                                <div class="card">
-                                    <img class="img-fluid" src="images/big/img1.jpg" alt="">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Intro to Ink Practices</h5>
-                                        <p class="card-text">This is a wider card with supporting text and below as a natural lead-in to the additional content. This content is a little bit longer.</p>
-                                        <a href="#" class="btn btn-primary">Add</a>
-                                    </div>
-                                </div>
+                    <div class="col-12 m-b-30">
+                        <!-- tabs -->
+                        
+                        <!-- end of tabs -->
+                        <p><h3 class="d-inline">Welcome, please select a course to begin enrolling...</h3></p>
+                        <div></div>
+                        <br>
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              Course
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                              <a class="dropdown-item" href="#">Intro to Ink Practices</a>
+                              <a class="dropdown-item" href="#">Advanced IBM Printers</a>
+                              <a class="dropdown-item" href="#">Xerox 500</a>
                             </div>
-                            <!-- End Col -->
-
-                            <!--Course Card-->
-                            <div class="col-md-6 col-lg-3">
+                          </div>
+                          <br>
+                          <p><h3 class="d-inline">Classlist</h3></p>      
+                          <div class="row">
+                            <div class="col-lg-8">
                                 <div class="card">
-                                    <img class="img-fluid" src="images/big/img2.jpg" alt="">
                                     <div class="card-body">
-                                        <h5 class="card-title">Advanced IBM Printers</h5>
-                                        <p class="card-text">This is a wider card with supporting text and below as a natural lead-in to the additional content. This content is a little bit longer.</p>
-                                        <a href="#" class="btn btn-primary">Add</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- End Col -->
-
-                            <!--Course Card-->
-                            <div class="col-md-6 col-lg-3">
-                                <div class="card">
-                                    <img class="img-fluid" src="images/big/img3.jpg" alt="">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Printing System Design</h5>
-                                        <p class="card-text">This is a wider card with supporting text and below as a natural lead-in to the additional content. This content is a little bit longer.</p>
-                                        <a href="#" class="btn btn-primary">Add</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- End Col -->
-
-                            <!--Course Card-->
-                            <div class="col-md-6 col-lg-3">
-                                <div class="card">
-                                    <img class="img-fluid" src="images/big/img4.jpg" alt="">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Xerox 5000</h5>
-                                        <p class="card-text">This is a wider card with supporting text and below as a natural lead-in to the additional content. This content is a little bit longer.</p>
-                                        <a href="#" class="btn btn-primary">Add</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- End Col -->
-                        </div>
-                    </div>
-
-                    <!--Cart-->
-                    <div class="col-3 m-b-30">
-                        <div class="card">
-                            <div class="card-body px-0">
-                                <h1 class="card-title px-4 mb-3 text-primary">Course Checkout</h1>
-                                <div class="todo-list">
-                                    <div class="tdl-holder">
-                                        <div class="tdl-content">
-                                            <ul id="cart">
-                                                <li>
-                                                    <label>Intro to Ink Practices
-                                                        <a href='#' class="ti-trash"></a> <!--Delete button-->
-                                                    </label>
-                                                </li>
-                                                <li>
-                                                    <label>Printing System Design
-                                                        <a href='#' class="ti-trash"></a> <!--Delete button-->
-                                                    </label>
-                                                </li>
-                                            </ul>
+                                        <div class="active-member">
+                                            <div class="table-responsive">
+                                                <table class="table table-xs mb-0">
+                                                    <thead>
+                                                        <tr>
+                                                        
+                                                            <th>Student</th>
+                                                            <th>Progress</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td><a href="course1.html">Art of Ink 101</a></td>
+                                                            <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">John Watson</td>
+                                                            <td>
+                                                                <div>
+                                                                    <span class="float-right">60%</span>
+                                                                    <div class="progress" style="height: 6px">
+                                                                        <div class="progress-bar bg-success" style="width: 50%" role="progressbar"></div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Art of Ink 101</td>
+                                                            <td><img src="./images/avatar/2.jpg" class=" rounded-circle mr-3" alt="">Perry Platypus</td>
+                                                            <td>
+                                                                <div>
+                                                                    <span class="float-right">50%</span>
+                                                                    <div class="progress" style="height: 6px">
+                                                                        <div class="progress-bar bg-success" style="width: 50%" role="progressbar"></div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                          
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <a href="#" class="btn btn-success" id="enrol">Confirm Enrolment</a>
+                                </div>                        
                             </div>
+        
+                        
+                    </div>       
+                          <div class="row" id="allcourse">
+                             
                         </div>
                     </div>
-
                 </div>
                 
             </div>
