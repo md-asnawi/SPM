@@ -1,6 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
 
+<script>
+
+    window.onload = function (e) {
+        course_count();
+        course_request();
+        course_information();
+    }
+
+    async function course_count() {
+        course_count_url = `http://127.0.0.1:5001/course/count`;
+        var course_count = await fetch(course_count_url, {method: "GET"}).then(res => res.json());
+
+        document.getElementById("course_count").innerHTML = course_count.data.course_count;
+    }
+
+    async function course_request() {
+
+        // Create empty array
+        all = []
+        cards = []
+
+        pending_count_url = `http://127.0.0.1:5003/pending/count`;
+        var pending_count = await fetch(pending_count_url, {method: "GET"}).then(res => res.json());
+
+        document.getElementById("pending_count").innerHTML = "New : " + pending_count.data.pending_count;
+    }
+
+    async function course_information() {
+
+        all = []
+        rows = []
+        course_class_url = `http://127.0.0.1:5004/class`;
+
+        var course_class = await fetch(course_class_url, {method: "GET"}).then(res => res.json());
+
+        if (course_class.code == 200) {
+    
+            course_class_array = course_class.data.class;
+
+            for (i=0; i < course_class_array.length; i++ ) {
+                all.push(course_class_array[i]);
+            }
+
+            for (let i = 0; i < all.length; i++) {
+                let course = all[i]
+
+                inclass_count_url = `http://127.0.0.1:5003/class/count/${course.course_name}/${course.class_id}`;
+                var inclass_count = await fetch(inclass_count_url, {method: "GET"}).then(res => res.json());
+
+                rows.push(`
+                    <tr>
+                        <td>${course.course_name}</td>
+                        <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">${course.trainer_name}</td>
+                        <td><a href="">C${course.class_id}</a></td>
+                        <td><a href="">${inclass_count.data.inclass_count}/${course.class_size}</a></td>
+                    </tr>
+                `);
+            }
+        }
+
+        document.getElementById("class_information").innerHTML = rows;
+    }
+</script>
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -289,7 +352,7 @@
                             <div class="card-body">
                                 <h3 class="card-title text-white">Courses Available</h3>
                                 <div class="d-inline-block">
-                                    <h2 class="text-white">5</h2>
+                                    <h2 class="text-white" id="course_count">5</h2>
                             
                                 </div>
                                 <span class="float-right display-5 opacity-5"></span>
@@ -301,7 +364,7 @@
                             <div class="card-body">
                                 <h3 class="card-title text-white">Student Requests</h3>
                                 <div class="d-inline-block">
-                                    <h2 class="text-white">New: 9</h2>
+                                    <h2 class="text-white" id="pending_count">New: 9</h2>
                                     <p class="text-white mb-0"></p>
                                 </div>
                                 <span class="float-right display-5 opacity-5"></i></span>
@@ -339,7 +402,7 @@
                                                     <th>Capacity</th>
                                                 </tr>
                                             </thead>
-                                            <tbody>
+                                            <tbody id="class_information">
                                                 <tr>
                                                     <td>Intro to Ink Practices</td>
                                                     <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">John Watson</td>
@@ -353,9 +416,6 @@
                                                     <td><a href="">C1</a></td>
                                                     <td><a href="">38/40</a></td>
                                                 </tr>
-
-                                                
-                                  
                                             </tbody>
                                         </table>
                                     </div>

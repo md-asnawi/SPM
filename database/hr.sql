@@ -10,8 +10,8 @@ CREATE TABLE IF NOT EXISTS `hr` (
   PRIMARY KEY (`hr_id`));
 
 INSERT INTO `hr` (`hr_id`, `hr_name`, `password`) VALUES
-('1', 'Mary', 'password1'),
-('2', 'Bob', 'password2'),
-('3', 'Alice', 'password3'),
-('4', 'Chris', 'password4'),
-('5', 'Joe', 'password5');
+(1, 'Mary', 'password1'),
+(2, 'Bob', 'password2'),
+(3, 'Alice', 'password3'),
+(4, 'Chris', 'password4'),
+(5, 'Joe', 'password5');

@@ -105,6 +105,64 @@ class Learner_Class(db.Model):
     def set_withdrawal(self, withdrawal):
         self.withdrawal = withdrawal
 
+# get pending count
+@app.route("/pending/count", methods=["GET"])
+def get_pending_count():
+
+    learner_class_list = Learner_Class(db.Model).query.filter_by(enrolment_status="Pending").all()
+    
+    if len(learner_class_list):
+        count = 0
+        for learner in learner_class_list:
+            count += 1
+
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "pending_count": count
+                }
+            }
+        )
+
+    else:
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "pending_count": 0
+                }
+            }
+        )
+
+@app.route("/class/count/<string:course_name>/<int:class_id>", methods=["GET"])
+def get_inclass_count(course_name, class_id):
+
+    inclass_count = Learner_Class(db.Model).query.filter_by(course_name=course_name,class_id=class_id,enrolment_status="Enrolled",withdrawal=0).all()
+
+    if len(inclass_count):
+        count = 0
+        for learner in inclass_count:
+            count += 1
+
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "inclass_count": count
+                }
+            }
+        )
+
+    else:
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "inclass_count": 0
+                }
+            }
+        )
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5003, debug=True)
