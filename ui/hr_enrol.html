@@ -165,7 +165,7 @@
                                     <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">${learner.engineer_name}</td>
                                     <td>${learner.learner_id}</td>
                                     <td><div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="" id="${learner.learner_id}">
+                                        <input class="form-check-input" type="checkbox" value="${learner.learner_id}" id="${learner.learner_id}">
                                     </div></td>
                                 </tr>
                             `);
@@ -178,7 +178,7 @@
                                 <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">${learner.engineer_name}</td>
                                 <td>${learner.learner_id}</td>
                                 <td><div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="" id="${learner.learner_id}">
+                                    <input class="form-check-input" type="checkbox" value="${learner.learner_id}" id="${learner.learner_id}">
                                 </div></td>
                             </tr>
                         `);
@@ -207,7 +207,7 @@
                                 <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">${learner.engineer_name}</td>
                                 <td>${learner.learner_id}</td>
                                 <td><div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="" id="${learner.learner_id}">
+                                    <input class="form-check-input" type="checkbox" value="${learner.learner_id}" id="${learner.learner_id}">
                                 </div></td>
                             </tr>
                         `);
@@ -220,7 +220,7 @@
                                     <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">${learner.engineer_name}</td>
                                     <td>${learner.learner_id}</td>
                                     <td><div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="" id="${learner.learner_id}">
+                                        <input class="form-check-input" type="checkbox" value="${learner.learner_id}" id="${learner.learner_id}">
                                     </div></td>
                                 </tr>
                             `);
@@ -228,11 +228,47 @@
             }
         }
         document.getElementById("available_learner").innerHTML = available;
+        console.log(course_name);
     }
 
-    // async function enrolment(course_name, class_id, learner_id) {
+    async function enrolment(course_name) {
+        enrol_learner = []
+
+        // get course_name
+        course_name =  document.getElementById("course_dropdown").value;
         
-    // }
+        // if learner checked, append learner_id 
+        checkedbox = $('.form-check:checkbox:checked');
+
+        $('input.form-check-input:checkbox:checked').each(function () {
+            enrol_learner.push($(this).val());
+        });
+        // console.log(enrol_learner);
+
+        for (let i = 0; i < enrol_learner.length; i++) {
+            let learner_id = enrol_learner[i]
+            console.log(learner_id);
+            console.log(course_name);
+
+            enrolment_url = `http://127.0.0.1:5003/enrol/` + course_name + `/` + 1 + `/` + learner_id;
+            console.log(enrolment_url);
+            var enrol = await fetch(enrolment_url, {method: "POST"}).then(res => res.json());
+
+            // console.log(enrol);
+
+            if (enrol.code == 201) {
+                alert("Learner " + learner_id + " successfully enrolled into " + course_name + "!")
+            }
+
+            else {
+                alert("Enrolment Unsuccessful!")
+            }
+        }
+
+        // rerun the page
+        course_dropdown();
+        available_learner(course_name);
+    }
 
 </script>
 
@@ -577,18 +613,16 @@
                                                                 <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">{{Learner}}</td>
                                                                 <td>{{ID}}</td>
                                                                 <td><div class="form-check">
-                                                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                                                    <input class="form-check-input" type="checkbox" value="Learner" id="flexCheckDefault">
                                                                 </div></td>
                                                             </tr>
                                                             <tr>
                                                                 <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">{{Learner2}}</td>
                                                                 <td>{{ID2}}</td>
                                                                 <td><div class="form-check">
-                                                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                                                    <input class="form-check-input" type="checkbox" value="Learner2" id="flexCheckDefault">
                                                                 </div></td>
                                                             </tr>
-                                                        
-                                          
                                                     </tbody>
                                                 </table>
                                             </div>
@@ -601,7 +635,7 @@
                     </div>       
                     <!-- INSERT ENROL REQUEST HERE -->
                           <div class="row">
-                            <button class="btn btn-primary" type="submit" onclick="myAlert()">Enrol</button>
+                            <button class="btn btn-primary" type="submit" onclick="enrolment(course_name)">Enrol</button>
                         </div>
                   </div>
                   </div>

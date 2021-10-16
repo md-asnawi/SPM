@@ -237,34 +237,83 @@ def get_coursecompleted(course_name):
             }
         )
 
-# whoever completed the prereq
-# @app.route("/course/prereq/<string:course_name>", methods=["GET"])
-# def get_prereq(course_name):
-#     course = Course(db.Model).query.filter_by(course_name=course_name).first()
-#     course_prereq = course.prerequisite
 
-#     prereq_learner_class = Learner_Class(db.Model).query.filter_by(course_name=course_prereq,enrolment_status="Enrolled",progress=100).all()
+# enrol new learner into course
 
-#     if len(prereq_learner_class):
-#         return jsonify(
-#             {
-#                 "code": 200,
-#                 "data": {
-#                     "prereq_completed_learner": [learner.json() for learner in prereq_learner_class]
-#                 }
-#             }
-#         )
+@app.route("/enrol/<string:course_name>/<int:class_id>/<int:learner_id>", methods=["POST"])
+def enrolment(course_name, class_id, learner_id):
 
-#     else:
-#         return jsonify(
-#             {
-#                 "code": 404,
-#                 "data": {
-#                     "prereq_completed_learner": "No one completed the prerequisite of this course."
-#                 }
-#             }
-#         )
+    # check_current_count
+    # inclass_count = Learner_Class(db.Model).query.filter_by(course_name=course_name,class_id=class_id,enrolment_status="Enrolled",withdrawal=0).all()
 
+    # if len(inclass_count):
+    #     inclass_class_count = 0
+    #     for learner in inclass_count:
+    #         inclass_class_count += 1
+    # else:
+    #     inclass_class_count = 0
+
+    # class size
+    # class_size = Class(db.Model).query.filter_by(course_name=course_name,class_id=class_id).first()
+
+    # if got capacity, add the learner
+    new_enrolment = Learner_Class(course_name, class_id, learner_id, '2021-04-01', '2021-04-05', '2021-04-30', 0, 'Enrolled', True, False)
+
+    # if (inclass_class_count + 1 < class_size.class_size) {
+    #     new_enrolment = ()
+    # }
+
+    # try:
+    #     db.session.add(new_enrolment)
+    #     db.session.commit()
+    #     return jsonify({new_enrolment.to_dict()}), 201
+    # except:
+    #     return jsonify({
+    #         "message": "Unable to commit to database."
+    #     }), 500
+
+    try:
+        db.session.add(new_enrolment)
+        db.session.commit()
+        
+        return jsonify (
+            {
+                "code": 201,
+                "data": {
+                    "new_enrolment": new_enrolment.json()
+                },
+                "message": "Enrolment commited to database."
+            }
+        ), 201
+    except Exception as e:
+        return jsonify({
+            "message": "Unable to commit to database."
+        }), 500
+
+
+# @app.route("/enrol/learner", methods=['POST'])
+# def enrol():
+#     data = request.get_json()
+#     if not all(key in data.keys() for
+#                key in ('course_name', 'class_id', 'learner_id', 'date_assigned', 'start_date', 'end_date', 'progress', 'enrolment_status', 'preassigned', 'withdrawal')):
+#         return jsonify({
+#             "message": "Incorrect JSON object provided."
+#         }), 500
+
+#     # TO-DO: check if class exist first
+#     # TO-DO: check if course created, then class can be created (?)
+#     # currently request returns error "Unable to commit to database"
+
+#     new_enrolment = Learner_Class(**data)
+#     try:
+#         db.session.add(new_enrolment)
+#         db.session.commit()
+#         return jsonify(new_enrolment.to_dict()), 201
+#     except Exception:
+#         return jsonify({
+#             "message": "Unable to commit to database."
+#         }), 500
+    
 
 
 if __name__ == '__main__':
