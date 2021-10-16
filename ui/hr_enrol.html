@@ -8,50 +8,232 @@
         alert("Enrolment Successful!")
     }
 
-    // window.onload = function (e) {
-    //     all_courses();
-    // }
+    window.onload = function (e) {
+        course_name = "Course 111"
+        // class_id = "1"
+        course_dropdown();
+        // class_dropdown(course_name);
+        available_learner(course_name);
+    }
 
-    // async function all_courses() {
+    async function course_dropdown() {
+
+        // Create empty array
+        all = []
+        dropdown = []
+
+        all_url = `http://127.0.0.1:5001/course`;
+        var all_course = await fetch(all_url, {method: "GET"}).then(res => res.json());
+
+        if (all_course.code == 200) {
+        
+            all_course_array = all_course.data.course;
+
+            for (i=0; i < all_course_array.length; i++ ) {
+                all.push(all_course_array[i]);
+            }
+
+            for (let i = 0; i < all.length; i++) {
+                let course = all[i]
+                
+                dropdown.push(`
+                    <option value="${course.course_name}">${course.course_name}</option>
+                `)
+            }
+        }
+
+        else {
+            dropdown.push(`<option value="nocourse">No Course</option>`);
+        }
+
+        document.getElementById("course_dropdown").innerHTML = dropdown;
+    }
+
+    // async function class_dropdown(course_name) {
 
     //     // Create empty array
-    //     all_course = []
-    //     cards = []
+    //     all1 = []
+    //     dropdown1 = []
 
-    //     url = `http://127.0.0.1:5001/course`;
+    //     course_class_url = `http://127.0.0.1:5004/class/` + course_name;
 
-    //     var course = await fetch(url, {method: "GET"}).then(res => res.json());
+    //     var all_course_class = await fetch(course_class_url, {method: "GET"}).then(res => res.json());
 
-    //     console.log(course);
+    //     if (all_course_class.code == 200) {
 
-    //     course_array = course.data.course;
+    //         all_course_class_array = all_course_class.data.class;
 
-    //     console.log(course_array);
+    //         console.log(all_course_class_array);
 
-    //     for (i=0; i < course_array.length; i++ ) {
-    //         all_course.push(course_array[i]);
-    //     }
-        
-    //     for (let i = 0; i < all_course.length; i++) {
-    //         let course = all_course[i]
+    //         for (i=0; i < all_course_class_array.length; i++ ) {
+    //             all1.push(all_course_class_array[i]);
+    //         }
 
-    //         cards.push(`
-    //             <div class="col-md-6 col-lg-3">
-    //                 <div class="card">
-    //                     <img class="img-fluid" src="images/big/img2.jpg" alt="">
-    //                     <div class="card-body">
-    //                         <h5 class="card-title">${course.course_name}</h5>
-    //                         <p class="card-text">${course.description}</p>
-    //                         <a href="#" class="btn btn-dark">Add</a>
-    //                     </div>
-    //                 </div>
-    //             </div>
-    //         `);
+    //         for (let i = 0; i < all1.length; i++) {
+    //             let course_class = all1[i]
+                
+    //             dropdown1.push(`
+    //                 <option value="${course_class.class_id}" course_name="${course_class.course_name}">${course_class.class_id}</option>
+    //             `)
+    //         }
     //     }
 
-    //     // display it within the id
-    //     document.getElementById("allcourse").innerHTML = cards;
+    //     else {
+    //         dropdown1.push(`<option value="noclass">No Class</option>`);
+    //     }
+
+    //     document.getElementById("class_dropdown").innerHTML = dropdown1;
+
     // }
+
+    async function available_learner(course_name) {
+
+        // must complete prereq, not taken course, class not packed
+
+        course_list_a = []
+        all_learner_a = []
+        course_completed_a = []
+        prereq_course_completed_a = []
+        available = []
+        
+        // get the current course list and learner list
+        course_list_url = `http://127.0.0.1:5003/class/` + course_name;
+        all_learner_url = `http://127.0.0.1:5005/all`;
+        course_completed_url = `http://127.0.0.1:5003/course_completed/` + course_name;
+        
+        var course_list = await fetch(course_list_url, {method: "GET"}).then(res => res.json());
+        var all_learner = await fetch(all_learner_url, {method: "GET"}).then(res => res.json());
+        var course_completed = await fetch(course_completed_url, {method: "GET"}).then(res => res.json());
+
+        // check for prereq
+        all_courses_url = `http://127.0.0.1:5001/course`;
+        var all_course_list = await fetch(all_courses_url, {method: "GET"}).then(res => res.json());
+        all_course_list_array = all_course_list.data.course;
+
+        for (let i = 0; i < all_course_list_array.length; i++) {
+            let course1 = all_course_list_array[i]
+
+            if (course1.course_name ==  course_name) {
+                prereq = course1.prerequisite
+            }
+        }
+
+        if (prereq != null) {
+            prereq_course_completed_url = `http://127.0.0.1:5003/course_completed/` + prereq;
+            var prereq_course_completed_list = await fetch(prereq_course_completed_url, {method: "GET"}).then(res => res.json());
+
+            if (prereq_course_completed_list.code == 200) {
+                prereq_course_completed_list_array = prereq_course_completed_list.data.completed_learner;
+
+                for (i=0; i < prereq_course_completed_list_array.length; i++ ) {
+                    prereq_course_completed_a.push(prereq_course_completed_list_array[i]);
+                }   
+            }
+        }
+
+        // if learner not in current list, means available
+        
+        if (course_list.code == 200) {
+            course_list_array = course_list.data.inclass;
+            all_learner_array = all_learner.data.learner;
+            course_completed_array = course_completed.data.completed_learner;
+
+
+            for (i=0; i < course_list_array.length; i++ ) {
+                course_list_a.push(course_list_array[i]);
+            }
+
+            for (i=0; i < all_learner_array.length; i++ ) {
+                all_learner_a.push(all_learner_array[i]);
+            }
+
+            for (i=0; i < course_completed_array.length; i++ ) {
+                course_completed_a.push(course_completed_array[i]);
+            }
+
+            for (let i = 0; i < all_learner_a.length; i++) {
+                let learner = all_learner_a[i]
+
+                // check if the leaner_id is part of class_list
+                if (JSON.stringify(course_list_a).includes(JSON.stringify(learner.learner_id)) == false) {
+
+                    // if learner is not in class, check if he fulfil the prerequisite
+                    if (prereq != null ) {
+                        if (JSON.stringify(prereq_course_completed_a).includes(JSON.stringify(learner.learner_id))) {
+                            available.push(`
+                                <tr>
+                                    <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">${learner.engineer_name}</td>
+                                    <td>${learner.learner_id}</td>
+                                    <td><div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="" id="${learner.learner_id}">
+                                    </div></td>
+                                </tr>
+                            `);
+                        }
+                    }
+
+                    else {
+                        available.push(`
+                            <tr>
+                                <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">${learner.engineer_name}</td>
+                                <td>${learner.learner_id}</td>
+                                <td><div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="${learner.learner_id}">
+                                </div></td>
+                            </tr>
+                        `);
+                    }
+                }
+            }
+        }
+
+        // if no one in course list
+        else {
+            // all learners avaliable
+            all_learner_array = all_learner.data.learner;
+
+            for (i=0; i < all_learner_array.length; i++ ) {
+                all_learner_a.push(all_learner_array[i]);
+            }
+
+            for (let i = 0; i < all_learner_a.length; i++) {
+                let learner = all_learner_a[i]
+                
+                // check if prereq fulfilled
+                if (prereq != null) {
+                    if (JSON.stringify(prereq_course_completed_a).includes(JSON.stringify(learner.learner_id))) {
+                        available.push(`
+                            <tr>
+                                <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">${learner.engineer_name}</td>
+                                <td>${learner.learner_id}</td>
+                                <td><div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="${learner.learner_id}">
+                                </div></td>
+                            </tr>
+                        `);
+                    }
+                }
+                // if no prereq, anyone can take
+                else {
+                        available.push(`
+                                <tr>
+                                    <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">${learner.engineer_name}</td>
+                                    <td>${learner.learner_id}</td>
+                                    <td><div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="" id="${learner.learner_id}">
+                                    </div></td>
+                                </tr>
+                            `);
+                    }
+            }
+        }
+        document.getElementById("available_learner").innerHTML = available;
+    }
+
+    // async function enrolment(course_name, class_id, learner_id) {
+        
+    // }
+
 </script>
 
 <head>
@@ -356,12 +538,21 @@
                         <br>
                         <!-- PULL COURSE NAME INTO CHECKBOX -->
                         <label for="course">Choose a Course:</label>
-                            <select name="course" id="course">
+                            <select name="course" id="course_dropdown" onchange="available_learner(value);">
                             <option value="course1">{{Course1}}</option>
                             <option value="course2">{{Course2}}</option>
                             <option value="course3">{{Course3}}</option>
                             
                             </select>
+                        
+                        <br>
+                        <!-- <label for="class">Choose a Class:</label>
+                            <select name="course_class" id="class_dropdown" onchange="available_learner(course_name, value);">
+                            <option value="class1">{{1}}</option>
+                            <option value="class2">{{2}}</option>
+                            <option value="class3">{{3}}</option>
+                            
+                            </select> -->
                         
                           <br><br>
                           <p><h4 class="d-inline">Select Learners:</h4></p>      
@@ -381,13 +572,13 @@
                                                         </tr>
                                                     </thead>
                                                 <!-- INSERT LEARNERS DATA HERE -->
-                                                    <tbody>
+                                                    <tbody id="available_learner">
                                                             <tr>
-                                                            <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">{{Learner}}</td>
-                                                            <td>{{ID}}</td>
-                                                            <td><div class="form-check">
-                                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                                                            </div></td>
+                                                                <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">{{Learner}}</td>
+                                                                <td>{{ID}}</td>
+                                                                <td><div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                                                </div></td>
                                                             </tr>
                                                             <tr>
                                                                 <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">{{Learner2}}</td>

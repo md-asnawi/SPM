@@ -164,6 +164,87 @@ def get_inclass_count(course_name, class_id):
             }
         )
 
+@app.route("/class/<string:course_name>", methods=["GET"])
+def get_inclass(course_name):
+
+    inclass = Learner_Class(db.Model).query.filter_by(course_name=course_name,enrolment_status="Enrolled",withdrawal=0).all()
+
+    if len(inclass):
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "inclass": [course_class.json() for course_class in inclass]
+                }
+            }
+        )
+
+    else:
+        return jsonify(
+            {
+                "code": 404,
+                "data": {
+                    "inclass": "No one enrolled in this class."
+                }
+            }
+        )
+
+# whoever completed the course
+@app.route("/course_completed/<string:course_name>", methods=["GET"])
+def get_coursecompleted(course_name):
+
+    learner_list = Learner_Class(db.Model).query.filter_by(course_name=course_name,enrolment_status="Enrolled",progress=100).all()
+
+    if len(learner_list):
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "completed_learner": [learner.json() for learner in learner_list]
+                }
+            }
+        )
+
+    else:
+        return jsonify(
+            {
+                "code": 404,
+                "data": {
+                    "completed_learner": "No one completed the course."
+                }
+            }
+        )
+
+# whoever completed the prereq
+# @app.route("/course/prereq/<string:course_name>", methods=["GET"])
+# def get_prereq(course_name):
+#     course = Course(db.Model).query.filter_by(course_name=course_name).first()
+#     course_prereq = course.prerequisite
+
+#     prereq_learner_class = Learner_Class(db.Model).query.filter_by(course_name=course_prereq,enrolment_status="Enrolled",progress=100).all()
+
+#     if len(prereq_learner_class):
+#         return jsonify(
+#             {
+#                 "code": 200,
+#                 "data": {
+#                     "prereq_completed_learner": [learner.json() for learner in prereq_learner_class]
+#                 }
+#             }
+#         )
+
+#     else:
+#         return jsonify(
+#             {
+#                 "code": 404,
+#                 "data": {
+#                     "prereq_completed_learner": "No one completed the prerequisite of this course."
+#                 }
+#             }
+#         )
+
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5003, debug=True)
     
