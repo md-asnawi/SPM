@@ -1,53 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<!-- <script>
+<script>
 
     window.onload = function (e) {
-        all_courses();
+        pending_request();
     }
 
-    async function all_courses() {
+    async function pending_request() {
 
-        // Create empty array
-        all_course = []
-        cards = []
+        // Create empty array for the pending requests
+        pending_html = []
 
-        url = `http://127.0.0.1:5001/course`;
+        url = `http://127.0.0.1:5003/pending`;
 
-        var course = await fetch(url, {method: "GET"}).then(res => res.json());
+        var pending_response = await fetch(url, {method: "GET"}).then(res => res.json());
 
-        console.log(course);
+        // console.log(pending_response);
 
-        course_array = course.data.course;
+        pending_array = pending_response.data.pending_list;
 
-        console.log(course_array);
+        // console.log(pending_array);
 
-        for (i=0; i < course_array.length; i++ ) {
-            all_course.push(course_array[i]);
-        }
+        // for (i=0; i < course_array.length; i++ ) {
+        //     all_course.push(course_array[i]);
+        // }
         
-        for (let i = 0; i < all_course.length; i++) {
-            let course = all_course[i]
+        for (pending_object of pending_array) {
 
-            cards.push(`
-                <div class="col-md-6 col-lg-3">
-                    <div class="card">
-                        <img class="img-fluid" src="images/big/img2.jpg" alt="">
-                        <div class="card-body">
-                            <h5 class="card-title">${course.course_name}</h5>
-                            <p class="card-text">${course.description}</p>
-                            <a href="#" class="btn btn-dark">Add</a>
-                        </div>
-                    </div>
-                </div>
+            url = `http://127.0.0.1:5005/learner/` + pending_object.learner_id;
+
+            var learner_response = await fetch(url, {method: "GET"}).then(res => res.json());
+
+            // console.log(learner_response);
+
+            learner_object = learner_response.data.learner
+
+            // console.log(learner_object);
+
+            pending_html.push(`
+                <tr>
+                    <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">${learner_object.engineer_name}</td>
+                    <td>${pending_object.learner_id}</td>
+                    <td>${pending_object.course_name}</td>
+                    <td><button type="button" class="btn btn-light">Accept</button></td>
+                    <td><button type="button" class="btn btn-light">Reject</button></td>
+                </tr>
             `);
         }
 
         // display it within the id
-        document.getElementById("allcourse").innerHTML = cards;
+        document.getElementById("pending_request").innerHTML = pending_html;
     }
-</script> -->
+</script>
 
 <head>
     <meta charset="utf-8">
@@ -371,7 +376,7 @@
                                                         </tr>
                                                     </thead>
                                                 <!-- INSERT LEARNERS DATA HERE -->
-                                                    <tbody>
+                                                    <tbody id="pending_request">
                                                             <tr>
                                                             <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">{{Name}}</td>
                                                             <td>{{ID}}</td>

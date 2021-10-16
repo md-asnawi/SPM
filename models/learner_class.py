@@ -105,6 +105,28 @@ class Learner_Class(db.Model):
     def set_withdrawal(self, withdrawal):
         self.withdrawal = withdrawal
 
+# get all pending records
+@app.route("/pending", methods=["GET"])
+def get_pending():
+
+    pending_list = Learner_Class(db.Model).query.filter_by(enrolment_status="Pending").all()
+
+    if pending_list:
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "pending_list": [pending.json() for pending in pending_list]
+                }
+            }
+        )
+
+    return jsonify(
+            {
+                "message": "No pending requests."
+            }
+        ), 404
+
 # get pending count
 @app.route("/pending/count", methods=["GET"])
 def get_pending_count():
