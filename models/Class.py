@@ -103,7 +103,7 @@ def get_all_classes():
             {
                 "code": 200,
                 "data": {
-                    "class": [single_class.json() for single_class in classList]
+                    "classes": [single_class.json() for single_class in classList]
                 }
             }
         )
@@ -119,7 +119,7 @@ def get_all_classes_in_course(course_name):
             {
                 "code": 200,
                 "data": {
-                    "class": [single_class.json() for single_class in classList]
+                    "classes": [single_class.json() for single_class in classList]
                 }
             }
         )
@@ -143,7 +143,7 @@ def get_one_class(course_name, class_id):
             {
                 "code": 200,
                 "data": {
-                    "class": single_class.json()
+                    "single_class": single_class.json()
                 }
             }
         )
