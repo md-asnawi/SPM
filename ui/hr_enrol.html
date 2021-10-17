@@ -12,7 +12,7 @@
         course_name = "Course 111"
         // class_id = "1"
         course_dropdown();
-        // class_dropdown(course_name);
+        class_dropdown(course_name);
         available_learner(course_name);
     }
 
@@ -49,42 +49,53 @@
         document.getElementById("course_dropdown").innerHTML = dropdown;
     }
 
-    // async function class_dropdown(course_name) {
+    async function class_dropdown(course_name) {
 
-    //     // Create empty array
-    //     all1 = []
-    //     dropdown1 = []
+        // Create empty array
+        all1 = []
+        dropdown1 = []
 
-    //     course_class_url = `http://127.0.0.1:5004/class/` + course_name;
+        course_class_url = `http://127.0.0.1:5004/class/` + course_name;
+    
+        var all_course_class = await fetch(course_class_url, {method: "GET"}).then(res => res.json());
 
-    //     var all_course_class = await fetch(course_class_url, {method: "GET"}).then(res => res.json());
+        if (all_course_class.code == 200) {
 
-    //     if (all_course_class.code == 200) {
+            all_course_class_array = all_course_class.data.classes;
 
-    //         all_course_class_array = all_course_class.data.class;
+            console.log(all_course_class_array);
 
-    //         console.log(all_course_class_array);
+            for (i=0; i < all_course_class_array.length; i++ ) {
+                all1.push(all_course_class_array[i]);
+            }
 
-    //         for (i=0; i < all_course_class_array.length; i++ ) {
-    //             all1.push(all_course_class_array[i]);
-    //         }
-
-    //         for (let i = 0; i < all1.length; i++) {
-    //             let course_class = all1[i]
+            for (let i = 0; i < all1.length; i++) {
+                let course_class = all1[i]
                 
-    //             dropdown1.push(`
-    //                 <option value="${course_class.class_id}" course_name="${course_class.course_name}">${course_class.class_id}</option>
-    //             `)
-    //         }
-    //     }
+                // check capacity of class
+                single_class_url = `http://127.0.0.1:5004/class/` + course_class.course_name + `/` + course_class.class_id;
+                var single_class = await fetch(single_class_url, {method: "GET"}).then(res => res.json());
+                class_size = single_class.data.single_class.class_size;
+            
 
-    //     else {
-    //         dropdown1.push(`<option value="noclass">No Class</option>`);
-    //     }
+                // check current class size
+                class_count_url = `http://127.0.0.1:5003/class/count/` + course_class.course_name + `/` + course_class.class_id
+                var class_count = await fetch(class_count_url, {method: "GET"}).then(res => res.json());
+                class_cap = class_count.data.inclass_count;
 
-    //     document.getElementById("class_dropdown").innerHTML = dropdown1;
+                dropdown1.push(`
+                    <option value="${course_class.class_id}" course_name="${course_class.course_name}">${course_class.class_id} - (${class_cap}/${class_size})</option>
+                `)
+            }
+        }
 
-    // }
+        else {
+            dropdown1.push(`<option value="noclass">No Class</option>`);
+        }
+
+        document.getElementById("class_dropdown").innerHTML = dropdown1;
+
+    }
 
     async function available_learner(course_name) {
 
@@ -165,7 +176,7 @@
                                     <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">${learner.engineer_name}</td>
                                     <td>${learner.learner_id}</td>
                                     <td><div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="" id="${learner.learner_id}">
+                                        <input class="form-check-input" type="checkbox" value="${learner.learner_id}" id="${learner.learner_id}">
                                     </div></td>
                                 </tr>
                             `);
@@ -178,7 +189,7 @@
                                 <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">${learner.engineer_name}</td>
                                 <td>${learner.learner_id}</td>
                                 <td><div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="" id="${learner.learner_id}">
+                                    <input class="form-check-input" type="checkbox" value="${learner.learner_id}" id="${learner.learner_id}">
                                 </div></td>
                             </tr>
                         `);
@@ -207,7 +218,7 @@
                                 <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">${learner.engineer_name}</td>
                                 <td>${learner.learner_id}</td>
                                 <td><div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="" id="${learner.learner_id}">
+                                    <input class="form-check-input" type="checkbox" value="${learner.learner_id}" id="${learner.learner_id}">
                                 </div></td>
                             </tr>
                         `);
@@ -220,7 +231,7 @@
                                     <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">${learner.engineer_name}</td>
                                     <td>${learner.learner_id}</td>
                                     <td><div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="" id="${learner.learner_id}">
+                                        <input class="form-check-input" type="checkbox" value="${learner.learner_id}" id="${learner.learner_id}">
                                     </div></td>
                                 </tr>
                             `);
@@ -228,11 +239,79 @@
             }
         }
         document.getElementById("available_learner").innerHTML = available;
+        console.log(course_name);
     }
 
-    // async function enrolment(course_name, class_id, learner_id) {
+    async function enrolment(course_name) {
+        enrol_learner = []
+
+        // get course_name
+        course_name =  document.getElementById("course_dropdown").value;
+
+        // get class information
+        class_id =  document.getElementById("class_dropdown").value;
+        // console.log(course_name);
+        // console.log(class_id);
         
-    // }
+        // no class available
+        if (class_id == "noclass"){
+            alert("No available class for selected course.")
+        }
+
+        // class available
+        else {            
+            // if learner checked, append learner_id 
+            checkedbox = $('.form-check:checkbox:checked');
+
+            $('input.form-check-input:checkbox:checked').each(function () {
+                enrol_learner.push($(this).val());
+            });
+            // console.log(enrol_learner);
+
+            for (let i = 0; i < enrol_learner.length; i++) {
+
+                // check capacity of class
+                single_class_url = `http://127.0.0.1:5004/class/` + course_name + `/` + class_id;
+                var single_class = await fetch(single_class_url, {method: "GET"}).then(res => res.json());
+                class_size = single_class.data.single_class.class_size;
+                // console.log(class_size);
+
+                // check current class size
+                class_count_url = `http://127.0.0.1:5003/class/count/` + course_name + `/` + class_id
+                var class_count = await fetch(class_count_url, {method: "GET"}).then(res => res.json());
+                class_cap = class_count.data.inclass_count;
+                // console.log(class_cap);
+
+                // count + 1 lower than class_size, add
+                if (class_cap+1 <= class_size) {
+                    let learner_id = enrol_learner[i]
+                    console.log(learner_id);
+                    console.log(course_name);
+
+                    enrolment_url = `http://127.0.0.1:5003/enrol/` + course_name + `/` + class_id + `/` + learner_id;
+                    console.log(enrolment_url);
+                    var enrol = await fetch(enrolment_url, {method: "POST"}).then(res => res.json());
+                    // console.log(enrol);
+
+                    if (enrol.code == 201) {
+                        alert("You have successfully enrolled Learner " + learner_id + " into " + course_name + " C" + class_id + "!")
+                    }
+
+                    else {
+                        alert("Enrolment Unsuccessful!")
+                    }
+                }
+                else {
+                    alert("Selected class full. Enrolment Unsuccessful!")
+                }
+            }
+        }
+        
+
+        // rerun the page
+        class_dropdown(course_name);
+        available_learner(course_name);
+    }
 
 </script>
 
@@ -538,7 +617,7 @@
                         <br>
                         <!-- PULL COURSE NAME INTO CHECKBOX -->
                         <label for="course">Choose a Course:</label>
-                            <select name="course" id="course_dropdown" onchange="available_learner(value);">
+                            <select name="course" id="course_dropdown" onchange="available_learner(value); class_dropdown(value);">
                             <option value="course1">{{Course1}}</option>
                             <option value="course2">{{Course2}}</option>
                             <option value="course3">{{Course3}}</option>
@@ -546,13 +625,11 @@
                             </select>
                         
                         <br>
-                        <!-- <label for="class">Choose a Class:</label>
-                            <select name="course_class" id="class_dropdown" onchange="available_learner(course_name, value);">
-                            <option value="class1">{{1}}</option>
-                            <option value="class2">{{2}}</option>
-                            <option value="class3">{{3}}</option>
+                        <label for="class">Choose a Class:</label>
+                            <select name="course_class" id="class_dropdown">
+                            <option value="">Select a course to see available class</option>
                             
-                            </select> -->
+                            </select>
                         
                           <br><br>
                           <p><h4 class="d-inline">Select Learners:</h4></p>      
@@ -577,18 +654,16 @@
                                                                 <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">{{Learner}}</td>
                                                                 <td>{{ID}}</td>
                                                                 <td><div class="form-check">
-                                                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                                                    <input class="form-check-input" type="checkbox" value="Learner" id="flexCheckDefault">
                                                                 </div></td>
                                                             </tr>
                                                             <tr>
                                                                 <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">{{Learner2}}</td>
                                                                 <td>{{ID2}}</td>
                                                                 <td><div class="form-check">
-                                                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                                                    <input class="form-check-input" type="checkbox" value="Learner2" id="flexCheckDefault">
                                                                 </div></td>
                                                             </tr>
-                                                        
-                                          
                                                     </tbody>
                                                 </table>
                                             </div>
@@ -601,7 +676,7 @@
                     </div>       
                     <!-- INSERT ENROL REQUEST HERE -->
                           <div class="row">
-                            <button class="btn btn-primary" type="submit" onclick="myAlert()">Enrol</button>
+                            <button class="btn btn-primary" type="submit" onclick="enrolment(course_name)">Enrol</button>
                         </div>
                   </div>
                   </div>
