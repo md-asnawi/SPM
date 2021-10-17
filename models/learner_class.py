@@ -157,6 +157,35 @@ def get_pending_count():
             }
         )
 
+# update pending status
+@app.route("/pending/<int:learner_id>/<string:course_name>", methods=["PUT"])
+def update_pending(learner_id, course_name):
+
+    learner_class = Learner_Class(db.Model).query.filter_by(learner_id=learner_id, course_name=course_name).first()
+    
+    if learner_class:
+        data = request.get_json()
+        if data['']
+
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "pending_count": count
+                }
+            }
+        )
+
+    else:
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "pending_count": 0
+                }
+            }
+        )
+
 @app.route("/class/count/<string:course_name>/<int:class_id>", methods=["GET"])
 def get_inclass_count(course_name, class_id):
 

@@ -43,10 +43,17 @@
                     <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">${learner_object.engineer_name}</td>
                     <td>${pending_object.learner_id}</td>
                     <td>${pending_object.course_name}</td>
-                    <td><button type="button" class="btn btn-light">Accept</button></td>
-                    <td><button type="button" class="btn btn-light">Reject</button></td>
+                    <td><button type="button" class="btn btn-light" onclick="interact_request(pending_object.learner_id, pending_object.course_name, 'accept')">Accept</button></td>
+                    <td><button type="button" class="btn btn-light" onclick="interact_request(pending_object.learner_id, pending_object.course_name, 'reject')">Reject</button></td>
                 </tr>
             `);
+        }
+
+        async function interact_request(learner_id, course_name, interaction) {
+            
+            url = `http://127.0.0.1:5003/learner/` + pending_object.learner_id;
+
+
         }
 
         // display it within the id
@@ -72,7 +79,6 @@
 </head>
 
 <body>
-
     <!--*******************
         Preloader start
     ********************-->
