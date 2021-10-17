@@ -4,7 +4,7 @@ from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 
-from Lesson import Lesson
+from lesson import Lesson
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/is212'
@@ -90,10 +90,9 @@ def get_all_materials():
 
     return jsonify(
         {
-            "code": 404,
             "message": "No material found."
         }
-    )
+    ), 404
 
 # GET materials with material id
 @app.route("/material/<int:material_id>", methods=["GET"])

@@ -4,7 +4,7 @@
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-from Learner_class import Learner_Class
+from learner_class import Learner_Class
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/is212'
@@ -35,7 +35,7 @@ class Course(db.Model):
 
     def json(self):
         return{"course_name": self.course_name, "course_id": self.course_id, "description": self.description, "prerequisite": self.prerequisite,
-                "enrolment_start_date": self.enrolment_start_date, "enrolment_end_date": self.enrolment_end_date}
+                "enrolment_start_date": str(self.enrolment_start_date), "enrolment_end_date": str(self.enrolment_end_date)}
 
     def get_course_name(self):
         return self.course_name
@@ -49,14 +49,17 @@ class Course(db.Model):
     def set_course_id(self, course_id):
         self.course_id = course_id
 
-    def get_class_list(self):
-        return self.class_list
+    def get_description(self):
+        return self.description
 
-    def add_class(self, Class):
-        self.class_list.append(Class)
+    def set_description(self, description):
+        self.description = description
 
-    def remove_class(self, Class):
-        self.class_list.remove(Class)
+    def get_prerequisite(self):
+        return self.prerequisite
+
+    def set_prerequisite(self, prerequisite):
+        self.prerequisite = prerequisite
 
     def get_enrolment_start_date(self):
         return self.enrolment_start_date
@@ -94,7 +97,7 @@ def get_available(learner_id):
 
     courselist = Course.query.all()
 
-    ## get learner course completed
+    # get learner course completed
     learner_class = Learner_Class(db.Model).query.filter_by(learner_id=learner_id).all()
 
     for eachrow in learner_class:
@@ -102,13 +105,13 @@ def get_available(learner_id):
         if eachrow.json()["withdrawal"] == False:
             unavailable_array.append(eachrow.json()["course_name"])
     
-    ## if course not in completed array, append to available array.
+    # if course not in completed array, append to available array.
     if len(courselist):
         for course in courselist:
             if course.json()["course_name"] not in unavailable_array:
                 available_course.append(course)
                 
-    ## display available array    
+    # display available array    
     if len(available_course):
         return jsonify(
             {
@@ -132,7 +135,7 @@ def get_completed(learner_id):
     completed_course = []
     courselist = Course.query.all()
 
-    ## get learner course completed
+    # get learner course completed
     learner_class = Learner_Class(db.Model).query.filter_by(learner_id=learner_id).all()
 
     for eachrow in learner_class:
@@ -140,13 +143,13 @@ def get_completed(learner_id):
         if eachrow.json()["progress"] == 100:
             completed_array.append(eachrow.json()["course_name"])
 
-    ## if course completed, append to completed array.
+    # if course completed, append to completed array.
     if len(courselist):
         for course in courselist:
             if course.json()["course_name"] in completed_array:
                 completed_course.append(course)
                 
-    ## display available array    
+    # display available array    
     if len(completed_course):
         return jsonify(
             {

@@ -38,7 +38,7 @@ class Class(db.Model):
     def json(self):
         return {
                 "course_name": self.course_name, "class_id": self.class_id, "class_size": self.class_size, 
-                "start_date": self.start_date, "end_date": self.end_date, "start_time": str(self.start_time),
+                "start_date": str(self.start_date), "end_date": str(self.end_date), "start_time": str(self.start_time),
                 "end_time": str(self.end_time), "trainer_name": self.trainer_name
         }
 
