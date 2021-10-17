@@ -17,47 +17,73 @@
         var pending_response = await fetch(url, {method: "GET"}).then(res => res.json());
 
         // console.log(pending_response);
+        if ("data" in pending_response) {
+            pending_array = pending_response.data.pending_list;
 
-        pending_array = pending_response.data.pending_list;
+            // console.log(pending_array);
 
-        // console.log(pending_array);
-
-        // for (i=0; i < course_array.length; i++ ) {
-        //     all_course.push(course_array[i]);
-        // }
-        
-        for (pending_object of pending_array) {
-
-            url = `http://127.0.0.1:5005/learner/` + pending_object.learner_id;
-
-            var learner_response = await fetch(url, {method: "GET"}).then(res => res.json());
-
-            // console.log(learner_response);
-
-            learner_object = learner_response.data.learner
-
-            // console.log(learner_object);
-
-            pending_html.push(`
-                <tr>
-                    <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">${learner_object.engineer_name}</td>
-                    <td>${pending_object.learner_id}</td>
-                    <td>${pending_object.course_name}</td>
-                    <td><button type="button" class="btn btn-light" onclick="interact_request(pending_object.learner_id, pending_object.course_name, 'accept')">Accept</button></td>
-                    <td><button type="button" class="btn btn-light" onclick="interact_request(pending_object.learner_id, pending_object.course_name, 'reject')">Reject</button></td>
-                </tr>
-            `);
-        }
-
-        async function interact_request(learner_id, course_name, interaction) {
+            // for (i=0; i < course_array.length; i++ ) {
+            //     all_course.push(course_array[i]);
+            // }
             
-            url = `http://127.0.0.1:5003/learner/` + pending_object.learner_id;
+            for (pending_object of pending_array) {
 
+                url = `http://127.0.0.1:5005/learner/` + pending_object.learner_id;
 
+                var learner_response = await fetch(url, {method: "GET"}).then(res => res.json());
+
+                // console.log(learner_response);
+
+                learner_object = learner_response.data.learner
+
+                // console.log(learner_object);
+
+                pending_html.push(`
+                    <tr>
+                        <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">${learner_object.engineer_name}</td>
+                        <td>${pending_object.learner_id}</td>
+                        <td>${pending_object.course_name}</td>
+                        <td><button type="button" class="btn btn-light" onclick="interact_request(pending_object.learner_id, pending_object.course_name, 'accept')">Accept</button></td>
+                        <td><button type="button" class="btn btn-light" onclick="interact_request(pending_object.learner_id, pending_object.course_name, 'reject')">Reject</button></td>
+                    </tr>
+                `);
+            }
+            
+
+            // display it within the id
+            document.getElementById("pending_request").innerHTML = pending_html;
         }
 
-        // display it within the id
-        document.getElementById("pending_request").innerHTML = pending_html;
+        else {
+            document.getElementById("pending_request").innerHTML = pending_html;
+            alert("No pending requests!"); // temporarily
+        }
+
+        
+    }
+
+    async function interact_request(learner_id, course_name, interaction) {
+
+        alertMsg = "You have approved the enrolment!";
+        data = {'enrolment_status': 'Enrolled'};
+
+        if (interaction == 'reject') {
+            alertMsg = "You have rejected the enrolment!";
+            data = {'enrolment_status': 'Rejected'};
+        }
+        
+
+        url = `http://127.0.0.1:5003/pending/` + pending_object.learner_id + `/` + String(pending_object.course_name);
+
+
+        var interact_response = await fetch(url, {method: "PUT", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)}).then(res => res.json());
+
+        // console.log(interact_response);
+
+        alert(alertMsg);
+
+        pending_request();
+
     }
 </script>
 

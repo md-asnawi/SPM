@@ -165,26 +165,30 @@ def update_pending(learner_id, course_name):
     
     if learner_class:
         data = request.get_json()
-        if data['']
-
-        return jsonify(
-            {
-                "code": 200,
-                "data": {
-                    "pending_count": count
+        if data['enrolment_status']:
+            learner_class.enrolment_status = data['enrolment_status']
+            db.session.commit()
+            return jsonify(
+                {
+                    "code": 200,
+                    "data": {
+                        "learner_class": learner_class.json()
+                    }
                 }
-            }
         )
 
-    else:
-        return jsonify(
+    return jsonify(
             {
-                "code": 200,
+                "code": 404,
                 "data": {
-                    "pending_count": 0
-                }
+                    "learner_id": learner_id,
+                    "course_name": course_name
+                },
+                "message": "Learner or Class not found"
             }
-        )
+        ), 404
+
+        
 
 @app.route("/class/count/<string:course_name>/<int:class_id>", methods=["GET"])
 def get_inclass_count(course_name, class_id):
