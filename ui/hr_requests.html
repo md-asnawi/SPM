@@ -43,8 +43,8 @@
                         <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">${learner_object.engineer_name}</td>
                         <td>${pending_object.learner_id}</td>
                         <td>${pending_object.course_name}</td>
-                        <td><button type="button" class="btn btn-light" onclick="interact_request(pending_object.learner_id, pending_object.course_name, 'accept')">Accept</button></td>
-                        <td><button type="button" class="btn btn-light" onclick="interact_request(pending_object.learner_id, pending_object.course_name, 'reject')">Reject</button></td>
+                        <td><button type="button" class="btn btn-light" onclick="interact_request('${pending_object.learner_id}', '${pending_object.course_name}', 'accept')">Accept</button></td>
+                        <td><button type="button" class="btn btn-light" onclick="interact_request('${pending_object.learner_id}', '${pending_object.course_name}', 'reject')">Reject</button></td>
                     </tr>
                 `);
             }
@@ -64,16 +64,16 @@
 
     async function interact_request(learner_id, course_name, interaction) {
 
-        alertMsg = "You have approved the enrolment!";
+        alertMsg = "You have approved the enrolment of learner " + learner_id + " into " + course_name + "!";
         data = {'enrolment_status': 'Enrolled'};
 
         if (interaction == 'reject') {
-            alertMsg = "You have rejected the enrolment!";
+            alertMsg = "You have rejected the enrolment of learner " + learner_id + " into " + course_name + "!";
             data = {'enrolment_status': 'Rejected'};
         }
         
 
-        url = `http://127.0.0.1:5003/pending/` + pending_object.learner_id + `/` + String(pending_object.course_name);
+        url = `http://127.0.0.1:5003/pending/` + learner_id + `/` + course_name;
 
 
         var interact_response = await fetch(url, {method: "PUT", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)}).then(res => res.json());
