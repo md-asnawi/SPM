@@ -21,8 +21,9 @@ CREATE TABLE IF NOT EXISTS `learner_class` (
 );
 
 INSERT INTO `learner_class` (`course_name`, `class_id`, `learner_id`, `date_assigned`, `start_date`, `end_date`, `progress`, `enrolment_status`, `preassigned`, `withdrawal`) VALUES
-('Course 111', '1', '456', '2021-04-01', '2021-04-05', '2021-04-30', '30', 'Enrolled', 'TRUE', 'FALSE'),
-('Course 111', '2', '909', '2021-04-01', '2021-04-05', '2021-04-30', '10', 'Enrolled', 'TRUE', 'FALSE'),
-('Course 111', '1', '999', '2021-04-01', '2021-04-05', '2021-04-30', '100', 'Enrolled', 'TRUE', 'FALSE'),
-('Course 222', '1', '999', '2021-04-01', '2021-04-05', '2021-04-30', '0', 'Pending', 'FALSE', 'FALSE'),
-('Course 333', '1', '999', '2021-04-01', '2021-04-05', '2021-04-30', '50', 'Enrolled', 'FALSE', 'FALSE');
+('Course 111', 1, 456, '2021-04-01', '2021-04-05', '2021-04-30', 30, 'Enrolled', 'TRUE', 'FALSE'),
+('Course 111', 2, 909, '2021-04-01', '2021-04-05', '2021-04-30', 10, 'Enrolled', 'TRUE', 'FALSE'),
+('Course 111', 1, 999, '2021-04-01', '2021-04-05', '2021-04-30', 100, 'Enrolled', 'TRUE', 'FALSE'),
+('Course 222', 1, 999, '2021-04-01', '2021-04-05', '2021-04-30', 0, 'Pending', 'FALSE', 'FALSE'),
+('Course 333', 1, 999, '2021-04-01', '2021-04-05', '2021-04-30', 50, 'Enrolled', 'FALSE', 'FALSE'),
+('Course 111', 2, 808, '2021-04-01', '2021-04-05', '2021-04-30', 50, 'Pending', 'FALSE', 'FALSE');

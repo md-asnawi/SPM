@@ -16,8 +16,8 @@ CREATE TABLE IF NOT EXISTS `lesson` (
 );
 
 INSERT INTO `lesson` (`course_name`, `class_id`, `lesson_id`, `ungraded_quiz`, `completion_status`) VALUES
-('Course 111', '1', '1', 'TRUE', '100'),
-('Course 111', '1', '2', 'TRUE', '0'),
-('Course 222', '1', '3', 'TRUE', '0'),
-('Course 222', '1', '4', 'TRUE', '20'),
-('Course 444', '1', '5', 'TRUE', '40');
+('Course 111', 1, 1, 'TRUE', 100),
+('Course 111', 1, 2, 'TRUE', 0),
+('Course 222', 1, 3, 'TRUE', 0),
+('Course 222', 1, 4, 'TRUE', 20),
+('Course 444', 1, 5, 'TRUE', 40);

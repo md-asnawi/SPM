@@ -89,6 +89,26 @@ def get_all():
             }
         )
 
+# course count
+@app.route("/course/count", methods=["GET"])
+def get_course_count():
+
+    courselist = Course.query.all()
+    
+    if len(courselist):
+        count = 0
+        for course in courselist:
+            count += 1
+
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "course_count": count
+                }
+            }
+        )
+
 @app.route("/course/available/<int:learner_id>", methods=["GET"])
 def get_available(learner_id):
 

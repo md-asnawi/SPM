@@ -1,6 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
 
+<script>
+
+    window.onload = function (e) {
+        course_count();
+        course_request();
+        course_information();
+    }
+
+    async function course_count() {
+        course_count_url = `http://127.0.0.1:5001/course/count`;
+        var course_count = await fetch(course_count_url, {method: "GET"}).then(res => res.json());
+
+        document.getElementById("course_count").innerHTML = course_count.data.course_count;
+    }
+
+    async function course_request() {
+
+        // Create empty array
+        all = []
+        cards = []
+
+        pending_count_url = `http://127.0.0.1:5003/pending/count`;
+        var pending_count = await fetch(pending_count_url, {method: "GET"}).then(res => res.json());
+
+        document.getElementById("pending_count").innerHTML = "New : " + pending_count.data.pending_count;
+    }
+
+    async function course_information() {
+
+        all = []
+        rows = []
+        course_class_url = `http://127.0.0.1:5004/class`;
+
+        var course_class = await fetch(course_class_url, {method: "GET"}).then(res => res.json());
+
+        if (course_class.code == 200) {
+    
+            course_class_array = course_class.data.classes;
+
+            for (i=0; i < course_class_array.length; i++ ) {
+                all.push(course_class_array[i]);
+            }
+
+            for (let i = 0; i < all.length; i++) {
+                let course = all[i]
+
+                inclass_count_url = `http://127.0.0.1:5003/class/count/${course.course_name}/${course.class_id}`;
+                var inclass_count = await fetch(inclass_count_url, {method: "GET"}).then(res => res.json());
+
+                rows.push(`
+                    <tr>
+                        <td>${course.course_name}</td>
+                        <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">${course.trainer_name}</td>
+                        <td><a href="">C${course.class_id}</a></td>
+                        <td><a href="">${inclass_count.data.inclass_count}/${course.class_size}</a></td>
+                    </tr>
+                `);
+            }
+        }
+
+        document.getElementById("class_information").innerHTML = rows;
+    }
+</script>
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -45,7 +108,7 @@
         ***********************************-->
         <div class="nav-header">
             <div class="brand-logo">
-                <a href="index.html">
+                <a href="hr.html">
                     <b class="logo-abbr"><img src="images/logo.png" alt=""> </b>
                     <span class="logo-compact"><img src="./images/logo-compact.png" alt=""></span>
                     <span class="brand-title">
@@ -254,127 +317,19 @@
                             <i class="icon-speedometer menu-icon"></i><span class="nav-text">Home</span>
                         </a>
                     </li>
-                    <li class="mega-menu mega-menu-sm">
-                        <a href="hr_enrol.html" aria-expanded="false">
-                            <i class="icon-globe-alt menu-icon"></i><span class="nav-text">Enrollment</span>
-                        </a>
-
-                    </li>
+                    
                     <li>
                         <a class="has-arrow" href="javascript:void()" aria-expanded="false">
-                            <i class="icon-envelope menu-icon"></i> <span class="nav-text">Message</span>
+                            <i class="icon-envelope menu-icon"></i> <span class="nav-text">Enrollment</span>
                         </a>
                         <ul aria-expanded="false">
-                            <li><a href="./email-inbox.html">Inbox</a></li>
-                            <li><a href="./email-read.html">Read</a></li>
-                            <li><a href="./email-compose.html">Compose</a></li>
+                            <li><a href="hr_enrol.html">Enrol</a></li>
+                            <li><a href="hr_requests.html">Requests</a></li>
+                            
                         </ul>
                     </li>
-                    <li>
-                        <a class="has-arrow" href="javascript:void()" aria-expanded="false">
-                            <i class="icon-screen-tablet menu-icon"></i><span class="nav-text">Apps</span>
-                        </a>
-                        <ul aria-expanded="false">
-                            <li><a href="./app-profile.html">Profile</a></li>
-                            <li><a href="./app-calender.html">Calender</a></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a class="has-arrow" href="javascript:void()" aria-expanded="false">
-                            <i class="icon-graph menu-icon"></i> <span class="nav-text">Charts</span>
-                        </a>
-                        <ul aria-expanded="false">
-                            <li><a href="./chart-flot.html">Flot</a></li>
-                            <li><a href="./chart-morris.html">Morris</a></li>
-                            <li><a href="./chart-chartjs.html">Chartjs</a></li>
-                            <li><a href="./chart-chartist.html">Chartist</a></li>
-                            <li><a href="./chart-sparkline.html">Sparkline</a></li>
-                            <li><a href="./chart-peity.html">Peity</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-label">UI Components</li>
-                    <li>
-                        <a class="has-arrow" href="javascript:void()" aria-expanded="false">
-                            <i class="icon-grid menu-icon"></i><span class="nav-text">UI Components</span>
-                        </a>
-                        <ul aria-expanded="false">
-                            <li><a href="./ui-accordion.html">Accordion</a></li>
-                            <li><a href="./ui-alert.html">Alert</a></li>
-                            <li><a href="./ui-badge.html">Badge</a></li>
-                            <li><a href="./ui-button.html">Button</a></li>
-                            <li><a href="./ui-button-group.html">Button Group</a></li>
-                            <li><a href="./ui-cards.html">Cards</a></li>
-                            <li><a href="./ui-carousel.html">Carousel</a></li>
-                            <li><a href="./ui-dropdown.html">Dropdown</a></li>
-                            <li><a href="./ui-list-group.html">List Group</a></li>
-                            <li><a href="./ui-media-object.html">Media Object</a></li>
-                            <li><a href="./ui-modal.html">Modal</a></li>
-                            <li><a href="./ui-pagination.html">Pagination</a></li>
-                            <li><a href="./ui-popover.html">Popover</a></li>
-                            <li><a href="./ui-progressbar.html">Progressbar</a></li>
-                            <li><a href="./ui-tab.html">Tab</a></li>
-                            <li><a href="./ui-typography.html">Typography</a></li>
-                        <!-- </ul>
-                    </li>
-                    <li>
-                        <a class="has-arrow" href="javascript:void()" aria-expanded="false">
-                            <i class="icon-layers menu-icon"></i><span class="nav-text">Components</span>
-                        </a>
-                        <ul aria-expanded="false"> -->
-                            <li><a href="./uc-nestedable.html">Nestedable</a></li>
-                            <li><a href="./uc-noui-slider.html">Noui Slider</a></li>
-                            <li><a href="./uc-sweetalert.html">Sweet Alert</a></li>
-                            <li><a href="./uc-toastr.html">Toastr</a></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="widgets.html" aria-expanded="false">
-                            <i class="icon-badge menu-icon"></i><span class="nav-text">Widget</span>
-                        </a>
-                    </li>
-                    <li class="nav-label">Forms</li>
-                    <li>
-                        <a class="has-arrow" href="javascript:void()" aria-expanded="false">
-                            <i class="icon-note menu-icon"></i><span class="nav-text">Forms</span>
-                        </a>
-                        <ul aria-expanded="false">
-                            <li><a href="./form-basic.html">Basic Form</a></li>
-                            <li><a href="./form-validation.html">Form Validation</a></li>
-                            <li><a href="./form-step.html">Step Form</a></li>
-                            <li><a href="./form-editor.html">Editor</a></li>
-                            <li><a href="./form-picker.html">Picker</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-label">Table</li>
-                    <li>
-                        <a class="has-arrow" href="javascript:void()" aria-expanded="false">
-                            <i class="icon-menu menu-icon"></i><span class="nav-text">Table</span>
-                        </a>
-                        <ul aria-expanded="false">
-                            <li><a href="./table-basic.html" aria-expanded="false">Basic Table</a></li>
-                            <li><a href="./table-datatable.html" aria-expanded="false">Data Table</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-label">Pages</li>
-                    <li>
-                        <a class="has-arrow" href="javascript:void()" aria-expanded="false">
-                            <i class="icon-notebook menu-icon"></i><span class="nav-text">Pages</span>
-                        </a>
-                        <ul aria-expanded="false">
-                            <li><a href="./page-login.html">Login</a></li>
-                            <li><a href="./page-register.html">Register</a></li>
-                            <li><a href="./page-lock.html">Lock Screen</a></li>
-                            <li><a class="has-arrow" href="javascript:void()" aria-expanded="false">Error</a>
-                                <ul aria-expanded="false">
-                                    <li><a href="./page-error-404.html">Error 404</a></li>
-                                    <li><a href="./page-error-403.html">Error 403</a></li>
-                                    <li><a href="./page-error-400.html">Error 400</a></li>
-                                    <li><a href="./page-error-500.html">Error 500</a></li>
-                                    <li><a href="./page-error-503.html">Error 503</a></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
+                    
+                            
                 </ul>
             </div>
         </div>
@@ -395,9 +350,9 @@
                     <div class="col-lg-4 col-sm-6">
                         <div class="card gradient-1">
                             <div class="card-body">
-                                <h3 class="card-title text-white">Absenteeism</h3>
+                                <h3 class="card-title text-white">Courses Available</h3>
                                 <div class="d-inline-block">
-                                    <h2 class="text-white">15%</h2>
+                                    <h2 class="text-white" id="course_count">5</h2>
                             
                                 </div>
                                 <span class="float-right display-5 opacity-5"></span>
@@ -407,9 +362,9 @@
                     <div class="col-lg-4 col-sm-6">
                         <div class="card gradient-2">
                             <div class="card-body">
-                                <h3 class="card-title text-white">Employee Reviews</h3>
+                                <h3 class="card-title text-white">Student Requests</h3>
                                 <div class="d-inline-block">
-                                    <h2 class="text-white">New: 9</h2>
+                                    <h2 class="text-white" id="pending_count">New: 9</h2>
                                     <p class="text-white mb-0"></p>
                                 </div>
                                 <span class="float-right display-5 opacity-5"></i></span>
@@ -441,38 +396,26 @@
                                         <table class="table table-xs mb-0">
                                             <thead>
                                                 <tr>
-                                                    <th>Name</th>
-                                                    <th>Position</th>
-                                                    <th>Dept.</th>
+                                                    <th>Course Name</th>
+                                                    <th>Instructor</th>
+                                                    <th>Class</th>
+                                                    <th>Capacity</th>
                                                 </tr>
                                             </thead>
-                                            <tbody>
+                                            <tbody id="class_information">
                                                 <tr>
+                                                    <td>Intro to Ink Practices</td>
                                                     <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">John Watson</td>
-                                                    <td><a href="">Snr. Engineer</a></td>
-                                                    <div>
-                                                    <td><a href="">Printing</a></td>
-                                                    <div>
-                                                           
-                                                        
-                                                            </div>
-                                                        </div>
-                                                    </td>
+                                                    <td><a href="">C1</a></td>
+                                                    <td><a href="">32/40</a></td>
                                                 </tr>
+
                                                 <tr>
-                                                    <td><img src="./images/avatar/2.jpg" class=" rounded-circle mr-3" alt="">Jane Peppers</td>
-                                                    <td><a href="">Jnr. Engineer</a></td>
-                                                    <div>
-                                                    <td><a href="">Servicing</a></td>
-                                                    <div>
-                                                           
-                                                        
-                                                            </div>
-                                                        </div>
-                                                    </td>
+                                                    <td>Advanced IBM Printers</td>
+                                                    <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">John Watson</td>
+                                                    <td><a href="">C1</a></td>
+                                                    <td><a href="">38/40</a></td>
                                                 </tr>
-                                                
-                                  
                                             </tbody>
                                         </table>
                                     </div>
@@ -484,7 +427,7 @@
                 
             </div>
             <!-- #/ container -->
-            
+            </div>
         </div>
         <!--**********************************
             Content body end

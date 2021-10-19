@@ -20,8 +20,8 @@ class Learner(Engineer):
     learner_id = db.Column(db.Integer, primary_key = True)
     engineer_id = db.Column(db.Integer, db.ForeignKey(Engineer.engineer_id), nullable=False)
     
-    def __init__(self, engineer_id = "", learner_id = ""):
-        super().__init__(engineer_id)
+    def __init__(self, engineer_name, engineer_id = "", learner_id = ""):
+        super().__init__(engineer_name, engineer_id)
         self.learner_id = learner_id
 
     def json(self):
@@ -33,8 +33,9 @@ class Learner(Engineer):
     def set_learner_id(self, learner_id):
         self.learner_id = learner_id
         
+# get all learners
 @app.route("/all", methods=["GET"])
-def get_all():
+def get_all_learners():
 
     learnerlist = Learner.query.all()
     
@@ -47,6 +48,28 @@ def get_all():
                 }
             }
         )
+
+# get a learner using learner id
+@app.route("/learner/<int:learner_id>", methods=["GET"])
+def get_learner(learner_id):
+
+    learner = Learner.query.filter_by(learner_id = learner_id).first()
+    
+    if learner:
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "learner": learner.json()
+                }
+            }
+        )
+
+    return jsonify(
+        {
+            "message": "Learner not found."
+        }
+    ), 404
 
 
 if __name__ == '__main__':
