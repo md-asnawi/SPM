@@ -282,7 +282,7 @@ def get_coursecompleted(course_name):
 # enrol new learner into course
 
 @app.route("/enrol/<string:course_name>/<int:class_id>/<int:learner_id>", methods=["POST"])
-def enrolment(course_name, class_id, learner_id):
+def hr_enrolment(course_name, class_id, learner_id):
 
     # check_current_count
     # inclass_count = Learner_Class(db.Model).query.filter_by(course_name=course_name,class_id=class_id,enrolment_status="Enrolled",withdrawal=0).all()
@@ -356,7 +356,7 @@ def enrolment(course_name, class_id, learner_id):
 #         }), 500
     
 @app.route("/enrol", methods=['POST'])
-def enrolment():
+def engineer_enrolment():
     if request.method == 'POST':
         course_name= request.form['course_name']
         class_id = request.form['class_id']
