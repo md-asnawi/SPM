@@ -1,8 +1,15 @@
 # Learner & Class enrolment class
 
 from flask import Flask, request, jsonify
+from flask.globals import session
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from datetime import date
+import sys
+
+sys.path.append('./models')
+from Class import Class
+
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/is212'
@@ -16,8 +23,8 @@ class Learner_Class(db.Model):
 
     __tablename__ = 'learner_class'
 
-    course_name = db.Column(db.String(45), nullable=False, primary_key = True)
-    class_id = db.Column(db.Integer, primary_key = True)
+    course_name = db.Column(db.String(45),db.ForeignKey(Class.course_name), nullable=False, primary_key = True)
+    class_id = db.Column(db.Integer,db.ForeignKey(Class.class_id), primary_key = True)
     learner_id = db.Column(db.Integer, nullable=False, primary_key = True)
     date_assigned = db.Column(db.Date, nullable=False)
     start_date = db.Column(db.Date, nullable=False)
@@ -26,6 +33,7 @@ class Learner_Class(db.Model):
     enrolment_status = db.Column(db.String(45), nullable=False)
     preassigned = db.Column(db.Boolean, nullable=False)
     withdrawal = db.Column(db.Boolean, nullable=False)
+
 
     def __init__(self, course_name = "", class_id = "", learner_id = "", date_assigned = "", start_date = "", end_date = "", 
                     progress = "", enrolment_status = "", preassigned = "", withdrawal = ""):
@@ -347,8 +355,25 @@ def enrolment(course_name, class_id, learner_id):
 #             "message": "Unable to commit to database."
 #         }), 500
     
+@app.route("/enrol", methods=['POST'])
+def enrolment():
+    if request.method == 'POST':
+        course_name= request.form['course_name']
+        class_id = request.form['class_id']
+        learner_id = request.form['learner_id']
+        date_assigned = date.today()
+        start_date = db.session.query(Class.start_date).filter(Class.course_name.like(course_name), Class.class_id.like(class_id))
+        end_date=db.session.query(Class.end_date).filter(Class.course_name.like(course_name), Class.class_id.like(class_id))
+        progress=request.form['progress']
+        enrolment_status=request.form['enrolment_status']
+        preassigned=False
+        withdrawal=False
 
+        newClass = Learner_Class(course_name=course_name, class_id=class_id, learner_id=learner_id,date_assigned=date_assigned,start_date=start_date,end_date=end_date,progress=progress,enrolment_status=enrolment_status,preassigned=preassigned,withdrawal=withdrawal)
+        db.session.add(newClass)
+        db.session.commit()
+        return jsonify(newClass.__dict__), 201
+   
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5003, debug=True)
-    
