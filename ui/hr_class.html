@@ -598,7 +598,7 @@
                 <div class="col p-md-0">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="javascript:void(0)">HR</a></li>
-                        <li class="breadcrumb-item active"><a href="javascript:void(0)">Enrol</a></li>
+                        <li class="breadcrumb-item active"><a href="javascript:void(0)">Classlist</a></li>
                     </ol>
                 </div>
             </div>
@@ -612,7 +612,7 @@
                         <!-- tabs -->
                         
                         <!-- end of tabs -->
-                        <p><h3 class="d-inline">Welcome, select a course to begin enrolling!</h3></p>
+                        <p><h3 class="d-inline">Classlist</h3></p>
                         <div></div>
                         <br>
                         <!-- PULL COURSE NAME INTO CHECKBOX -->
@@ -627,12 +627,19 @@
                         <br>
                         <label for="class">Choose a Class:</label>
                             <select name="course_class" id="class_dropdown">
-                            <option value="">Select a course to see available class</option>
-                            
+                            <option value="">{{Class1}}</option>
+                            <option value="">{{Class2}}</option>
                             </select>
                         
                           <br><br>
-                          <p><h4 class="d-inline">Select Learners:</h4></p>      
+                          <!-- search bar here  --> 
+                          <div class="input-group col-sm-3">
+                            <input type="search" class="form-control rounded" placeholder="Search by Name" aria-label="Search"
+                            aria-describedby="search-addon"/>
+                            <br><br>
+                            <button type="button" class="btn btn-primary">Search</button>
+                          </div>
+                          <p><h4 class="d-inline"></h4></p>      
                           <div class="row">
                             <div class="col-lg-8">
                                 <div class="card">
@@ -642,10 +649,9 @@
                                                 <table class="table table-xs mb-0">
                                                     <thead>
                                                         <tr>
-                                                        
                                                             <th>Name</th>
                                                             <th>ID</th>
-                                                            <th>Enrol</th>
+                                                            <th>Enrollment Date</th>
                                                         </tr>
                                                     </thead>
                                                 <!-- INSERT LEARNERS DATA HERE -->
@@ -653,16 +659,12 @@
                                                             <tr>
                                                                 <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">{{Learner}}</td>
                                                                 <td>{{ID}}</td>
-                                                                <td><div class="form-check">
-                                                                    <input class="form-check-input" type="checkbox" value="Learner" id="flexCheckDefault">
-                                                                </div></td>
+                                                                <td>{{start_date}} from learner_class</td>
                                                             </tr>
                                                             <tr>
                                                                 <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">{{Learner2}}</td>
                                                                 <td>{{ID2}}</td>
-                                                                <td><div class="form-check">
-                                                                    <input class="form-check-input" type="checkbox" value="Learner2" id="flexCheckDefault">
-                                                                </div></td>
+                                                                <td>{{start_date}} from learner_class</td>
                                                             </tr>
                                                     </tbody>
                                                 </table>
@@ -674,10 +676,7 @@
         
                         
                     </div>       
-                    <!-- INSERT ENROL REQUEST HERE -->
-                          <div class="row">
-                            <button class="btn btn-primary" type="submit" onclick="enrolment(course_name)">Enrol</button>
-                        </div>
+                    
                   </div>
                   </div>
                   </div>
