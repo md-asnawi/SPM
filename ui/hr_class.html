@@ -139,6 +139,7 @@
                             <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">${learner_name.engineer_name}</td>
                             <td>${learner.learner_id}</td>
                             <td>${learner.date_assigned}</td>
+                            <td>${learner.enrolment_status}</td>
                         </tr>
                     `);
                 }
@@ -152,6 +153,7 @@
                                 <td>${message}</td>   
                                 <td></td>
                                 <td></td>   
+                                <td></td>
                              </tr>`);
             }
         }
@@ -163,6 +165,7 @@
                             <td>No class available. Please select a course with available class</td>      
                             <td></td>
                             <td></td>  
+                            <td></td>
                         </tr>`);
         }
         // }
@@ -229,10 +232,12 @@
                                     <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">${learner_info.engineer_name}</td>
                                     <td>${learner_inclass_info.learner_id}</td>
                                     <td>${learner_inclass_info.date_assigned}</td>
+                                    <td>${learner_inclass_info.enrolment_status}</td>
                                 </tr>
 
                                 <tr>
                                     <td>To search for another learner in class, go back to the class list.</td>
+                                    <td></td>
                                     <td></td>
                                     <td></td>
                                 </tr>
@@ -612,6 +617,7 @@
                                                             <th>Name</th>
                                                             <th>ID</th>
                                                             <th>Enrollment Date</th>
+                                                            <th>Status</th>
                                                         </tr>
                                                     </thead>
                                                 <!-- INSERT LEARNERS DATA HERE -->
