@@ -1,259 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
-  
-  <!-- jQuery library -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script>
-  
-</script>
-<script>
-
-    window.onload = function (e) {
-        learner_id = 999;
-        all_courses(learner_id);
-    }
-
-    var addedToList = [];
-
-    //add course
-    function addCourse(element) {
-        if (addedToList.includes(element)) {
-            alert("There already exist " + element + " in your cart!")
-        } else {
-            addedToList.push(element)
-        }
-        showAllAddedCourses();
-    }
-
-    //delete course
-    function deleteCourse(index) {
-        addedToList.splice(index,1);
-        showAllAddedCourses();   
-    }
-    
-
-
-    async function all_courses(learner_id) {
-
-        // Create empty array
-        all = []
-        available = []
-        cards = []
-
-        let item = "";
-
-        all_url = `http://127.0.0.1:5001/course`;
-        available_url = `http://127.0.0.1:5001/course/available/` + learner_id;
-        
-        var all_course = await fetch(all_url, {method: "GET"}).then(res => res.json());
-        var available_course = await fetch(available_url, {method: "GET"}).then(res => res.json());
-        
-        // console.log("lengthasfads: " + available_course.data.course.length)
-
-        if (available_course.code == 200) {
-    
-            all_course_array = all_course.data.course;
-            available_course_array = available_course.data.course;
-            
-
-            for (i=0; i < all_course_array.length; i++ ) {
-                all.push(all_course_array[i]);
-            }
-
-            for (i=0; i < available_course_array.length; i++ ) {
-                available.push(available_course_array[i]);
-            }
-
-
-            all.forEach((element, index) => {
-                if (JSON.stringify(available).includes(JSON.stringify(element))) {
-                    item +=  `<div class="col-md-6 col-lg-3"><div class="card"><img class="img-fluid" src="images/big/img2.jpg" alt=""><div class="card-body"><h5 class="card-title">${element.course_name}</h5> <p class="card-text">${element.description}</p><a href="#" class="btn btn-dark" onClick="addCourse('${element.course_name}')">Add</a></div></div></div>`;
-                } else {
-                    item +=  `<div class="col-md-6 col-lg-3"><div class="card"><img class="img-fluid" src="images/big/img2.jpg" alt=""><div class="card-body"><h5 class="card-title">${element.course_name}</h5> <p class="card-text">${element.description}</p></div></div></div>`;
-                }
-        });
-     
-
-        }
-
-        else {
-            all_course_array = all_course.data.course;
-
-
-            for (i=0; i < all_course_array.length; i++ ) {
-                all.push(all_course_array[i]);
-            }
-            all.forEach((element, index) => {
-                if (JSON.stringify(available).includes(JSON.stringify(element))) {
-                    item +=  `<div class="col-md-6 col-lg-3"><div class="card"><img class="img-fluid" src="images/big/img2.jpg" alt=""><div class="card-body"><h5 class="card-title">${element.course_name}</h5> <p class="card-text">${element.description}</p><a href="#" class="btn btn-dark" onClick="addCourse(${index})">Add</a></div></div></div>`;
-                } else {
-                    item +=  `<div class="col-md-6 col-lg-3"><div class="card"><img class="img-fluid" src="images/big/img2.jpg" alt=""><div class="card-body"><h5 class="card-title">${element.course_name}</h5> <p class="card-text">${element.description}</p></div></div></div>`;
-                }
-        });
-
-            
-        }
-
-        // display it within the id
-        document.getElementById("allcourse").innerHTML = item;
-        document.getElementById("newactive").innerHTML = `<li class="active"><a href="#" onclick="all_courses(999);">All Courses</a></li>
-                                                            <li><a href="#" onclick="available_courses(999);">Available Courses</a></li>
-                                                            <li><a href="#" onclick="completed_courses(999);">Completed Courses</a></li>`;
-    }
-
-    async function available_courses(learner_id) {
-
-        // Create empty array
-        available_course = []
-        cards = []
-        item = ""
-
-
-        url = `http://127.0.0.1:5001/course/available/` + learner_id;
-
-        var course = await fetch(url, {method: "GET"}).then(res => res.json());
-
-        if (course.code == 200) {
-            course_array = course.data.course;
-
-            for (i=0; i < course_array.length; i++ ) {
-                available_course.push(course_array[i]);
-            }
-            
-            if (available_course){
-
-                available_course.forEach((element, index) => {
-                if (JSON.stringify(available).includes(JSON.stringify(element))) {
-                    item +=  `<div class="col-md-6 col-lg-3"><div class="card"><img class="img-fluid" src="images/big/img2.jpg" alt=""><div class="card-body"><h5 class="card-title">${element.course_name}</h5> <p class="card-text">${element.description}</p><a href="#" class="btn btn-dark" onClick="addCourse('${element.course_name}')">Add</a></div></div></div>`;
-                } else {
-                    item +=  `<div class="col-md-6 col-lg-3"><div class="card"><img class="img-fluid" src="images/big/img2.jpg" alt=""><div class="card-body"><h5 class="card-title">${element.course_name}</h5> <p class="card-text">${element.description}</p></div></div></div>`;
-                }
-        });
-
-            }
-        }
-
-        else {
-            cards.push(`<h5>No Available Course</h5>`);
-        }
-
-        
-
-        // display it within the id
-        document.getElementById("allcourse").innerHTML = item;
-        document.getElementById("newactive").innerHTML = `<li><a href="#" onclick="all_courses(999);">All Courses</a></li>
-                                                            <li class="active"><a href="#" onclick="available_courses(999);">Available Courses</a></li>
-                                                            <li><a href="#" onclick="completed_courses(999);">Completed Courses</a></li>`;
-    }
-
-    async function completed_courses(learner_id) {
-
-        // Create empty array
-        completed_course = []
-        cards = []
-        item = ""
-
-        url = `http://127.0.0.1:5001/course/completed/` + learner_id;
-        
-        var course = await fetch(url, {method: "GET"}).then(res => res.json());
-
-        if (course.code == 200) {
-            course_array = course.data.course;
-
-            for (i=0; i < course_array.length; i++ ) {
-                completed_course.push(course_array[i]);
-            }
-            
-            if (completed_course){
-
-                completed_course.forEach((element, index) => {
-                if (JSON.stringify(available).includes(JSON.stringify(element))) {
-                    item +=  `<div class="col-md-6 col-lg-3"><div class="card"><img class="img-fluid" src="images/big/img2.jpg" alt=""><div class="card-body"><h5 class="card-title">${element.course_name}</h5> <p class="card-text">${element.description}</p><a href="#" class="btn btn-dark" onClick="addCourse(${index})">Add</a></div></div></div>`;
-                 
-                } else {
-                    item +=  `<div class="col-md-6 col-lg-3"><div class="card"><img class="img-fluid" src="images/big/img2.jpg" alt=""><div class="card-body"><h5 class="card-title">${element.course_name}</h5> <p class="card-text">${element.description}</p></div></div></div>`;
-                  
-                }
-        });
-
-            }
-        }
-
-        else {
-            item += `<h5>No Completed Course</h5>`;
-        }
-
-
-        // display it within the id
-        document.getElementById("allcourse").innerHTML = item;
-        document.getElementById("newactive").innerHTML = `<li><a href="#" onclick="all_courses(999);">All Courses</a></li>
-                                                            <li><a href="#" onclick="available_courses(999);">Available Courses</a></li>
-                                                            <li class="active"><a href="#" onclick="completed_courses(999);">Completed Courses</a></li>`;
-    }
-    
-    async function add_course_to() {
-        
-    }
-
-
-    $(document).ready(function() {
-     $('#enrol').on('click', function(event) {
-         if (addedToList.length == 0) {
-             alert('Please add a course before checkout! ')
-         } else {
-            addedToList.forEach((element) => {
-            $.ajax({
-          data : {
-            course_name : element,
-            class_id: 1,
-            learner_id:999,
-            progress:0,
-            enrolment_status:'Pending',
-                 },
-             type : 'POST',
-             url : 'http://127.0.0.1:5003/enrol'
-            })
-            });
-            addedToList.length = 0,
-                addedToList.splice(0, addedToList.length),
-                all_courses(999),
-                available_courses(999),
-                completed_courses(),
-                showAllAddedCourses(),
-                alert('Course(s) added successfully!')
-
-            event.preventDefault();
-         }
-
-      });
-});
-
-</script>
-
-
 
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>LMS - All Courses</title>
+    <title>LMS - Withdrawal</title>
     <!-- Favicon icon -->
     <link rel="icon" type="image/png" sizes="16x16" href="images/favicon.png">
-    <!-- Pignose Calender -->
-    <link href="./plugins/pg-calendar/css/pignose.calendar.min.css" rel="stylesheet">
-    <!-- Chartist -->
-    <link rel="stylesheet" href="./plugins/chartist/css/chartist.min.css">
-    <link rel="stylesheet" href="./plugins/chartist-plugin-tooltips/css/chartist-plugin-tooltip.css">
     <!-- Custom Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
 
-    <style>
-        #enrol{
-            margin: 12px 5px -5px 12px;
-        }
-    </style>
-
 </head>
+
+<style>
+    h1{
+        text-align: center;
+    }
+</style>
 
 <body>
 
@@ -305,19 +69,6 @@
                     <div class="hamburger">
                         <span class="toggle-icon"><i class="icon-menu"></i></span>
                     </div>
-                </div>
-                <div class="header-left">
-                    <!-- <div class="input-group icons">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text bg-transparent border-0 pr-2 pr-sm-3" id="basic-addon1"><i class="mdi mdi-magnify"></i></span>
-                        </div>
-                        <input type="search" class="form-control" placeholder="Search Dashboard" aria-label="Search Dashboard">
-                        <div class="drop-down animated flipInX d-md-none">
-                            <form action="#">
-                                <input type="text" class="form-control" placeholder="Search">
-                            </form>
-                        </div>
-                    </div> -->
                 </div>
                 <div class="header-right">
                     <ul class="clearfix">
@@ -516,61 +267,64 @@
             Sidebar end
         ***********************************-->
 
-
         <!--**********************************
             Content body start
         ***********************************-->
         <div class="content-body">
-            
+
             <div class="row page-titles mx-0">
                 <div class="col p-md-0">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="javascript:void(0)">Overview</a></li>
-                        <li class="breadcrumb-item active"><a href="javascript:void(0)">All Courses</a></li>
+                        <li class="breadcrumb-item active"><a href="javascript:void(0)">Enrolled</a></li>
+                        <li class="breadcrumb-item active"><a href="javascript:void(0)">Withdraw</a></li>
                     </ol>
                 </div>
             </div>
+            <!-- row -->
 
-            <!--Tab Nav Bar for Courses-->
             <div class="container-fluid">
-
-                <ul class="nav nav-tabs" id="newactive">
-                    <li class="active"><a href="#" onclick="all_courses();">All Courses</a></li>
-                    <li><a href="#" onclick="available_courses(999);">Available Courses</a></li>
-                    <li><a href="#" onclick="completed_courses(999);">Completed Courses</a></li>
-                    <li><a href="#" >Enrolled Courses</a></li>
-                </ul>
-
                 <div class="row">
-                    <div class="col-9 m-b-30">
-
-                        <p><h4 class="d-inline"></h4></p>
-                        <div class="row" id="allcourse">
-                             
-                        </div>
-                    </div>
-
-                    <!--Cart-->
-                    <div class="col-3 m-b-30">
+                    <div class="col-lg-12">
                         <div class="card">
-                            <div class="card-body px-0">
-                                <h1 class="card-title px-4 mb-3 text-primary">Course Checkout</h1>
-                                <div class="todo-list">
-                                    <div class="tdl-holder">
-                                        <div class="tdl-content">
-                                            <ul id="cart">
-
-                                            </ul>
+                            <div class="card-body">
+                                <h1 class="card-title">Course Withdrawal</h1>
+                                <div class="basic-form">
+                                    <form>
+                                        <div class="form-row align-items-center">
+                                            <div class="col-auto my-1">
+                                                <label class="mr-sm-2">Course</label>
+                                                <select class="custom-select mr-sm-2" id="inlineFormCustomSelect">
+                                                    <option selected="selected">Select Course</option>
+                                                    <option value="#">Course Name</option>
+                                                    <option value="#">Course Name</option>
+                                                    <option value="#">Course Name</option>
+                                                </select>
+                                            </div>
                                         </div>
-                                    </div>
+
+                                        <br>
+                                        <label>Reason for Withdrawal:</label>
+                                        <textarea class="form-control h-150px" rows="6" id="comment"></textarea>
+
+                                        <br>
+                                        <div class="form-check mb-3">
+                                            <label class="form-check-label">
+                                                <input type="checkbox" class="form-check-input" value="">
+                                            I confirm that I am withdrawing out of this course.
+                                            </label>
+                                        </div>
+
+                                        <br>
+                                        <button type="button" class="btn mb-1 btn-primary">Submit</button>
+
+                                    </form>
                                 </div>
-                                <a href="#" class="btn btn-success" id="enrol">Confirm Enrolment</a>
                             </div>
                         </div>
                     </div>
 
                 </div>
-                
             </div>
             <!-- #/ container -->
         </div>
@@ -598,30 +352,11 @@
     <!--**********************************
         Scripts
     ***********************************-->
-
-    <script>
-            var list = document.getElementById('cart');
-     //show all added courses
-     function showAllAddedCourses() {
-            let entry = "";
-            addedToList.forEach((element, index) => {
-                entry += `<li><label>${element}<a href='#' class="ti-trash" onClick="deleteCourse(${index})"></a></label></li>`;
-            });
-
-            list.innerHTML = entry;
-        }   
-    </script>
-
     <script src="plugins/common/common.min.js"></script>
     <script src="js/custom.min.js"></script>
     <script src="js/settings.js"></script>
     <script src="js/gleek.js"></script>
     <script src="js/styleSwitcher.js"></script>
-    <!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-
-<!-- Latest compiled JavaScript -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
 </body>
 
