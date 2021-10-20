@@ -48,7 +48,7 @@
         var all_course = await fetch(all_url, {method: "GET"}).then(res => res.json());
         var available_course = await fetch(available_url, {method: "GET"}).then(res => res.json());
         
-        console.log("lengthasfads: " + available_course.data.course.length)
+        // console.log("lengthasfads: " + available_course.data.course.length)
 
         if (available_course.code == 200) {
     
@@ -198,7 +198,10 @@
 
     $(document).ready(function() {
      $('#enrol').on('click', function(event) {
-         addedToList.forEach((element) => {
+         if (addedToList.length == 0) {
+             alert('Please add a course before checkout! ')
+         } else {
+            addedToList.forEach((element) => {
             $.ajax({
           data : {
             course_name : element,
@@ -206,8 +209,6 @@
             learner_id:999,
             progress:0,
             enrolment_status:'Pending',
-
-
                  },
              type : 'POST',
              url : 'http://127.0.0.1:5003/enrol'
@@ -219,9 +220,11 @@
                 available_courses(999),
                 completed_courses(),
                 showAllAddedCourses(),
-                alert('Success!')
+                alert('Course(s) added successfully!')
 
-      event.preventDefault();
+            event.preventDefault();
+         }
+
       });
 });
 
