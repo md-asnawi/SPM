@@ -165,6 +165,7 @@ def get_pending_count():
             }
         )
 
+# test jenkin part 3 :(
 # added to test jenkins part 2
 # update pending status
 @app.route("/pending/<int:learner_id>/<string:course_name>", methods=["PUT"])
