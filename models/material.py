@@ -116,5 +116,28 @@ def get_material(material_id):
         }
     ), 404
 
+# GET all materials in 1 lesson with course id, class id, lesson id
+@app.route("/material/<string:course_name>/<int:class_id>/<int:lesson_id>", methods=["GET"])
+def get_materials_of_lesson(course_name, class_id, lesson_id):
+
+    materialList = Material.query.filter_by(course_name = course_name, class_id = class_id, lesson_id = lesson_id).all()
+    
+    if len(materialList):
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "material": [material.json() for material in materialList]
+
+                }
+            }
+        )
+
+    return jsonify(
+        {
+            "message": "Material not found."
+        }
+    ), 404
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5008, debug=True)
