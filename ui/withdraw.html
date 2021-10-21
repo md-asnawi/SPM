@@ -1,6 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
 
+<script>
+    window.onload = function (e) {
+        learner_id = 999;
+        course_dropdown(learner_id);
+    }
+
+    async function course_dropdown(learner_id) {
+
+        // Create empty array
+        dropdown = []
+
+        course_url = `http://127.0.0.1:5003/learner_class/` + learner_id;
+        var course_response = await fetch(course_url, {method: "GET"}).then(res => res.json());
+
+        if (course_response.code == 200) {
+        
+            learner_class_array = course_response.data.learner_class;
+
+            for (i=0; i < learner_class_array.length; i++ ) {
+               course = learner_class_array[i];
+
+               dropdown.push(`
+                    <option value="${course.course_name}">${course.course_name}</option>
+                `)
+            }
+
+        }
+
+        else {
+            dropdown.push(`<option value="nocourse">No Course</option>`);
+        }
+
+        document.getElementById("course_dropdown").innerHTML = dropdown;
+    }
+
+    async function submit_withdrawal() {
+
+        // console.log("Submit withdrawal is clicked");
+        // get course_name chosen
+        course_name =  document.getElementById("course_dropdown").value;
+
+        // console.log(course_name);
+
+        alertMsg = "Learner " + learner_id + ", you have submitted your withdrawal from " + course_name + "!";
+        // data = {'withdrawal': 'True'};
+
+        url = `http://127.0.0.1:5003/learner_class/update_withdrawal/` + learner_id + `/` + course_name;
+
+        var withdrawal_response = await fetch(url, {method: "PUT", headers: { 'Content-Type': 'application/json' }}).then(res => res.json());
+
+        console.log(withdrawal_response);
+
+        alert(alertMsg);
+
+        course_dropdown(learner_id);
+
+    }
+
+</script>
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -294,7 +354,7 @@
                                         <div class="form-row align-items-center">
                                             <div class="col-auto my-1">
                                                 <label class="mr-sm-2">Course</label>
-                                                <select class="custom-select mr-sm-2" id="inlineFormCustomSelect">
+                                                <select class="custom-select mr-sm-2" id="course_dropdown">
                                                     <option selected="selected">Select Course</option>
                                                     <option value="#">Course Name</option>
                                                     <option value="#">Course Name</option>
@@ -316,7 +376,7 @@
                                         </div>
 
                                         <br>
-                                        <button type="button" class="btn mb-1 btn-primary">Submit</button>
+                                        <button type="button" class="btn mb-1 btn-primary" onclick="submit_withdrawal()">Submit</button>
 
                                     </form>
                                 </div>
