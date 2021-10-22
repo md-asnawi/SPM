@@ -1,7 +1,7 @@
 # Administrator
 # jenkintest11
 class Administrator:
-  
+
     def __init__(self, name="", administrator_id=""):
         self.name = name
         self.administrator_id = administrator_id
@@ -17,4 +17,3 @@ class Administrator:
 
     def set_administrator_id(self, administrator_id):
         self.administrator_id = administrator_id
-     
