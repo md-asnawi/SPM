@@ -20,7 +20,6 @@ class TestCourse(unittest.TestCase):
             'enrolment_end_date': '2021-05-01'
             }
         )
-
 # # Test for class Class
 # class TestClass(unittest.TestCase):
 #     def test_to_json(self):
