@@ -391,7 +391,7 @@
             <div class="container-fluid mt-3">
                 
                 <h3>Create a Quiz</h3>
-                <h4>For class</h4> 
+                <h4>Choose which class and course you wish to create the quiz for:</h4> 
                 <br>
                 <!-- insert drop down here to query for class -->
                 <label for="course">Choose a Course:</label>
@@ -408,19 +408,25 @@
                             
                             </select>
                             <br>
+                        <label>Choose a question type:</label>
+                <!-- Select what type of question to add: -->
+                <a href="#link" class="btn btn-light" role="button">Multiple Choice Question</a>
+                <a href="#link" class="btn btn-light" role="button">True False Question</a>
+                
+                
                 <!-- form begins here -->
                 <form>
                     <br>
                     <label>Qn. {{Question Count}}</label> 
                     <br>
-                    <div class="form-group">
+                    <!-- <div class="form-group">
                         <br>
                         <label for="exampleFormControlSelect1">Question Type?</label>
                         <select class="form-control" id="exampleFormControlSelect1">
                           <option>MCQ 4 Options</option>
                           <option>True False Question 2 Options</option>
                         </select>
-                      </div>
+                      </div> -->
                     
                 <!-- IF MAKING MCQ :  -->
                     <div class="form-group">
@@ -492,6 +498,17 @@
             </form> -->
             
             </div>
+            <!-- Add question to quiz -->
+            <a href="#link" class="btn btn-light" role="button">Add Question</a> 
+            <br>
+
+            <!-- Preview the questions added here -->
+            <br>
+            <h3>Preview:</h3>
+            <br>
+            QN 1. {{Question}}
+            {{Options}}
+
             <!-- #/ container -->
                 </div>
             </div>
