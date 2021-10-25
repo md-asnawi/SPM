@@ -185,6 +185,29 @@ def get_completed(learner_id):
             "message": "No Course Completed"
         }), 404
     
+@app.route("/course/<string:course_name>", methods=["GET"])
+def get_course_information(course_name):
+
+    course = Course.query.filter_by(course_name=course_name).first()
+    
+    if course:
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "course": course.json()
+                }
+            })
+        
+    else:
+        return jsonify(
+            {
+                "code": 404,
+                "data": {
+                    "course": "Course not found"
+                }
+            }
+        )
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001, debug=True)

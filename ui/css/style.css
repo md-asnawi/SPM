@@ -12091,6 +12091,18 @@ table.dataTable thead .sorting::after {
   width: 100%;
   position: relative; }
 
+
+  #cart ul li .radio-input {
+    margin-left: 1.5rem;
+  }
+  #cart ul li .radio-label {
+    display: contents;
+  }
+  
+  #cart li ul .radio-li {
+    border-bottom: none;
+  }
+
 /*  1 - media screen and (max-width: 1750px)
 ---------------------------------------------------------------------- */
 /*  2 - media screen and (max-width: 1680px)
