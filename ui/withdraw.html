@@ -51,8 +51,10 @@
 
         var withdrawal_response = await fetch(url, {method: "PUT", headers: { 'Content-Type': 'application/json' }}).then(res => res.json());
 
-        console.log(withdrawal_response);
-
+        if (withdrawal_response.data.course_name == "nocourse") {
+            alertMsg = "Learner " + learner_id + ", you are not enrolled in any courses.";
+        }
+        
         alert(alertMsg);
 
         course_dropdown(learner_id);

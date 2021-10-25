@@ -117,7 +117,7 @@ class Learner_Class(db.Model):
 @app.route("/learner_class/<int:learner_id>", methods=["GET"])
 def get_courses_by_learner_id(learner_id):
 
-    learner_class_list = Learner_Class(db.Model).query.filter_by(learner_id=learner_id, withdrawal=0).all()
+    learner_class_list = Learner_Class(db.Model).query.filter_by(learner_id=learner_id, enrolment_status="Enrolled", withdrawal=0).all()
 
     if len(learner_class_list):
         return jsonify(
