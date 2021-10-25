@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-  
-  <!-- jQuery library -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script>
-  
+
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+
 </script>
 <script>
 
@@ -14,23 +14,40 @@
     }
 
     var addedToList = [];
+    var classList = [];
+    var selectedOptions = new Map();
+    var keys = [];
 
     //add course
     function addCourse(element) {
+
+        //whenever add new course, the page widget refreshes - to clear the list again
+        selectedOptions.clear()
+        keys.length = 0
+        keys.splice(0, keys.length)
+        console.log(selectedOptions)
+        console.log(addedToList)
+
         if (addedToList.includes(element)) {
             alert("There already exist " + element + " in your cart!")
         } else {
-            addedToList.push(element)
+            addedToList.push(element);
         }
+
         showAllAddedCourses();
     }
 
     //delete course
-    function deleteCourse(index) {
-        addedToList.splice(index,1);
-        showAllAddedCourses();   
+    function deleteCourse(index, element) {
+        var listIndex = addedToList.indexOf(element)
+        addedToList.splice(listIndex, 1);
+        selectedOptions.delete(element)
+        var keysIndex = keys.indexOf(element)
+        keys.splice(keysIndex,1);
+        document.getElementById("container"+index).remove()
+        console.log(addedToList)
+        // showAllAddedCourses();
     }
-    
 
 
     async function all_courses(learner_id) {
@@ -40,39 +57,92 @@
         available = []
         cards = []
 
-        let item = "";
-
         all_url = `http://127.0.0.1:5001/course`;
         available_url = `http://127.0.0.1:5001/course/available/` + learner_id;
-        
-        var all_course = await fetch(all_url, {method: "GET"}).then(res => res.json());
-        var available_course = await fetch(available_url, {method: "GET"}).then(res => res.json());
-        
-        // console.log("lengthasfads: " + available_course.data.course.length)
+        class_url = `http://127.0.0.1:5004/class`;
+
+        var all_course = await fetch(all_url, { method: "GET" }).then(res => res.json());
+        var available_course = await fetch(available_url, { method: "GET" }).then(res => res.json());
+        var class_list = await fetch(class_url, { method: "GET" }).then(res => res.json());
+
+        const mapClasses = new Map(class_list.data.classes.map(({ course_name, classes, class_size }) => [course_name, { course_name, classes: [] }]));
+        for (let { course_name, class_id, class_size, current_size } of class_list.data.classes) mapClasses.get(course_name).classes.push({ class_id: class_id, class_size: class_size, current_size: current_size });
+        classList = [...mapClasses.values()];
+
 
         if (available_course.code == 200) {
-    
+
             all_course_array = all_course.data.course;
             available_course_array = available_course.data.course;
-            
 
-            for (i=0; i < all_course_array.length; i++ ) {
+
+            for (i = 0; i < all_course_array.length; i++) {
                 all.push(all_course_array[i]);
             }
 
-            for (i=0; i < available_course_array.length; i++ ) {
+            for (i = 0; i < available_course_array.length; i++) {
                 available.push(available_course_array[i]);
             }
 
+            for (let i = 0; i < all.length; i++) {
+                let course = all[i]
+                if (JSON.stringify(available).includes(JSON.stringify(course))) {
+                    cards.push(`<div class="col-md-6 col-lg-3">
+                            <div class="card">
+                                <img class="img-fluid" src="images/big/img2.jpg" alt="">
+                                <div class="card-body">
+                                    <h5 class="card-title">${course.course_name}</h5>
+                                    <p class="card-text">${course.description}</p>
+                                    <h5>Enrolment Period: ${course.enrolment_start_date} to ${course.enrolment_end_date}</h5>`)
 
-            all.forEach((element, index) => {
-                if (JSON.stringify(available).includes(JSON.stringify(element))) {
-                    item +=  `<div class="col-md-6 col-lg-3"><div class="card"><img class="img-fluid" src="images/big/img2.jpg" alt=""><div class="card-body"><h5 class="card-title">${element.course_name}</h5> <p class="card-text">${element.description}</p><a href="#" class="btn btn-dark" onClick="addCourse('${element.course_name}')">Add</a></div></div></div>`;
+                    // get class_info (count and capacity)... if count less than cap means class available + 1
+
+                    class_information_url = `http://127.0.0.1:5004/class/` + course.course_name;
+                    var class_information = await fetch(class_information_url, { method: "GET" }).then(res => res.json());
+
+                    if (class_information.code == 200) { //if theres information means class is available
+                        classes = class_information.data.classes; //inform - classes change to class
+                        cards.push(`<h5 id="class_information">`)
+
+                        for (let i = 0; i < classes.length; i++) {
+                            let eachclass = classes[i]
+                            cards.push(`<b>Class ${eachclass.class_id}</b>
+                                <br><br>
+                                Class Date: ${eachclass.start_date} to ${eachclass.end_date}
+                                <br><br>
+                                Class Time: ${eachclass.start_time} to ${eachclass.end_time}
+                                <br><br>
+                                Trainer Name: ${eachclass.trainer_name}
+                                <br><br>`)
+
+                            class_cap_url = `http://127.0.0.1:5003/class/count/` + course.course_name + `/` + eachclass.class_id;
+                            var class_cap = await fetch(class_cap_url, { method: "GET" }).then(res => res.json());
+                            enrolment_info_url = `http://127.0.0.1:5001/course/` + course.course_name;
+                            var enrolment_info = await fetch(enrolment_info_url, { method: "GET" }).then(res => res.json());
+
+                            cards.push(`Current Capacity: ${class_cap.data.inclass_count}/${eachclass.class_size}
+                                        <br><br>`)
+
+                        }
+                        cards.push(`</h5><a href="#" class="btn btn-dark" id="button" onClick="addCourse('${course.course_name}')">Add</a>`)
+                    } else {
+                        cards.push(`<h5 id="class_information"><b>No Class Available</b></h5>`)
+                    }
+                    cards.push(`</div></div></div>`)
                 } else {
-                    item +=  `<div class="col-md-6 col-lg-3"><div class="card"><img class="img-fluid" src="images/big/img2.jpg" alt=""><div class="card-body"><h5 class="card-title">${element.course_name}</h5> <p class="card-text">${element.description}</p></div></div></div>`;
+                    cards.push(` <div class="col-md-6 col-lg-3">
+                            <div class="card">
+                                <img class="img-fluid" src="images/big/img2.jpg" alt="">
+                                <div class="card-body">
+                                    <h5 class="card-title">${course.course_name}</h5>
+                                    <p class="card-text">${course.description}</p>
+                                    <h5><b>Not Enrollable</b></h5>
+                                </div>
+                            </div>
+                        </div>`)
+
                 }
-        });
-     
+            }
 
         }
 
@@ -80,56 +150,109 @@
             all_course_array = all_course.data.course;
 
 
-            for (i=0; i < all_course_array.length; i++ ) {
+            for (i = 0; i < all_course_array.length; i++) {
                 all.push(all_course_array[i]);
             }
-            all.forEach((element, index) => {
-                if (JSON.stringify(available).includes(JSON.stringify(element))) {
-                    item +=  `<div class="col-md-6 col-lg-3"><div class="card"><img class="img-fluid" src="images/big/img2.jpg" alt=""><div class="card-body"><h5 class="card-title">${element.course_name}</h5> <p class="card-text">${element.description}</p><a href="#" class="btn btn-dark" onClick="addCourse(${index})">Add</a></div></div></div>`;
-                } else {
-                    item +=  `<div class="col-md-6 col-lg-3"><div class="card"><img class="img-fluid" src="images/big/img2.jpg" alt=""><div class="card-body"><h5 class="card-title">${element.course_name}</h5> <p class="card-text">${element.description}</p></div></div></div>`;
-                }
-        });
 
-            
+            for (let i = 0; i < all.length; i++) {
+                let course = all[i]
+
+                cards.push(`
+                    <div class="col-md-6 col-lg-3">
+                        <div class="card">
+                            <img class="img-fluid" src="images/big/img2.jpg" alt="">
+                            <div class="card-body">
+                                <h5 class="card-title">${course.course_name}</h5>
+                                <p class="card-text">${course.description}</p>
+                                <h5><b>Not Enrollable</b></h5>
+                            </div>
+                        </div>
+                    </div>
+                `)
+
+            }
+
         }
 
         // display it within the id
-        document.getElementById("allcourse").innerHTML = item;
+        document.getElementById("allcourse").innerHTML = cards.join('');
         document.getElementById("newactive").innerHTML = `<li class="active"><a href="#" onclick="all_courses(999);">All Courses</a></li>
                                                             <li><a href="#" onclick="available_courses(999);">Available Courses</a></li>
                                                             <li><a href="#" onclick="completed_courses(999);">Completed Courses</a></li>`;
     }
 
     async function available_courses(learner_id) {
-
         // Create empty array
         available_course = []
         cards = []
-        item = ""
-
 
         url = `http://127.0.0.1:5001/course/available/` + learner_id;
-
-        var course = await fetch(url, {method: "GET"}).then(res => res.json());
-
+        var course = await fetch(url, { method: "GET" }).then(res => res.json());
         if (course.code == 200) {
             course_array = course.data.course;
 
-            for (i=0; i < course_array.length; i++ ) {
+            for (i = 0; i < course_array.length; i++) {
                 available_course.push(course_array[i]);
             }
-            
-            if (available_course){
 
-                available_course.forEach((element, index) => {
-                if (JSON.stringify(available).includes(JSON.stringify(element))) {
-                    item +=  `<div class="col-md-6 col-lg-3"><div class="card"><img class="img-fluid" src="images/big/img2.jpg" alt=""><div class="card-body"><h5 class="card-title">${element.course_name}</h5> <p class="card-text">${element.description}</p><a href="#" class="btn btn-dark" onClick="addCourse('${element.course_name}')">Add</a></div></div></div>`;
-                } else {
-                    item +=  `<div class="col-md-6 col-lg-3"><div class="card"><img class="img-fluid" src="images/big/img2.jpg" alt=""><div class="card-body"><h5 class="card-title">${element.course_name}</h5> <p class="card-text">${element.description}</p></div></div></div>`;
+            if (available_course) {
+                for (let i = 0; i < available_course.length; i++) {
+                    let course = available_course[i]
+
+                    cards.push(`
+                    <div class="col-md-6 col-lg-3">
+                        <div class="card">
+                            <img class="img-fluid" src="images/big/img2.jpg" alt="">
+                            <div class="card-body">
+                                <h5 class="card-title">${course.course_name}</h5>
+                                <p class="card-text">${course.description}</p>
+                                <h5>Enrolment Period: ${course.enrolment_start_date} to ${course.enrolment_end_date}</h5>`);
+
+                    // get class_info (count and capacity)... if count less than cap means class available + 1
+
+                    class_information_url = `http://127.0.0.1:5004/class/` + course.course_name;
+                    var class_information = await fetch(class_information_url, { method: "GET" }).then(res => res.json());
+
+                    if (class_information.code == 200) {
+                        classes = class_information.data.classes;
+                        cards.push(`<h5 id="class_information">`);
+
+                        for (let i = 0; i < classes.length; i++) {
+                            let eachclass = classes[i]
+
+                            cards.push(`<b>Class ${eachclass.class_id}</b>
+                                                    <br><br>
+                                                    Class Date: ${eachclass.start_date} to ${eachclass.end_date}
+                                                    <br><br>
+                                                    Class Time: ${eachclass.start_time} to ${eachclass.end_time}
+                                                    <br><br>
+                                                    Trainer Name: ${eachclass.trainer_name}
+                                                    <br><br>`);
+
+                            class_cap_url = `http://127.0.0.1:5003/class/count/` + course.course_name + `/` + eachclass.class_id;
+                            var class_cap = await fetch(class_cap_url, { method: "GET" }).then(res => res.json());
+
+                            enrolment_info_url = `http://127.0.0.1:5001/course/` + course.course_name;
+                            var enrolment_info = await fetch(enrolment_info_url, { method: "GET" }).then(res => res.json());
+
+                            cards.push(`Current Capacity: ${class_cap.data.inclass_count}/${eachclass.class_size}
+                                                    <br><br>`);
+                        }
+
+                        cards.push(`</h5>
+                                    <a href="#" class="btn btn-dark" onClick="addCourse('${course.course_name}')">Add</a>`);
+                    }
+
+                    // exclude add button for course with no class available
+                    else {
+                        cards.push(`<h5 id="class_information"><b>No Class Available</b></h5>`);
+                    }
+
+                    cards.push(`</div>
+                        </div>
+                    </div>
+                `);
                 }
-        });
-
             }
         }
 
@@ -137,13 +260,13 @@
             cards.push(`<h5>No Available Course</h5>`);
         }
 
-        
+
 
         // display it within the id
-        document.getElementById("allcourse").innerHTML = item;
+        document.getElementById("allcourse").innerHTML = cards.join('');
         document.getElementById("newactive").innerHTML = `<li><a href="#" onclick="all_courses(999);">All Courses</a></li>
-                                                            <li class="active"><a href="#" onclick="available_courses(999);">Available Courses</a></li>
-                                                            <li><a href="#" onclick="completed_courses(999);">Completed Courses</a></li>`;
+                                                    <li class="active"><a href="#" onclick="available_courses(999);">Available Courses</a></li>
+                                                    <li><a href="#" onclick="completed_courses(999);">Completed Courses</a></li>`;
     }
 
     async function completed_courses(learner_id) {
@@ -151,82 +274,90 @@
         // Create empty array
         completed_course = []
         cards = []
-        item = ""
 
         url = `http://127.0.0.1:5001/course/completed/` + learner_id;
-        
-        var course = await fetch(url, {method: "GET"}).then(res => res.json());
+
+        var course = await fetch(url, { method: "GET" }).then(res => res.json());
 
         if (course.code == 200) {
             course_array = course.data.course;
 
-            for (i=0; i < course_array.length; i++ ) {
+            for (i = 0; i < course_array.length; i++) {
                 completed_course.push(course_array[i]);
             }
-            
-            if (completed_course){
 
-                completed_course.forEach((element, index) => {
-                if (JSON.stringify(available).includes(JSON.stringify(element))) {
-                    item +=  `<div class="col-md-6 col-lg-3"><div class="card"><img class="img-fluid" src="images/big/img2.jpg" alt=""><div class="card-body"><h5 class="card-title">${element.course_name}</h5> <p class="card-text">${element.description}</p><a href="#" class="btn btn-dark" onClick="addCourse(${index})">Add</a></div></div></div>`;
-                 
-                } else {
-                    item +=  `<div class="col-md-6 col-lg-3"><div class="card"><img class="img-fluid" src="images/big/img2.jpg" alt=""><div class="card-body"><h5 class="card-title">${element.course_name}</h5> <p class="card-text">${element.description}</p></div></div></div>`;
-                  
+            if (completed_course) {
+                for (let i = 0; i < completed_course.length; i++) {
+                    let course = completed_course[i]
+
+                    cards.push(`
+                <div class="col-md-6 col-lg-3">
+                    <div class="card">
+                        <img class="img-fluid" src="images/big/img2.jpg" alt="">
+                        <div class="card-body">
+                            <h5 class="card-title">${course.course_name}</h5>
+                            <p class="card-text">${course.description}</p>
+                            <h5><b>Not Enrollable</b></h5>
+                        </div>
+                    </div>
+                </div>
+            `);
                 }
-        });
-
             }
         }
 
         else {
-            item += `<h5>No Completed Course</h5>`;
+            cards.push(`<h5>No Completed Course</h5>`);
         }
 
 
         // display it within the id
-        document.getElementById("allcourse").innerHTML = item;
+        document.getElementById("allcourse").innerHTML = cards.join('');
         document.getElementById("newactive").innerHTML = `<li><a href="#" onclick="all_courses(999);">All Courses</a></li>
-                                                            <li><a href="#" onclick="available_courses(999);">Available Courses</a></li>
-                                                            <li class="active"><a href="#" onclick="completed_courses(999);">Completed Courses</a></li>`;
+                                                    <li><a href="#" onclick="available_courses(999);">Available Courses</a></li>
+                                                    <li class="active"><a href="#" onclick="completed_courses(999);">Completed Courses</a></li>`;
     }
-    
+
     async function add_course_to() {
-        
+
     }
 
 
-    $(document).ready(function() {
-     $('#enrol').on('click', function(event) {
-         if (addedToList.length == 0) {
-             alert('Please add a course before checkout! ')
-         } else {
-            addedToList.forEach((element) => {
-            $.ajax({
-          data : {
-            course_name : element,
-            class_id: 1,
-            learner_id:999,
-            progress:0,
-            enrolment_status:'Pending',
-                 },
-             type : 'POST',
-             url : 'http://127.0.0.1:5003/enrol'
-            })
-            });
-            addedToList.length = 0,
-                addedToList.splice(0, addedToList.length),
-                all_courses(999),
-                available_courses(999),
-                completed_courses(),
-                showAllAddedCourses(),
-                alert('Course(s) added successfully!')
+    $(document).ready(function () {
+        $('#enrol').on('click', function (event) {
+            if (addedToList.length == 0) {
+                alert('no items found')
+            } else {
+                if (keys.length == addedToList.length) {
+                    selectedOptions.forEach((selectedClass, courseName) => {
+                        $.ajax({
+                            data: {
+                                course_name: courseName,
+                                class_id: selectedClass,
+                                learner_id: 999,
+                                progress: 0,
+                                enrolment_status: 'Enrolled',
+                            },
+                            type: 'POST',
+                            url: 'http://127.0.0.1:5003/enrol'
+                        });
 
-            event.preventDefault();
-         }
+                    })
+                    addedToList.length = 0,
+                        addedToList.splice(0, addedToList.length),
+                        selectedOptions.clear()
+                    all_courses(999),
+                        showAllAddedCourses(),
+                        alert('success!')
+                    event.preventDefault();
+                } else {
+                    alert("Please select the class you wish to attend.")
+                }
 
-      });
-});
+            }
+
+        });
+    });
 
 </script>
 
@@ -248,7 +379,7 @@
     <link href="css/style.css" rel="stylesheet">
 
     <style>
-        #enrol{
+        #enrol {
             margin: 12px 5px -5px 12px;
         }
     </style>
@@ -271,7 +402,7 @@
         Preloader end
     ********************-->
 
-    
+
     <!--**********************************
         Main wrapper start
     ***********************************-->
@@ -298,9 +429,9 @@
         <!--**********************************
             Header start
         ***********************************-->
-        <div class="header">    
+        <div class="header">
             <div class="header-content clearfix">
-                
+
                 <div class="nav-control">
                     <div class="hamburger">
                         <span class="toggle-icon"><i class="icon-menu"></i></span>
@@ -327,7 +458,7 @@
                             </a>
                             <div class="drop-down animated fadeIn dropdown-menu">
                                 <div class="dropdown-content-heading d-flex justify-content-between">
-                                    <span class="">3 New Messages</span>  
+                                    <span class="">3 New Messages</span>
                                     <a href="javascript:void()" class="d-inline-block">
                                         <span class="badge badge-pill gradient-1">3</span>
                                     </a>
@@ -336,17 +467,20 @@
                                     <ul>
                                         <li class="notification-unread">
                                             <a href="javascript:void()">
-                                                <img class="float-left mr-3 avatar-img" src="images/avatar/1.jpg" alt="">
+                                                <img class="float-left mr-3 avatar-img" src="images/avatar/1.jpg"
+                                                    alt="">
                                                 <div class="notification-content">
                                                     <div class="notification-heading">Saiful Islam</div>
                                                     <div class="notification-timestamp">08 Hours ago</div>
-                                                    <div class="notification-text">Hi Teddy, Just wanted to let you ...</div>
+                                                    <div class="notification-text">Hi Teddy, Just wanted to let you ...
+                                                    </div>
                                                 </div>
                                             </a>
                                         </li>
                                         <li class="notification-unread">
                                             <a href="javascript:void()">
-                                                <img class="float-left mr-3 avatar-img" src="images/avatar/2.jpg" alt="">
+                                                <img class="float-left mr-3 avatar-img" src="images/avatar/2.jpg"
+                                                    alt="">
                                                 <div class="notification-content">
                                                     <div class="notification-heading">Adam Smith</div>
                                                     <div class="notification-timestamp">08 Hours ago</div>
@@ -356,17 +490,20 @@
                                         </li>
                                         <li>
                                             <a href="javascript:void()">
-                                                <img class="float-left mr-3 avatar-img" src="images/avatar/3.jpg" alt="">
+                                                <img class="float-left mr-3 avatar-img" src="images/avatar/3.jpg"
+                                                    alt="">
                                                 <div class="notification-content">
                                                     <div class="notification-heading">Barak Obama</div>
                                                     <div class="notification-timestamp">08 Hours ago</div>
-                                                    <div class="notification-text">Hi Teddy, Just wanted to let you ...</div>
+                                                    <div class="notification-text">Hi Teddy, Just wanted to let you ...
+                                                    </div>
                                                 </div>
                                             </a>
                                         </li>
                                         <li>
                                             <a href="javascript:void()">
-                                                <img class="float-left mr-3 avatar-img" src="images/avatar/4.jpg" alt="">
+                                                <img class="float-left mr-3 avatar-img" src="images/avatar/4.jpg"
+                                                    alt="">
                                                 <div class="notification-content">
                                                     <div class="notification-heading">Hilari Clinton</div>
                                                     <div class="notification-timestamp">08 Hours ago</div>
@@ -375,7 +512,7 @@
                                             </a>
                                         </li>
                                     </ul>
-                                    
+
                                 </div>
                             </div>
                         </li>
@@ -385,7 +522,7 @@
                             </a>
                             <div class="drop-down animated fadeIn dropdown-menu dropdown-notfication">
                                 <div class="dropdown-content-heading d-flex justify-content-between">
-                                    <span class="">2 New Notifications</span>  
+                                    <span class="">2 New Notifications</span>
                                     <a href="javascript:void()" class="d-inline-block">
                                         <span class="badge badge-pill gradient-2">5</span>
                                     </a>
@@ -394,25 +531,28 @@
                                     <ul>
                                         <li>
                                             <a href="javascript:void()">
-                                                <span class="mr-3 avatar-icon bg-success-lighten-2"><i class="icon-present"></i></span>
+                                                <span class="mr-3 avatar-icon bg-success-lighten-2"><i
+                                                        class="icon-present"></i></span>
                                                 <div class="notification-content">
                                                     <h6 class="notification-heading">Events near you</h6>
-                                                    <span class="notification-text">Within next 5 days</span> 
+                                                    <span class="notification-text">Within next 5 days</span>
                                                 </div>
                                             </a>
                                         </li>
                                         <li>
                                             <a href="javascript:void()">
-                                                <span class="mr-3 avatar-icon bg-danger-lighten-2"><i class="icon-present"></i></span>
+                                                <span class="mr-3 avatar-icon bg-danger-lighten-2"><i
+                                                        class="icon-present"></i></span>
                                                 <div class="notification-content">
                                                     <h6 class="notification-heading">Event Started</h6>
-                                                    <span class="notification-text">One hour ago</span> 
+                                                    <span class="notification-text">One hour ago</span>
                                                 </div>
                                             </a>
                                         </li>
                                         <li>
                                             <a href="javascript:void()">
-                                                <span class="mr-3 avatar-icon bg-success-lighten-2"><i class="icon-present"></i></span>
+                                                <span class="mr-3 avatar-icon bg-success-lighten-2"><i
+                                                        class="icon-present"></i></span>
                                                 <div class="notification-content">
                                                     <h6 class="notification-heading">Event Ended Successfully</h6>
                                                     <span class="notification-text">One hour ago</span>
@@ -421,21 +561,22 @@
                                         </li>
                                         <li>
                                             <a href="javascript:void()">
-                                                <span class="mr-3 avatar-icon bg-danger-lighten-2"><i class="icon-present"></i></span>
+                                                <span class="mr-3 avatar-icon bg-danger-lighten-2"><i
+                                                        class="icon-present"></i></span>
                                                 <div class="notification-content">
                                                     <h6 class="notification-heading">Events to Join</h6>
-                                                    <span class="notification-text">After two days</span> 
+                                                    <span class="notification-text">After two days</span>
                                                 </div>
                                             </a>
                                         </li>
                                     </ul>
-                                    
+
                                 </div>
                             </div>
                         </li>
                         <li class="icons dropdown d-none d-md-flex">
-                            <a href="javascript:void(0)" class="log-user"  data-toggle="dropdown">
-                                <span>English</span>  <i class="fa fa-angle-down f-s-14" aria-hidden="true"></i>
+                            <a href="javascript:void(0)" class="log-user" data-toggle="dropdown">
+                                <span>English</span> <i class="fa fa-angle-down f-s-14" aria-hidden="true"></i>
                             </a>
                             <div class="drop-down dropdown-language animated fadeIn  dropdown-menu">
                                 <div class="dropdown-content-body">
@@ -447,7 +588,7 @@
                             </div>
                         </li>
                         <li class="icons dropdown">
-                            <div class="user-img c-pointer position-relative"   data-toggle="dropdown">
+                            <div class="user-img c-pointer position-relative" data-toggle="dropdown">
                                 <span class="activity active"></span>
                                 <img src="images/user/1.png" height="40" width="40" alt="">
                             </div>
@@ -455,19 +596,23 @@
                                 <div class="dropdown-content-body">
                                     <ul>
                                         <li>
-                                            <a href="app-profile.html"><i class="icon-user"></i> <span>Profile</span></a>
+                                            <a href="app-profile.html"><i class="icon-user"></i>
+                                                <span>Profile</span></a>
                                         </li>
                                         <li>
                                             <a href="javascript:void()">
-                                                <i class="icon-envelope-open"></i> <span>Inbox</span> <div class="badge gradient-3 badge-pill gradient-1">3</div>
+                                                <i class="icon-envelope-open"></i> <span>Inbox</span>
+                                                <div class="badge gradient-3 badge-pill gradient-1">3</div>
                                             </a>
                                         </li>
-                                        
+
                                         <hr class="my-2">
                                         <li>
-                                            <a href="page-lock.html"><i class="icon-lock"></i> <span>Lock Screen</span></a>
+                                            <a href="page-lock.html"><i class="icon-lock"></i> <span>Lock
+                                                    Screen</span></a>
                                         </li>
-                                        <li><a href="page-login.html"><i class="icon-key"></i> <span>Logout</span></a></li>
+                                        <li><a href="page-login.html"><i class="icon-key"></i> <span>Logout</span></a>
+                                        </li>
                                     </ul>
                                 </div>
                             </div>
@@ -483,7 +628,7 @@
         <!--**********************************
             Sidebar start
         ***********************************-->
-        <div class="nk-sidebar">           
+        <div class="nk-sidebar">
             <div class="nk-nav-scroll">
                 <ul class="metismenu" id="menu">
                     <li>
@@ -529,17 +674,17 @@
                             <li><a href="./chart-peity.html">Peity</a></li>
                         </ul>
                     </li>
-                    
-                        <!-- </ul>
+
+                    <!-- </ul>
                     </li>
                     <li>
                         <a class="has-arrow" href="javascript:void()" aria-expanded="false">
                             <i class="icon-layers menu-icon"></i><span class="nav-text">Components</span>
                         </a>
                         <ul aria-expanded="false"> -->
-                           
-                        </ul>
-                    </li>
+
+                </ul>
+                </li>
                 </ul>
             </div>
         </div>
@@ -552,7 +697,7 @@
             Content body start
         ***********************************-->
         <div class="content-body">
-            
+
             <div class="row page-titles mx-0">
                 <div class="col p-md-0">
                     <ol class="breadcrumb">
@@ -574,9 +719,11 @@
                 <div class="row">
                     <div class="col-9 m-b-30">
 
-                        <p><h4 class="d-inline"></h4></p>
+                        <p>
+                        <h4 class="d-inline"></h4>
+                        </p>
                         <div class="row" id="allcourse">
-                             
+
                         </div>
                     </div>
 
@@ -600,15 +747,15 @@
                     </div>
 
                 </div>
-                
+
             </div>
             <!-- #/ container -->
         </div>
         <!--**********************************
             Content body end
         ***********************************-->
-        
-        
+
+
         <!--**********************************
             Footer start
         ***********************************-->
@@ -630,16 +777,91 @@
     ***********************************-->
 
     <script>
-            var list = document.getElementById('cart');
-     //show all added courses
-     function showAllAddedCourses() {
+        var list = document.getElementById('cart');
+        //show all added courses
+        async function showAllAddedCourses() {
             let entry = "";
             addedToList.forEach((element, index) => {
-                entry += `<li><label>${element}<a href='#' class="ti-trash" onClick="deleteCourse(${index})"></a></label></li>`;
+                entry += `<li id="container${index}"><label>${element}<a href='#' class="ti-trash" onClick="deleteCourse(${index}, '${element}')"></a></label><ul id="classesContent${index}"></ul></li>`;
             });
 
             list.innerHTML = entry;
-        }   
+
+            //add content for dropdown
+
+            for (var i = 0; i < addedToList.length; i++) {
+                let content = "";
+                var contentForDropdown = document.getElementById('classesContent' + i);
+                contentForDropdown.style.display = 'block';
+
+                class_information_url = `http://127.0.0.1:5004/class/` + addedToList[i];
+                var class_information = await fetch(class_information_url, { method: "GET" }).then(res => res.json());
+
+
+                var classes = class_information.data.classes //inform
+
+                for (j = 0; j < classes.length; j++) {
+                    class_cap_url = `http://127.0.0.1:5003/class/count/` + addedToList[i] + `/` + classes[j].class_id;
+                    var class_size = classes[j].class_size
+                    var class_cap = await fetch(class_cap_url, { method: "GET" }).then(res => res.json());
+                    if (class_cap.data.inclass_count < class_size) {
+                        content += `<li class="radio-li"> <input type=radio id="${addedToList[i]}w${classes[j].class_id}" class="radio-input" value=${classes[j].class_id} name="radio${i}">
+                        <label for="rdo1" class="radio-label" > <span class="radio-border"></span> Class ${classes[j].class_id} </label></li>`;
+                    }
+                    document.body.addEventListener('change', function (e) {
+                        let target = e.target;
+                        let message;
+                        selectedOptions.set(target.id.split("w")[0], parseInt(target.id.split("w")[1]))
+                        keys = [...selectedOptions.keys()]
+                        console.log(selectedOptions)
+                        console.log(keys)
+                    });
+
+                    contentForDropdown.innerHTML = content
+                }
+
+
+            }
+
+            //             addedToList.forEach((element, index) => {
+            //                 let content = "";
+            //                 var contentForDropdown = document.getElementById('classesContent'+index);
+            //                 contentForDropdown.style.display= 'block';
+
+            //                 class_information_url = `http://127.0.0.1:5004/class/` + element;
+            //                 var class_information = await fetch(class_information_url, {method: "GET"}).then(res => res.json());
+
+            // //     classList.forEach((e) => { 
+            // //         if (e.course_name == element) {
+            // //             e.classes.forEach((f) => {
+            // //     // class_cap_url = `http://127.0.0.1:5003/class/count/` + e.course_name + `/` + f.class_id;
+            // //     // var class_cap = await fetch(class_cap_url, {method: "GET"}).then(res => res.json());
+            // //         //if (class_size < class_cap)
+            // //                 if (f.current_size < f.class_size) {
+            // //                     content += `<li class="radio-li"> <input type=radio id="${element}w${f.class_id}" class="radio-input" value=${f.class_id} name="radio${index}">
+            // // <label for="rdo1" class="radio-label" > <span class="radio-border"></span> Class ${f.class_id} </label></li>`; 
+            // //                 }
+            // //                 // selectedOptions.set(element, f.class_id);
+            // //                 document.body.addEventListener('change', function (e) {
+            // //                     let target = e.target;
+            // //                     let message;
+            // //                     selectedOptions.set(target.id.split("w")[0], parseInt(target.id.split("w")[1]))
+            // //                     keys = [...selectedOptions.keys()]
+            // //             });
+            // //             });
+            // //         }
+
+            // //     });
+            //             contentForDropdown.innerHTML = content
+
+            //             });
+
+        }
+
+        // $(document).ready(function(){
+        //     $("input:radio[name=radio0]:first").attr('checked', true);
+        // });
+
     </script>
 
     <script src="plugins/common/common.min.js"></script>
@@ -648,10 +870,10 @@
     <script src="js/gleek.js"></script>
     <script src="js/styleSwitcher.js"></script>
     <!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
 
-<!-- Latest compiled JavaScript -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
 </body>
 
