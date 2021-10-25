@@ -1,69 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<script>
-
-    window.onload = function (e) {
-        course_count();
-        course_request();
-        course_information();
-    }
-
-    async function course_count() {
-        course_count_url = `http://127.0.0.1:5001/course/count`;
-        var course_count = await fetch(course_count_url, {method: "GET"}).then(res => res.json());
-
-        document.getElementById("course_count").innerHTML = course_count.data.course_count;
-    }
-
-    async function course_request() {
-
-        // Create empty array
-        all = []
-        cards = []
-
-        pending_count_url = `http://127.0.0.1:5003/pending/count`;
-        var pending_count = await fetch(pending_count_url, {method: "GET"}).then(res => res.json());
-
-        document.getElementById("pending_count").innerHTML = "New : " + pending_count.data.pending_count;
-    }
-
-    async function course_information() {
-
-        all = []
-        rows = []
-        course_class_url = `http://127.0.0.1:5004/class`;
-
-        var course_class = await fetch(course_class_url, {method: "GET"}).then(res => res.json());
-
-        if (course_class.code == 200) {
-    
-            course_class_array = course_class.data.classes;
-
-            for (i=0; i < course_class_array.length; i++ ) {
-                all.push(course_class_array[i]);
-            }
-
-            for (let i = 0; i < all.length; i++) {
-                let course = all[i]
-
-                inclass_count_url = `http://127.0.0.1:5003/class/count/${course.course_name}/${course.class_id}`;
-                var inclass_count = await fetch(inclass_count_url, {method: "GET"}).then(res => res.json());
-
-                rows.push(`
-                    <tr>
-                        <td>${course.course_name}</td>
-                        <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">${course.trainer_name}</td>
-                        <td><a href="">C${course.class_id}</a></td>
-                        <td><a href="">${inclass_count.data.inclass_count}/${course.class_size}</a></td>
-                    </tr>
-                `);
-            }
-        }
-
-        document.getElementById("class_information").innerHTML = rows;
-    }
-</script>
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -108,7 +45,7 @@
         ***********************************-->
         <div class="nav-header">
             <div class="brand-logo">
-                <a href="hr.html">
+                <a href="index.html">
                     <b class="logo-abbr"><img src="images/logo.png" alt=""> </b>
                     <span class="logo-compact"><img src="./images/logo-compact.png" alt=""></span>
                     <span class="brand-title">
@@ -117,13 +54,7 @@
                 </a>
             </div>
         </div>
-        <!--**********************************
-            Nav header end
-        ***********************************-->
 
-        <!--**********************************
-            Header start
-        ***********************************-->
         <div class="header">    
             <div class="header-content clearfix">
                 
@@ -302,184 +233,121 @@
                 </div>
             </div>
         </div>
-        <!--**********************************
-            Header end ti-comment-alt
-        ***********************************-->
+<!-- 
+QUIZ BEGINS HERE -->
 
-        <!--**********************************
-            Sidebar start
-        ***********************************-->
-        <div class="nk-sidebar">           
-            <div class="nk-nav-scroll">
-                <ul class="metismenu" id="menu">
-                    <li>
-                        <a href="hr.html" aria-expanded="false">
-                            <i class="icon-speedometer menu-icon"></i><span class="nav-text">Home</span>
-                        </a>
-                    </li>
-                    
-                    <li>
-                        <a class="has-arrow" href="javascript:void()" aria-expanded="false">
-                            <i class="icon-envelope menu-icon"></i> <span class="nav-text">Enrollment</span>
-                        </a>
-                        <ul aria-expanded="false">
-                            <li><a href="hr_enrol.html">Enrol</a></li>
-                            <li><a href="hr_requests.html">Requests</a></li>
-                            <li><a href="hr_class.html">Classlist</a></li>
-                        </ul>
-                    </li>
-                    
-                            
-                </ul>
-            </div>
-        </div>
-        <!--**********************************
-            Sidebar end
-        ***********************************-->
-
-        <!--**********************************
-            Content body start
-        ***********************************-->
-        <div class="content-body">
-
-
-            <div class="container-fluid mt-3">
-                
-                <!--Overview of courses, quizzes etc-->
-                <div class="row">
-                    <div class="col-lg-4 col-sm-6">
-                        <div class="card gradient-1">
-                            <div class="card-body">
-                                <h3 class="card-title text-white">Courses Available</h3>
-                                <div class="d-inline-block">
-                                    <h2 class="text-white" id="course_count">5</h2>
-                            
-                                </div>
-                                <span class="float-right display-5 opacity-5"></span>
-                            </div>
-                        </div>
+<div class="container mt-5">
+    <div class="d-flex justify-content-center row">
+        <div class="col-md-10 col-lg-10">
+            <div class="border">
+                <div class="question bg-white p-3 border-bottom">
+                    <div class="d-flex flex-row justify-content-between align-items-center mcq">
+                        <h4>Graded MCQ Quiz on {module}</h4><span>({current question} of {total questions count})</span>
                     </div>
-                    <div class="col-lg-4 col-sm-6">
-                        <div class="card gradient-2">
-                            <div class="card-body">
-                                <h3 class="card-title text-white">Student Requests</h3>
-                                <div class="d-inline-block">
-                                    <h2 class="text-white" id="pending_count">New: 9</h2>
-                                    <p class="text-white mb-0"></p>
-                                </div>
-                                <span class="float-right display-5 opacity-5"></i></span>
-                            </div>
-                        </div>
-                    </div>
-        
-                    <!-- <div class="col-lg-3 col-sm-6">
-                        <div class="card gradient-4">
-                            <div class="card-body">
-                                <h3 class="card-title text-white">Customer Satisfaction</h3>
-                                <div class="d-inline-block">
-                                    <h2 class="text-white">99%</h2>
-                                    <p class="text-white mb-0">Jan - March 2019</p>
-                                </div>
-                                <span class="float-right display-5 opacity-5"><i class="fa fa-heart"></i></span>
-                            </div>
-                        </div>
-                    </div> -->
                 </div>
-            
-                <!--List of enrolled classes and progress bars-->
-                <div class="row">
-                    <div class="col-lg-8">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="active-member">
-                                    <div class="table-responsive">
-                                        <table class="table table-xs mb-0">
-                                            <thead>
-                                                <tr>
-                                                    <th>Course Name</th>
-                                                    <th>Instructor</th>
-                                                    <th>Class</th>
-                                                    <th>Capacity</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="class_information">
-                                                <tr>
-                                                    <td>Intro to Ink Practices</td>
-                                                    <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">John Watson</td>
-                                                    <td><a href="">C1</a></td>
-                                                    <td><a href="">32/40</a></td>
-                                                </tr>
-
-                                                <tr>
-                                                    <td>Advanced IBM Printers</td>
-                                                    <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">John Watson</td>
-                                                    <td><a href="">C1</a></td>
-                                                    <td><a href="">38/40</a></td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>                        
+                <!-- QUESTION 1 -->
+                <div class="question bg-white p-3 border-bottom">
+                    <div class="d-flex flex-row align-items-center question-title">
+                        <h3 class="text-danger">Q1.</h3>
+                        <h5 class="mt-1 ml-2">INSERT FIRST QUESTION HERE: LOREM IPSUM BLAH</h5>
                     </div>
+                    <div class="ans ml-2">
+                        <label class="radio"> <input type="radio" name="brazil" value="brazil"> <span>INSERT INPUT 1 
+                            <!-- PULL ANSWER SET BY TRAINER -->
+                        </span>
+                        </label>
+                    </div>
+                    <div class="ans ml-2">
+                        <label class="radio"> <input type="radio" name="Germany" value="Germany"> <span>INSERT INPUT 2
+                            <!-- PULL ANSWER SET BY TRAINER -->
+                        </span>
+                        </label>
+                    </div>
+                    <div class="ans ml-2">
+                        <label class="radio"> <input type="radio" name="Indonesia" value="Indonesia"> <span>INSERT INPUT 3</span>
+                        </label>
+                    </div>
+                    <div class="ans ml-2">
+                        <label class="radio"> <input type="radio" name="Russia" value="Russia"> <span>INSERT INPUT 4</span>
+                        </label>
+                    </div>
+                </div>
+                <!-- QUESTION 2 -->
+                <div class="question bg-white p-3 border-bottom">
+                    <div class="d-flex flex-row align-items-center question-title">
+                        <h3 class="text-danger">Q2.</h3>
+                        <h5 class="mt-1 ml-2">{{q2}}</h5>
+                    </div>
+                    <div class="ans ml-2">
+                        <label class="radio"> <input type="radio" name="#" value="#"> <span>True
+                            <!-- PULL ANSWER SET BY TRAINER -->
+                        </span>
+                        </label>
+                    </div>
+                    <div class="ans ml-2">
+                        <label class="radio"> <input type="radio" name="#" value="#"> <span>False
+                            <!-- PULL ANSWER SET BY TRAINER -->
+                        </span>
+                        </label>
+                    </div>
+                    
+                </div>
+                <!-- END -->
+                <!-- write function here:
+                if question count != no of questions:  -->
+                <div class="d-flex flex-row justify-content-between align-items-center p-3 bg-white"><button class="btn btn-primary d-flex align-items-center btn-danger" type="button"><i class="fa fa-angle-left mt-1 mr-1"></i>&nbsp;previous</button><button class="btn btn-primary border-success align-items-center btn-success" type="button">Next<i class="fa fa-angle-right ml-2"></i></button></div>
+                <!-- else: -->
+                <button class="btn btn-primary border-success align-items-center btn-success" type="button">Completed!<i class="fa fa-angle-right ml-2"></i></button>
 
-                
-            </div>
-            <!-- #/ container -->
             </div>
         </div>
-        <!--**********************************
-            Content body end
-        ***********************************-->
-        
-        
-        <!--**********************************
-            Footer start
-        ***********************************-->
-        <div class="footer">
-            <div class="copyright">
-                <p>Copyright &copy; All-in-One Printing Solutions</p>
-            </div>
-        </div>
-        <!--**********************************
-            Footer end
-        ***********************************-->
     </div>
-    <!--**********************************
-        Main wrapper end
-    ***********************************-->
-
-    <!--**********************************
-        Scripts
-    ***********************************-->
-    <script src="plugins/common/common.min.js"></script>
-    <script src="js/custom.min.js"></script>
-    <script src="js/settings.js"></script>
-    <script src="js/gleek.js"></script>
-    <script src="js/styleSwitcher.js"></script>
-
-    <!-- Chartjs -->
-    <script src="./plugins/chart.js/Chart.bundle.min.js"></script>
-    <!-- Circle progress -->
-    <script src="./plugins/circle-progress/circle-progress.min.js"></script>
-    <!-- Datamap -->
-    <script src="./plugins/d3v3/index.js"></script>
-    <script src="./plugins/topojson/topojson.min.js"></script>
-    <script src="./plugins/datamaps/datamaps.world.min.js"></script>
-    <!-- Morrisjs -->
-    <script src="./plugins/raphael/raphael.min.js"></script>
-    <script src="./plugins/morris/morris.min.js"></script>
-    <!-- Pignose Calender -->
-    <script src="./plugins/moment/moment.min.js"></script>
-    <script src="./plugins/pg-calendar/js/pignose.calendar.min.js"></script>
-    <!-- ChartistJS -->
-    <script src="./plugins/chartist/js/chartist.min.js"></script>
-    <script src="./plugins/chartist-plugin-tooltips/js/chartist-plugin-tooltip.min.js"></script>
+</div>
 
 
+<div class="footer">
+    <div class="copyright">
+        <p>Copyright &copy; All-in-One Printing Solutions</p>
+    </div>
+</div>
+<!--**********************************
+    Footer end
+***********************************-->
+</div>
+<!--**********************************
+Main wrapper end
+***********************************-->
 
-    <script src="./js/dashboard/dashboard-1.js"></script>
+<!--**********************************
+Scripts
+***********************************-->
+<script src="plugins/common/common.min.js"></script>
+<script src="js/custom.min.js"></script>
+<script src="js/settings.js"></script>
+<script src="js/gleek.js"></script>
+<script src="js/styleSwitcher.js"></script>
+
+<!-- Chartjs -->
+<script src="./plugins/chart.js/Chart.bundle.min.js"></script>
+<!-- Circle progress -->
+<script src="./plugins/circle-progress/circle-progress.min.js"></script>
+<!-- Datamap -->
+<script src="./plugins/d3v3/index.js"></script>
+<script src="./plugins/topojson/topojson.min.js"></script>
+<script src="./plugins/datamaps/datamaps.world.min.js"></script>
+<!-- Morrisjs -->
+<script src="./plugins/raphael/raphael.min.js"></script>
+<script src="./plugins/morris/morris.min.js"></script>
+<!-- Pignose Calender -->
+<script src="./plugins/moment/moment.min.js"></script>
+<script src="./plugins/pg-calendar/js/pignose.calendar.min.js"></script>
+<!-- ChartistJS -->
+<script src="./plugins/chartist/js/chartist.min.js"></script>
+<script src="./plugins/chartist-plugin-tooltips/js/chartist-plugin-tooltip.min.js"></script>
+
+
+
+<script src="./js/dashboard/dashboard-1.js"></script>
 
 </body>
 

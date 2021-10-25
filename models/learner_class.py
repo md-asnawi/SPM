@@ -165,6 +165,7 @@ def get_pending_count():
             }
         )
 
+# test jenkin part 10 :(
 # update pending status
 @app.route("/pending/<int:learner_id>/<string:course_name>", methods=["PUT"])
 def update_pending(learner_id, course_name):
@@ -227,8 +228,9 @@ def get_inclass_count(course_name, class_id):
             }
         )
 
+# incourse regardless of class
 @app.route("/class/<string:course_name>", methods=["GET"])
-def get_inclass(course_name):
+def get_incourse(course_name):
 
     inclass = Learner_Class(db.Model).query.filter_by(course_name=course_name,enrolment_status="Enrolled",withdrawal=0).all()
 
@@ -248,6 +250,58 @@ def get_inclass(course_name):
                 "code": 404,
                 "data": {
                     "inclass": "No one enrolled in this class."
+                }
+            }
+        )
+
+# inclass by course and class
+@app.route("/class/<string:course_name>/<int:class_id>", methods=["GET"])
+def get_inclass(course_name, class_id):
+
+    inclass = Learner_Class(db.Model).query.filter_by(course_name=course_name,class_id=class_id,enrolment_status="Enrolled",withdrawal=0).all()
+
+    if len(inclass):
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "inclass": [course_class.json() for course_class in inclass]
+                }
+            }
+        )
+
+    else:
+        return jsonify(
+            {
+                "code": 404,
+                "data": {
+                    "inclass": "No one enrolled in this class."
+                }
+            }
+        )
+
+# id in class 
+@app.route("/class/<string:course_name>/<int:class_id>/<int:learner_id>", methods=["GET"])
+def get_inclass_byid(course_name, class_id, learner_id):
+
+    inclass = Learner_Class(db.Model).query.filter_by(course_name=course_name,class_id=class_id,learner_id=learner_id,enrolment_status="Enrolled",withdrawal=0).first()
+
+    if inclass:
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "inclass": inclass.json()
+                }
+            }
+        )
+
+    else:
+        return jsonify(
+            {
+                "code": 404,
+                "data": {
+                    "message": "Learner not enrolled in this class."
                 }
             }
         )

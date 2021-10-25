@@ -51,7 +51,7 @@ def get_all_learners():
 
 # get a learner using learner id
 @app.route("/learner/<int:learner_id>", methods=["GET"])
-def get_learner(learner_id):
+def get_learner_byid(learner_id):
 
     learner = Learner.query.filter_by(learner_id = learner_id).first()
     
@@ -67,6 +67,30 @@ def get_learner(learner_id):
 
     return jsonify(
         {
+            "code": 404,
+            "message": "Learner not found."
+        }
+    ), 404
+
+# get a learner using learner name
+@app.route("/learner/<string:engineer_name>", methods=["GET"])
+def get_learner_byname(engineer_name):
+
+    learner = Learner.query.filter_by(engineer_name = engineer_name).first()
+    
+    if learner:
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "learner": learner.json()
+                }
+            }
+        )
+
+    return jsonify(
+        {
+            "code": 404,
             "message": "Learner not found."
         }
     ), 404
