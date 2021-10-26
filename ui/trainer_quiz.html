@@ -393,19 +393,24 @@
                 <h3>Create a Quiz</h3>
                 <h4>Choose which class and course you wish to create the quiz for:</h4> 
                 <br>
-                <!-- insert drop down here to query for class -->
+                <!-- insert drop down here to query for course -->
                 <label for="course">Choose a Course:</label>
                             <select name="course" id="course_dropdown" onchange="available_learner(value); class_dropdown(value);">
                             <option value="course1">{{Course1}}</option>
                             <option value="course2">{{Course2}}</option>
                             <option value="course3">{{Course3}}</option>
                             </select> 
-                        
+                <!-- insert drop down for classlist -->
                         <br>
                         <label for="class">Choose a Class:</label>
                             <select name="course_class" id="class_dropdown">
                             <option value="">Select a course to see available class</option>
-                            
+                            </select>
+                            <br>
+                    <!-- insert lesson dropdown -->
+                        <label for="class">Choose lesson:</label>
+                            <select name="course_class" id="class_dropdown">
+                            <option value="">Select a lesson</option>
                             </select>
                             <br>
                         <label>Choose a question type:</label>
@@ -509,6 +514,9 @@
             QN 1. {{Question}}
             {{Options}}
 
+            <!-- Create Quiz: Send to quiz data table -->
+            <br>
+            <a href="#link" class="btn btn-light" role="button">Create Quiz</a>
             <!-- #/ container -->
                 </div>
             </div>
