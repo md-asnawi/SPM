@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>LMS - Home</title>
+    <title>LMS - Quiz</title>
     <!-- Favicon icon -->
     <link rel="icon" type="image/png" sizes="16x16" href="images/favicon.png">
     <!-- Pignose Calender -->
@@ -242,7 +242,12 @@ QUIZ BEGINS HERE -->
             <div class="border">
                 <div class="question bg-white p-3 border-bottom">
                     <div class="d-flex flex-row justify-content-between align-items-center mcq">
-                        <h4>Graded MCQ Quiz on {module}</h4><span>({current question} of {total questions count})</span>
+                        <h4>Graded MCQ Quiz on {module}</h4>
+                        <span>
+                            <!-- insert timer here -->
+                        <p id="min"></p>
+                        <p id="secs"></p>
+                        </span>
                     </div>
                 </div>
                 <!-- QUESTION 1 -->
@@ -293,23 +298,10 @@ QUIZ BEGINS HERE -->
                     
                 </div>
                 <!-- END -->
-                <!-- write function here:
-                if question count != no of questions:  -->
-                <div class="d-flex flex-row justify-content-between align-items-center p-3 bg-white"><button class="btn btn-primary d-flex align-items-center btn-danger" type="button"><i class="fa fa-angle-left mt-1 mr-1"></i>&nbsp;previous</button><button class="btn btn-primary border-success align-items-center btn-success" type="button">Next<i class="fa fa-angle-right ml-2"></i></button></div>
-                <!-- else: -->
-                <button class="btn btn-primary border-success align-items-center btn-success" type="button">Completed!<i class="fa fa-angle-right ml-2"></i></button>
-
-            </div>
-        </div>
-    </div>
-</div>
-
-
-<div class="footer">
-    <div class="copyright">
-        <p>Copyright &copy; All-in-One Printing Solutions</p>
-    </div>
-</div>
+                
+                <!-- Submit Button Here -->
+                <button class="btn btn-primary border-success align-items-center btn-success" type="button">Submit<i class="fa fa-angle-right ml-2"></i></button></div>
+                
 <!--**********************************
     Footer end
 ***********************************-->
@@ -321,6 +313,43 @@ Main wrapper end
 <!--**********************************
 Scripts
 ***********************************-->
+<!-- Countdown Clock -->
+<script>
+   // The data/time we want to countdown to
+    var countDownDate = new Date().getTime();
+
+    // Run function every second
+
+    var myfunc = setInterval(function() {
+
+    var now = new Date().getTime();
+    var timeleft = countDownDate - now;
+        
+    // Calculating the days, hours, minutes and seconds left
+    var days = Math.floor(timeleft / (1000 * 60 * 60 * 24));
+    var hours = Math.floor((timeleft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    var minutes = Math.floor((timeleft % (1000 * 60 * 60)) / (1000 * 60));
+    var seconds = Math.floor((timeleft % (1000 * 60)) / 1000);
+        
+    // Result is output to the specific element
+    document.getElementById("days").innerHTML = days + "d "
+    document.getElementById("hours").innerHTML = hours + "h " 
+    document.getElementById("mins").innerHTML = minutes + "m " 
+    document.getElementById("secs").innerHTML = seconds + "s " 
+        
+    // Display the message when countdown is over
+    if (timeleft < 0) {
+        clearInterval(myfunc);
+        document.getElementById("days").innerHTML = ""
+        document.getElementById("hours").innerHTML = "" 
+        document.getElementById("mins").innerHTML = ""
+        document.getElementById("secs").innerHTML = ""
+        document.getElementById("end").innerHTML = "You have exceeded the time";
+    }
+    }, 1000);
+
+</script>
+
 <script src="plugins/common/common.min.js"></script>
 <script src="js/custom.min.js"></script>
 <script src="js/settings.js"></script>
