@@ -113,6 +113,30 @@ def get_lesson(course_name, class_id, lesson_id):
         }
     )
 
+# create new lesson
+@app.route("/lesson/<string:course_name>/<int:class_id>/<int:lesson_id>", methods=["POST"])
+def new_lesson(course_name, class_id, lesson_id):
+
+    description = 'This is Lesson ' + str(lesson_id)
+    new_lesson = Lesson(course_name, class_id, lesson_id, description)
+    
+    try:
+        db.session.add(new_lesson)
+        db.session.commit()
+        
+        return jsonify (
+            {
+                "code": 201,
+                "data": {
+                    "new_lesson": new_lesson.json()
+                },
+                "message": "Lesson commited to database."
+            }
+        ), 201
+    except Exception as e:
+        return jsonify({
+            "message": "Unable to commit to database."
+        }), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5007, debug=True)

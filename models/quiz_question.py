@@ -146,5 +146,29 @@ def get_quiz_questions(course_name, class_id, lesson_id, quiz_id):
         }
     ), 500
 
+@app.route("/quizquestion/<string:course_name>/<int:class_id>/<int:lesson_id>/<int:quiz_id>/<int:question_number>/<string:question>/<string:question_type>/<string:option_1>/<string:option_2>/<string:option_3>/<string:option_4>/<string:answer>", methods=["POST"])
+def create_quiz_question(course_name, class_id, lesson_id, quiz_id, question_number, question, question_type, option_1, option_2, option_3, option_4, answer):
+    
+    new_quiz_question = Quiz_Question(course_name, class_id, lesson_id, quiz_id, question_number, question, question_type, option_1, option_2, option_3, option_4, answer)
+
+    try:
+        db.session.add(new_quiz_question)
+        db.session.commit()
+        
+        return jsonify (
+            {
+                "code": 201,
+                "data": {
+                    "new_quiz_question": new_quiz_question.json()
+                },
+                "message": "New Quiz Question commited to database."
+            }
+        ), 201
+    except Exception as e:
+        return jsonify({
+            "message": "Unable to commit to database.",
+            "error": e
+        }), 500
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5011, debug=True)

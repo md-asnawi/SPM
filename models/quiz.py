@@ -65,5 +65,30 @@ class Quiz(db.Model):
     def set_quiz_type(self, quiz_type):
         self.quiz_type = quiz_type
 
+@app.route("/quiz/<string:course_name>/<int:class_id>/<int:lesson_id>/<int:quiz_id>/<string:quiz_type>", methods=["POST"])
+def create_quiz(course_name, class_id, lesson_id, quiz_id, quiz_type):
+
+    new_quiz = Quiz(course_name, class_id, lesson_id, quiz_id, quiz_type)
+
+    try:
+        db.session.add(new_quiz)
+        db.session.commit()
+        
+        return jsonify (
+            {
+                "code": 201,
+                "data": {
+                    "new_quiz": new_quiz.json()
+                },
+                "message": "Quiz commited to database."
+            }
+        ), 201
+    except Exception as e:
+        return jsonify({
+            "message": "Unable to commit to database.",
+            "error": e
+        }), 500
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5010, debug=True)

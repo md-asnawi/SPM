@@ -75,7 +75,7 @@
                                 </label>
                             </div>`)
 
-                            if (question.option_3  != null) {
+                            if (question.option_3  != null && question.option_3  != "null") {
                                 each.push(`<div class="ans ml-2">
                                                 <label class="radio"> <input type="radio" id="${question.question_number}option3" name="${question.question_number}" value="${question.option_3}">
                                                     <span>${question.option_3}</span>
@@ -83,7 +83,7 @@
                                             </div>`)
                             }
 
-                            if (question.option_4 != null) {
+                            if (question.option_4 != null && question.option_4  != "null") {
                                 each.push(`<div class="ans ml-2">
                                                 <label class="radio"> <input type="radio" id="${question.question_number}option4" name="${question.question_number}" value="${question.option_4}">
                                                     <span>${question.option_4}</span>

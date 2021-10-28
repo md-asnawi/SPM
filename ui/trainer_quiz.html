@@ -1,6 +1,331 @@
 <!DOCTYPE html>
 <html lang="en">
 
+<script>
+    window.onload = function (e) {
+            course_name = "Course 111"
+            class_id = 1
+            current_quiz_number = 1
+            update_question_number_label(current_quiz_number)
+            course_dropdown();
+            class_dropdown(course_name);
+    }
+
+    async function course_dropdown() {
+
+        // Create empty array
+        all = []
+        dropdown = []
+
+        all_url = `http://127.0.0.1:5001/course`;
+        var all_course = await fetch(all_url, {method: "GET"}).then(res => res.json());
+
+        if (all_course.code == 200) {
+
+            all_course_array = all_course.data.course;
+
+            for (i=0; i < all_course_array.length; i++ ) {
+                all.push(all_course_array[i]);
+            }
+
+            for (let i = 0; i < all.length; i++) {
+                let course = all[i]
+                
+                dropdown.push(`
+                    <option value="${course.course_name}">${course.course_name}</option>
+                `)
+            }
+        }
+
+        else {
+            dropdown.push(`<option value="nocourse">No Course</option>`);
+        }
+
+        document.getElementById("course_dropdown").innerHTML = dropdown;
+    }
+
+    async function class_dropdown(course_name) {
+
+        // Create empty array
+        all1 = []
+        dropdown1 = []
+
+        course_class_url = `http://127.0.0.1:5004/class/` + course_name;
+
+        var all_course_class = await fetch(course_class_url, {method: "GET"}).then(res => res.json());
+
+        if (all_course_class.code == 200) {
+
+            all_course_class_array = all_course_class.data.classes;
+
+            console.log(all_course_class_array);
+
+            for (i=0; i < all_course_class_array.length; i++ ) {
+                all1.push(all_course_class_array[i]);
+            }
+
+            for (let i = 0; i < all1.length; i++) {
+                let course_class = all1[i]
+                
+                // check capacity of class
+                single_class_url = `http://127.0.0.1:5004/class/` + course_class.course_name + `/` + course_class.class_id;
+                var single_class = await fetch(single_class_url, {method: "GET"}).then(res => res.json());
+                class_size = single_class.data.single_class.class_size;
+            
+
+                // check current class size
+                class_count_url = `http://127.0.0.1:5003/class/count/` + course_class.course_name + `/` + course_class.class_id
+                var class_count = await fetch(class_count_url, {method: "GET"}).then(res => res.json());
+                class_cap = class_count.data.inclass_count;
+
+                dropdown1.push(`
+                    <option value="${course_class.class_id}" course_name="${course_class.course_name}">${course_class.class_id} - (${class_cap}/${class_size})</option>
+                `)
+            }
+        }
+
+        else {
+            dropdown1.push(`<option value="noclass">No Class</option>`);
+        }
+
+        document.getElementById("class_dropdown").innerHTML = dropdown1;
+    }
+
+    // async function lesson_dropdown(course_name, class_id) {
+
+    //     // Create empty array
+    //     all2 = []
+    //     dropdown2 = []
+
+    //     lesson_url = `http://127.0.0.1:5007/lesson/` + course_name + `/` + class_id;
+    //     var all_lesson = await fetch(lesson_url, {method: "GET"}).then(res => res.json());
+
+    //     if (all_lesson.code == 200) {
+
+    //         all_lesson_array = all_lesson.data.lesson;
+
+    //         for (i=0; i < all_lesson_array.length; i++ ) {
+    //             all2.push(all_lesson_array[i]);
+    //         }
+
+    //         for (let i = 0; i < all2.length; i++) {
+    //             let lesson = all2[i]
+    //             console.log(lesson);
+    //             dropdown2.push(`
+    //                 <option value="${lesson.lesson_id}">${lesson.lesson_id}</option>
+    //             `)
+    //         }
+    //     }
+
+    //     else {
+    //         dropdown2.push(`<option value="nolesson">No Lesson</option>`);
+    //     }
+
+    //     document.getElementById("lesson_dropdown").innerHTML = dropdown2;
+    // }
+    quiz_array = []
+    quiz_question_array = []
+    newstr = ''
+
+    async function update_question_number_label(current_quiz_number) {
+        document.getElementById("question_number_label").innerHTML = `<label>Qn. ${current_quiz_number}</label>`;
+    } 
+
+    async function display_MCQ() {
+        document.getElementById("displayformtype").innerHTML = 
+            `<div class="form-group">
+                <label for="exampleFormControlInput1">Question Input:</label>
+                <input type="email" class="form-control" id="question" placeholder="Insert your question here">
+            </div>
+            <div class="form-group">
+                        
+                <div class="form-group">
+                    <label for="exampleFormControlInput1">Sample MCQ Option 1</label>
+                    <input type="email" class="form-control" id="option1" placeholder="Answer 1">
+                </div>
+
+                <div class="form-group">
+                    <label for="exampleFormControlInput1">Sample MCQ Option 2</label>
+                    <input type="email" class="form-control" id="option2" placeholder="Answer 2">
+                </div>
+
+                <div class="form-group">
+                    <label for="exampleFormControlInput1">Sample MCQ Option 3</label>
+                    <input type="email" class="form-control" id="option3" placeholder="Answer 3">
+                </div>
+
+                <div class="form-group">
+                    <label for="exampleFormControlInput1">Sample MCQ Option 4</label>
+                    <input type="email" class="form-control" id="option4" placeholder="Answer 4">
+                </div>
+
+                <div class="form-group">
+                <label for="exampleFormControlSelect1">Select Correct answer</label>
+                <select class="form-control" id="answer">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                </select>
+                </div>
+            </div>`
+
+            question_type = "MCQ"
+    }
+
+    async function display_TF() {
+        document.getElementById("displayformtype").innerHTML = 
+        `<div class="form-group">
+                <label for="exampleFormControlInput1">Question Input:</label>
+                <input type="email" class="form-control" id="question" placeholder="Insert your question here">
+            </div>
+            <div class="form-group">
+                        
+                <div class="form-group">
+                    <label for="exampleFormControlInput1">Sample T/F Option 1</label>
+                    <input type="email" class="form-control" id="option1" value="True" placeholder="True" disabled>
+                </div>
+
+                <div class="form-group">
+                    <label for="exampleFormControlInput1">Sample T/F Option 2</label>
+                    <input type="email" class="form-control" id="option2" value="False" placeholder="False" disabled>
+                </div>
+
+                <div class="form-group">
+                    <label for="exampleFormControlInput1">Only Two Options Allowed</label>
+                    <input type="email" class="form-control" id="option3" value=" " placeholder="Answer 3" disabled>
+                </div>
+
+                <div class="form-group">
+                    <label for="exampleFormControlInput1">Only Two Options Allowed</label>
+                    <input type="email" class="form-control" id="option4" value=" " placeholder="Answer 4" disabled>
+                </div>
+
+                <div class="form-group">
+                <label for="exampleFormControlSelect1">Select Correct answer</label>
+                <select class="form-control" id="answer">
+                    <option value="True">True</option>
+                    <option value="False">False</option>
+                </select>
+                </div>
+            </div>`
+
+            question_type = "TF"
+    }
+
+    async function quiz_append() {
+        // get input
+
+        question_input = document.getElementById("question").value
+        option1_input = document.getElementById("option1").value
+        option2_input = document.getElementById("option2").value
+        option3_input = document.getElementById("option3").value
+        option4_input = document.getElementById("option4").value
+
+        if (option1_input == "") {
+            option1_input = null
+        }
+
+        if (option2_input == "") {
+            option2_input = null
+        }
+
+        if (option3_input == "") {
+            option3_input = null
+        }
+
+        if (option4_input == "") {
+            option4_input = null
+        }
+
+        var selected_answer = document.getElementById("answer");
+        answer_input = selected_answer.value;
+        if (question_type == "MCQ") {
+            answer = document.getElementById("option".concat(String(answer_input))).value
+        }
+
+        else{
+            answer = answer_input
+        }        
+        current_num = current_quiz_number
+
+        newstr += `Qn. ` + String(current_num) + `<br>
+                    Question: `+ String(question_input) + `<br>
+                    Question Type: `+ String(question_type) + `<br>
+                    Option 1: ` + String(option1_input) + `<br>
+                    Option 2: ` + String(option2_input) + `<br>
+                    Option 3: ` + String(option3_input) + `<br>
+                    Option 4: ` + String(option4_input) + `<br>
+                    Answer: ` + String(answer) +
+                    `<br><br>`
+
+        // create a json 
+        new_quiz_question = {'course_name' : document.getElementById("course_dropdown").value,
+                            'class_id' : document.getElementById("class_dropdown").value, 
+                            'lesson_id' : document.getElementById("lesson_dropdown").value, 
+                            'quiz_id' : document.getElementById("quizid_dropdown").value,
+                            'question_number' : current_num,
+                            'question' : question_input,
+                            'question_type' : question_type, 
+                            'option1' : option1_input,
+                            'option2' : option2_input,
+                            'option3' : option3_input,
+                            'option4' : option4_input,
+                            'answer' : answer,
+                            }
+                 
+        new_quiz = {'course_name' : document.getElementById("course_dropdown").value,
+                    'class_id' : document.getElementById("class_dropdown").value, 
+                    'lesson_id' : document.getElementById("lesson_dropdown").value, 
+                    'quiz_id' : document.getElementById("quizid_dropdown").value,
+                    'quiz_type' : document.getElementById("quiz_type_dropdown").value
+        }
+        // console.log(new_quiz_question);
+        quiz_question_array.push(new_quiz_question)
+        quiz_array.push(new_quiz)
+
+        // append to preview_list
+        document.getElementById('previewarea').innerHTML = newstr
+
+        // update the number after successful preview
+        current_quiz_number += 1
+        update_question_number_label(current_quiz_number)
+    }
+
+    
+
+    async function create_quiz(quiz_array, quiz_question_array) {
+        
+        // only need to create the quiz in quiz table once
+        quiz = quiz_array[0]
+        console.log(quiz)
+
+        quiz_url = `http://127.0.0.1:5010/quiz/` + quiz.course_name + `/` + quiz.class_id + `/` + quiz.lesson_id + `/` + quiz.quiz_id + `/` + quiz.quiz_type;
+
+        console.log(quiz_url)
+        var quiz_creation = await fetch(quiz_url, {method: "POST"}).then(res => res.json());
+
+        for (i=0; i < quiz_question_array.length; i++ ) {
+            quiz = quiz_question_array[i]
+            console.log(quiz)
+
+            quiz_question_url = `http://127.0.0.1:5011/quizquestion/` + quiz.course_name + `/` + quiz.class_id + `/` + quiz.lesson_id + `/` + quiz.quiz_id + `/` + 
+                    quiz.question_number + `/` + quiz.question + `/` + quiz.question_type + `/` + quiz.option1 + `/` + quiz.option2 + `/` + quiz.option3 + `/` + 
+                    quiz.option4 + `/` + quiz.answer;
+
+            console.log(quiz_question_url)
+
+            var quiz_question_creation = await fetch(quiz_question_url, {method: "POST"}).then(res => res.json());
+
+            // url = `http://127.0.0.1:5003/pending/` + learner_id + `/` + course_name;
+
+
+            // var quiz_question_creation = await fetch(quiz_question_url, {method: "POST", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)}).then(res => res.json());
+        }
+    }
+</script>
+
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -395,7 +720,7 @@
                 <br>
                 <!-- insert drop down here to query for course -->
                 <label for="course">Choose a Course:</label>
-                            <select name="course" id="course_dropdown" onchange="available_learner(value); class_dropdown(value);">
+                            <select name="course" id="course_dropdown" onchange="class_dropdown(value);">
                             <option value="course1">{{Course1}}</option>
                             <option value="course2">{{Course2}}</option>
                             <option value="course3">{{Course3}}</option>
@@ -408,21 +733,63 @@
                             </select>
                             <br>
                     <!-- insert lesson dropdown -->
-                        <label for="class">Choose lesson:</label>
-                            <select name="course_class" id="class_dropdown">
-                            <option value="">Select a lesson</option>
+                        <label for="lesson">Choose a Lesson:</label>
+                            <select name="lesson" id="lesson_dropdown">
+                            <option value="1">Lesson 1</option>
+                            <option value="2">Lesson 2</option>
+                            <option value="3">Lesson 3</option>
+                            <option value="4">Lesson 4</option>
+                            <option value="5">Lesson 5</option>
+                            <option value="6">Lesson 6</option>
+                            <option value="7">Lesson 7</option>
+                            <option value="8">Lesson 8</option>
+                            <option value="9">Lesson 9</option>
+                            <option value="10">Lesson 10</option>
+                            <option value="11">Lesson 11</option>
+                            <option value="12">Lesson 12</option>
+
                             </select>
                             <br>
-                        <label>Choose a question type:</label>
-                <!-- Select what type of question to add: -->
-                <a href="#link" class="btn btn-light" role="button">Multiple Choice Question</a>
-                <a href="#link" class="btn btn-light" role="button">True False Question</a>
+
+                        <label for="quizid">Choose a Quiz ID:</label>
+                            <select name="quizid_dropdown" id="quizid_dropdown">
+                            <option value="1">Quiz 1</option>
+                            <option value="2">Quiz 2</option>
+                            <option value="3">Quiz 3</option>
+                            <option value="4">Quiz 4</option>
+                            <option value="5">Quiz 5</option>
+                            </select>
+                            <br>
+
+                        <label for="quiz_type">Choose Quiz Type:</label>
+                            <select name="quiz_type" id="quiz_type_dropdown">
+                                <option value="Graded">Graded</option>
+                                <option value="Ungraded">Ungraded</option>
+                            </select>
+                            <br>
+
+                        <label>Choose a Question type:</label> -->
+                        <!-- Select what type of question to add: -->
+                        <a href="#link" class="btn btn-light" role="button" onclick="display_MCQ()">Multiple Choice Question</a>
+                        <a href="#link" class="btn btn-light" role="button" onclick="display_TF()">True False Question</a>
+
+                        <!-- <label for="question_type">Choose a Question type:</label>
+                            <select name="question_type" id="question_type_dropdown">
+                                <option value="MCQ" onclick=>Multiple Choice Question</option>
+                                <option value="TF">True False Question</option>
+                            </select>
+                        <br> -->
+
+                </div>
                 
                 
                 <!-- form begins here -->
                 <form>
                     <br>
-                    <label>Qn. {{Question Count}}</label> 
+                    <div id='question_number_label'>
+                        <label>Qn. number</label> 
+                    </div>
+                    
                     <br>
                     <!-- <div class="form-group">
                         <br>
@@ -434,8 +801,9 @@
                       </div> -->
                     
                 <!-- IF MAKING MCQ :  -->
+                <div id="displayformtype">
                     <div class="form-group">
-                      <label for="exampleFormControlInput1">Question Input:</label>
+                      <label for="exampleFormControlInput1">Question Input (exclude symbols):</label>
                       <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="Insert your question here">
                     </div>
                     <div class="form-group">
@@ -461,7 +829,7 @@
                     </div>
 
                     <div class="form-group">
-                      <label for="exampleFormControlSelect1">Select correct answer</label>
+                      <label for="exampleFormControlSelect1">Select Correct answer</label>
                       <select class="form-control" id="exampleFormControlSelect1">
                         <option>1</option>
                         <option>2</option>
@@ -470,8 +838,9 @@
                         
                       </select>
                     </div>
+                </div>
                     
-                  </form>
+                </form>
             <!-- IF MAKING TRUE FALSE, HIDE ON TOP, DISPLAY THIS:  --> 
                   
             <!-- <div class="form-group">
@@ -487,7 +856,7 @@
 
               <div class="form-group">
                   <label for="exampleFormControlInput1">Sample T/F Option 2</label>
-                  <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="Answer 1">
+                  <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="Answer 2">
               </div>
 
               <div class="form-group">
@@ -504,19 +873,19 @@
             
             </div>
             <!-- Add question to quiz -->
-            <a href="#link" class="btn btn-light" role="button">Add Question</a> 
+            <a href="#link" class="btn btn-success" role="button" onclick="quiz_append()">Add Question</a> 
             <br>
 
             <!-- Preview the questions added here -->
             <br>
             <h3>Preview:</h3>
             <br>
-            QN 1. {{Question}}
-            {{Options}}
+            <div id="previewarea">
+            </div>
+            
 
             <!-- Create Quiz: Send to quiz data table -->
-            <br>
-            <a href="#link" class="btn btn-light" role="button">Create Quiz</a>
+            <a href="#link" class="btn btn-success" role="button" onclick="create_quiz(quiz_array, quiz_question_array)">Create Quiz</a>
             <!-- #/ container -->
                 </div>
             </div>
