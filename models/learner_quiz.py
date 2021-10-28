@@ -15,6 +15,9 @@ CORS(app)
 
 class Learner_Quiz(db.Model):
 
+    __tablename__ = 'learner_quiz'
+    __mapper_args__ = {'polymorphic_identity': 'learner_quiz'}
+
     course_name = db.Column(db.String(45), db.ForeignKey(Quiz.course_name), primary_key = True)
     class_id = db.Column(db.Integer, db.ForeignKey(Quiz.class_id), primary_key = True)
     lesson_id = db.Column(db.Integer, db.ForeignKey(Quiz.lesson_id), primary_key = True)
@@ -70,6 +73,51 @@ class Learner_Quiz(db.Model):
 
     def set_score(self, score):
         self.score = score
+
+@app.route("/quizscore/<string:course_name>/<int:class_id>/<int:lesson_id>/<int:quiz_id>/<int:learner_id>", methods=["GET"])
+def get_quiz_score(course_name, class_id, lesson_id, quiz_id, learner_id):
+    quiz_score = Learner_Quiz.query.filter_by(course_name = course_name, class_id = class_id, lesson_id = lesson_id, quiz_id = quiz_id, learner_id = learner_id).first()
+
+    if quiz_score:
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "quiz_score": quiz_score.json()
+                }
+            }
+        )
+
+    return jsonify(
+        {
+            "message": "No quiz score found."
+        }
+    ), 500
+
+
+@app.route("/quizscore/<string:course_name>/<int:class_id>/<int:lesson_id>/<int:quiz_id>/<int:learner_id>/<int:score>", methods=["POST"])
+def update_quiz_score(course_name, class_id, lesson_id, quiz_id, learner_id, score):
+
+    new_quiz_score = Learner_Quiz(course_name, class_id, lesson_id, quiz_id, learner_id, score)
+
+    try:
+        db.session.add(new_quiz_score)
+        db.session.commit()
+        
+        return jsonify (
+            {
+                "code": 201,
+                "data": {
+                    "new_quiz_score": new_quiz_score.json()
+                },
+                "message": "Quiz score commited to database."
+            }
+        ), 201
+    except Exception as e:
+        return jsonify({
+            "message": "Unable to commit to database.",
+            "error": e
+        }), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5012, debug=True)

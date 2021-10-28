@@ -12,7 +12,10 @@ app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_size': 100, 'pool_recycle': 280
 db = SQLAlchemy(app)
 CORS(app)
 
-class Quiz(db.Model):
+class Quiz_Question(db.Model):
+
+    __tablename__ = 'quiz_question'
+    __mapper_args__ = {'polymorphic_identity': 'quiz_question'}
 
     course_name = db.Column(db.String(45), db.ForeignKey(Quiz.course_name), primary_key = True)
     class_id = db.Column(db.Integer, db.ForeignKey(Quiz.class_id), primary_key = True)
@@ -128,6 +131,28 @@ class Quiz(db.Model):
 
     def set_answer(self, answer):
         self.answer = answer
+
+
+@app.route("/quiz/question/<string:course_name>/<int:class_id>/<int:lesson_id>/<int:quiz_id>", methods=["GET"])
+def get_quiz_questions(course_name, class_id, lesson_id, quiz_id):
+
+    quiz_questions_list = Quiz_Question.query.filter_by(course_name = course_name, class_id = class_id, lesson_id = lesson_id, quiz_id = quiz_id).all()
+    
+    if len(quiz_questions_list):
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "quiz_questions": [quiz_question.json() for quiz_question in quiz_questions_list]
+                }
+            }
+        )
+
+    return jsonify(
+        {
+            "message": "No quiz found."
+        }
+    ), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5011, debug=True)

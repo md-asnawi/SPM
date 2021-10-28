@@ -17,6 +17,7 @@ CORS(app)
 class Course(db.Model):
 
     __tablename__ = 'course'
+    __mapper_args__ = {'polymorphic_identity': 'course'}
 
     course_name = db.Column(db.String(45), nullable=False)
     course_id = db.Column(db.Integer, primary_key = True)
