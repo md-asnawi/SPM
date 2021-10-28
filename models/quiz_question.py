@@ -21,7 +21,6 @@ class Quiz_Question(db.Model):
     class_id = db.Column(db.Integer, db.ForeignKey(Quiz.class_id), primary_key = True)
     lesson_id = db.Column(db.Integer, db.ForeignKey(Quiz.lesson_id), primary_key = True)
     quiz_id = db.Column(db.Integer, db.ForeignKey(Quiz.quiz_id), primary_key = True)
-    quiz_type = db.Column(db.String(45), nullable = False)
     question_number = db.Column(db.Integer, primary_key = True)
     question  = db.Column(db.String(255), nullable = False)
     question_type  = db.Column(db.String(45), nullable = False)
@@ -32,12 +31,11 @@ class Quiz_Question(db.Model):
     answer = db.Column(db.String(45), nullable = False)
     
 
-    def __init__(self, course_name, class_id, lesson_id, quiz_id, quiz_type, question_number, question, question_type, option_1, option_2, option_3, option_4, answer):
+    def __init__(self, course_name, class_id, lesson_id, quiz_id, question_number, question, question_type, option_1, option_2, option_3, option_4, answer):
         self.course_name = course_name
         self.class_id = class_id
         self.lesson_id = lesson_id
         self.quiz_id = quiz_id
-        self.quiz_type = quiz_type
         self.question_number = question_number
         self.question = question
         self.question_type = question_type
@@ -49,7 +47,7 @@ class Quiz_Question(db.Model):
 
     def json(self):
         return {
-            "course_name": self.course_name, "class_id": self.class_id, "lesson_id": self.lesson_id, "quiz_id": self.quiz_id, "quiz_type": self.quiz_type,
+            "course_name": self.course_name, "class_id": self.class_id, "lesson_id": self.lesson_id, "quiz_id": self.quiz_id,
             "question_number": self.question_number, "question": self.question, "question_type": self.question_type, "option_1": self.option_1,
             "option_2": self.option_2, "option_3": self.option_3, "option_4": self.option_4, "answer": self.answer
         }
@@ -77,12 +75,6 @@ class Quiz_Question(db.Model):
 
     def set_quiz_id(self, quiz_id):
         self.quiz_id = quiz_id
-
-    def get_quiz_type(self):
-        return self.quiz_type
-
-    def set_quiz_type(self, quiz_type):
-        self.quiz_type = quiz_type
 
     def get_question_number(self):
         return self.question_number
