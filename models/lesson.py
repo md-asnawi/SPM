@@ -17,20 +17,19 @@ class Lesson(db.Model):
     course_name = db.Column(db.String(45), primary_key = True)
     class_id = db.Column(db.Integer, primary_key = True)
     lesson_id = db.Column(db.Integer, primary_key = True)
-    ungraded_quiz = db.Column(db.Boolean, nullable = False)
-    completion_status = db.Column(db.Integer, nullable = False)
+    description = db.Column(db.String(45), nullable = False)
 
-    def __init__(self, course_name, class_id, lesson_id, ungraded_quiz, completion_status):
+    def __init__(self, course_name, class_id, lesson_id, description):
         self.course_name = course_name
         self.class_id = class_id
         self.lesson_id = lesson_id
-        self.ungraded_quiz = ungraded_quiz
-        self.completion_status = completion_status
+        self.description = description
+
 
     def json(self):
         return {
                 "course_name": self.course_name, "class_id": self.class_id, "lesson_id": self.lesson_id, 
-                "ungraded_quiz": self.ungraded_quiz, "completion_status": self.completion_status
+                "description": self.description
         }
 
     def get_course_name(self):
@@ -51,17 +50,11 @@ class Lesson(db.Model):
     def set_lesson_id(self, lesson_id):
         self.lesson_id = lesson_id
 
-    def get_ungraded_quiz(self):
-        return self.ungraded_quiz
+    def get_description(self):
+        return self.description
 
-    def set_ungraded_quiz(self, ungraded_quiz):
-        self.ungraded_quiz = ungraded_quiz
-
-    def get_completion_status(self):
-        return self.completion_status
-
-    def set_completion_status(self, completion_status):
-        self.completion_status = completion_status
+    def set_description(self, description):
+        self.description = description
 
 
 # GET all lessons with course name & class id

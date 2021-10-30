@@ -1,6 +1,148 @@
 <!DOCTYPE html>
 <html lang="en">
 
+<script>
+
+window.onload = function (e) {
+        course_name = 'Course 111';
+        class_id = 1;
+
+        document.getElementById("course-title").innerText = course_name;
+        display_lessons(course_name, class_id);
+    }
+
+    async function display_lessons(course_name, class_id) {
+
+        // Create empty array for lessons
+        lessons_html = [];
+        all_materials_html = [];
+
+        lesson_url = `http://127.0.0.1:5007/lesson/` + course_name + `/` + class_id;
+        var lesson_response = await fetch(lesson_url, {method: "GET"}).then(res => res.json());
+        // console.log(lesson_response);
+
+        if (lesson_response.code == 200) {
+        
+            lesson_array = lesson_response.data.lesson;
+            // console.log(lesson_array);
+
+
+            for (i=0; i < lesson_array.length; i++ ) {
+                lesson = lesson_array[i];
+                // console.log(lesson);
+
+                // forming the html string for lessons accordion items
+                lessons_html.push(`
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0" data-toggle="collapse" data-target="#collapse${lesson.lesson_id}" aria-expanded="false" aria-controls="collapseOne4">
+                                <i class="fa" aria-hidden="true"></i> 
+                                ${lesson.description}
+                                <!--Completion Status-->
+                                <span class="badge badge-light">Uncompleted</span>
+                            </h5>
+                        </div>
+                        <div id="collapse${lesson.lesson_id}" class="collapse" data-parent="#accordion-three">
+                            <!--Display materials in here-->
+                            <div class="card-body">
+
+                                <ul id="material${lesson.lesson_id}">
+                                    <li>Lecture Slides: <a href="#" class="text-primary">View</a> | <a href="#" class="text-primary">Download</a> </li>
+                                    <br>
+                                    <li>Tutorial Pack: <a href="#" class="text-primary">View</a> | <a href="#" class="text-primary">Download</a> </li>
+                                    <br>
+                                    <li><a href="#" class="text-primary">Quiz</a></li>
+                                </ul>
+                                
+                                <!--Student Completion Confirmation, input to include "checked" after checking-->
+                                <div class="form-check mb-3">
+                                    <label class="form-check-label">
+                                        <input type="checkbox" class="form-check-input" value="#">
+                                    Lesson Material Completed
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                `)
+
+                // forming the html string for materials in each lesson
+
+                material_of_lesson = display_material_of_lesson(course_name, class_id, lesson.lesson_id);
+                material_of_lesson.then((value) => {
+                    // all_materials_html.push(value);
+                    // value.forEach(element => {
+                    //     console.log(element);
+                    // });
+                    console.log(value);
+
+                })
+                // all_materials_html[lesson.lesson_id] = display_material_of_lesson(course_name, class_id, lesson.lesson_id);
+                
+            }
+
+            // all_materials_html.forEach(material => {
+            //     console.log(material);   
+            // });
+
+            document.getElementById("accordion-three").innerHTML = lessons_html.join("");
+
+            // console.log(all_materials_html);
+
+            // for (i=0; i < lesson_array.length; i++ ) {
+                // document.getElementById("material" + lesson_array[i].lesson_id).innerHTML = all_materials_html[i];
+                document.getElementById("material" + lesson_array[i].lesson_id).innerHTML = `<h1>${lesson_array[i].lesson_id}</h1>`;
+                // console.log(all_materials_html[i]);
+            // }
+
+        }
+
+        else {
+            console.log("Endpoint returned code not 200");
+        }
+
+        
+    }
+
+// materials for 1 lesson only
+async function display_material_of_lesson(course_name, class_id, lesson_id) {
+
+    material_url = `http://127.0.0.1:5008/material/` + course_name + `/` + class_id + `/` + lesson_id;
+    var material_response = await fetch(material_url, {method: "GET"}).then(res => res.json());
+    // console.log(material_response);
+
+    // Create empty array
+    material_of_lesson_html = []
+
+    if (material_response.code == 200) {
+
+        material_array = material_response.data.material;
+        // console.log(material_array);
+
+
+        for (i=0; i < material_array.length; i++ ) {
+            material = material_array[i];
+            // console.log(material.material_id);
+
+            material_of_lesson_html.push(`<h1>${material.material_id + "." + material.format}</h1>`);
+
+        }
+
+    }
+
+    else {
+            console.log("Endpoint returned code not 200");
+    }
+
+    // console.log(material_of_lesson_html);
+
+    return material_of_lesson_html;
+}
+
+</script>
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -287,7 +429,7 @@
             <div class="container-fluid">
                 
                 <!--Course Title-->
-                <h1> Art of Ink 101</h1>
+                <h1 id="course-title"> Art of Ink 101</h1>
                 <div class="row">
                     <div class="col-lg-12">
 
