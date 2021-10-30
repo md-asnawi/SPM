@@ -26,4 +26,4 @@ INSERT INTO `quiz_question` (`course_name`, `class_id`, `lesson_id`, `quiz_id`, 
 ('Course 111', 1, 1, 1, 3, 'A or B or C?', 'MCQ', 'A', 'B', 'C', NULL, 'A'),
 ('Course 111', 1, 1, 2, 1, 'Is this True?', 'TF', 'True', 'False', NULL, NULL, 'False'),
 ('Course 111', 1, 1, 2, 2, 'Is this Really Really True?', 'TF', 'True', 'False', NULL, NULL, 'True'),
-('Course 111', 1, 1, 2, 3, 'A or B or C or D?', 'MCQ', 'A', 'B', 'C', NULL, 'B');
+('Course 111', 1, 1, 2, 3, 'A or B or C or D?', 'MCQ', 'A', 'B', 'C', 'D', 'B');
