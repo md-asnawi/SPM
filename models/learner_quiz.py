@@ -23,19 +23,21 @@ class Learner_Quiz(db.Model):
     lesson_id = db.Column(db.Integer, db.ForeignKey(Quiz.lesson_id), primary_key = True)
     quiz_id = db.Column(db.Integer, db.ForeignKey(Quiz.quiz_id), primary_key = True)
     learner_id = db.Column(db.Integer, db.ForeignKey(Learner.learner_id), primary_key = True)
-    score = db.Column(db.Integer, nullable=True)
+    score = db.Column(db.Integer, nullable=False)
+    passboolean = db.Column(db.Boolean, nullable=False)
 
-    def __init__(self, course_name, class_id, lesson_id, quiz_id, learner_id, score):
+    def __init__(self, course_name, class_id, lesson_id, quiz_id, learner_id, score, passboolean):
         self.course_name = course_name
         self.class_id = class_id
         self.lesson_id = lesson_id
         self.quiz_id = quiz_id
         self.learner_id = learner_id
         self.score = score
+        self.passboolean = passboolean
 
     def json(self):
         return {
-            "course_name": self.course_name, "class_id": self.class_id, "lesson_id": self.lesson_id, "quiz_id": self.quiz_id, "learner_id": self.learner_id, "score": self.score
+            "course_name": self.course_name, "class_id": self.class_id, "lesson_id": self.lesson_id, "quiz_id": self.quiz_id, "learner_id": self.learner_id, "score": self.score, "passboolean": self.passboolean
         }
 
     def get_course_name(self):
@@ -74,6 +76,12 @@ class Learner_Quiz(db.Model):
     def set_score(self, score):
         self.score = score
 
+    def get_passboolean(self):
+        return self.passboolean
+
+    def set_score(self, passboolean):
+        self.passboolean = passboolean
+
 @app.route("/quizscore/<string:course_name>/<int:class_id>/<int:lesson_id>/<int:quiz_id>/<int:learner_id>", methods=["GET"])
 def get_quiz_score(course_name, class_id, lesson_id, quiz_id, learner_id):
     quiz_score = Learner_Quiz.query.filter_by(course_name = course_name, class_id = class_id, lesson_id = lesson_id, quiz_id = quiz_id, learner_id = learner_id).first()
@@ -98,8 +106,12 @@ def get_quiz_score(course_name, class_id, lesson_id, quiz_id, learner_id):
 @app.route("/quizscore/<string:course_name>/<int:class_id>/<int:lesson_id>/<int:quiz_id>/<int:learner_id>/<int:score>", methods=["POST"])
 def update_quiz_score(course_name, class_id, lesson_id, quiz_id, learner_id, score):
 
-    new_quiz_score = Learner_Quiz(course_name, class_id, lesson_id, quiz_id, learner_id, score)
+    if (score >= 75):
+        new_quiz_score = Learner_Quiz(course_name, class_id, lesson_id, quiz_id, learner_id, score, True)
+    else:
+        new_quiz_score = Learner_Quiz(course_name, class_id, lesson_id, quiz_id, learner_id, score, False)
 
+    
     try:
         db.session.add(new_quiz_score)
         db.session.commit()

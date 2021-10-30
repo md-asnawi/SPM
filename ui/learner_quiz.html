@@ -178,10 +178,23 @@
                 }
             }
             percentage = parseInt((score/question_count) * 100)
-            alert("You got " + score + "/" + question_count + " (" + percentage +"%) correct!" )
+
+            // check if pass
+            if (percentage >= 75) {
+                // passboolean = true
+                passornot = "Passed"
+            }
+
+            else {
+                // passboolean = false
+                passornot = "Failed"
+            }
+
+            alert("You got " + score + "/" + question_count + " (" + percentage +"%) correct! You " + passornot + "!")
 
             // update database
             udpate_score_url = `http://127.0.0.1:5012/quizscore/` + course_name + `/` + class_id + `/` + lesson_id + `/` + quiz_id + `/` + learner_id + `/` + percentage;
+            
             console.log(udpate_score_url);
             var update_score = await fetch(udpate_score_url, {method: "POST"}).then(res => res.json());
         }
