@@ -42,11 +42,33 @@
                     <tr>
                         <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">${learner_object.engineer_name}</td>
                         <td>${pending_object.learner_id}</td>
-                        <td>${pending_object.course_name}</td>
-                        <td><button type="button" class="btn btn-light" onclick="interact_request('${pending_object.learner_id}', '${pending_object.course_name}', 'accept')">Accept</button></td>
-                        <td><button type="button" class="btn btn-light" onclick="interact_request('${pending_object.learner_id}', '${pending_object.course_name}', 'reject')">Reject</button></td>
-                    </tr>
-                `);
+                        <td>${pending_object.course_name}</td>`)
+
+                        // get course_enrolment_period
+                        url = `http://127.0.0.1:5001/course/` + pending_object.course_name;
+                        
+                        var course_response = await fetch(url, {method: "GET"}).then(res => res.json());
+
+                        course_object = course_response.data.course
+
+                        pending_html.push(
+                            `<td>${course_object.enrolment_start_date} to ${course_object.enrolment_end_date}</td>
+                            <td>${pending_object.class_id}</td>`)
+
+                        // get class start data
+
+                        url = `http://127.0.0.1:5004/class/` + pending_object.course_name + `/` + pending_object.class_id
+
+                        var class_response = await fetch(url, {method: "GET"}).then(res => res.json());
+
+                        class_object = class_response.data.single_class
+
+                        pending_html.push(
+                            `<td>${class_object.start_date}</td>
+                            <td><button type="button" class="btn btn-light" onclick="interact_request('${pending_object.learner_id}', '${pending_object.course_name}', 'accept')">Accept</button></td>
+                            <td><button type="button" class="btn btn-light" onclick="interact_request('${pending_object.learner_id}', '${pending_object.course_name}', 'reject')">Reject</button></td>
+                        </tr>
+                    `);
             }
             
 
@@ -404,6 +426,9 @@
                                                             <th>Name</th>
                                                             <th>ID</th>
                                                             <th>Course</th>
+                                                            <th>Enrollment Period</th>
+                                                            <th>Class</th>
+                                                            <th>Class Start Date</th>
                                                             <th>Action</th>
                                                         </tr>
                                                     </thead>
@@ -413,6 +438,9 @@
                                                             <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">{{Name}}</td>
                                                             <td>{{ID}}</td>
                                                             <td>{{CourseName}}</td>
+                                                            <th>{{Enrollment Period}}</th>
+                                                            <td>{{Class}}</td>
+                                                            <td>{{Class Start Date}}</td>
                                                             <td><button type="button" class="btn btn-light">Accept</button></td>
                                                             <td><button type="button" class="btn btn-light">Reject</button></td>
                                                             </tr>
@@ -420,6 +448,9 @@
                                                             <td><img src="./images/avatar/2.jpg" class=" rounded-circle mr-3" alt="">{{Name}}</td>
                                                             <td>{{ID2}}</td>
                                                             <td>{{CourseName2}}</td>
+                                                            <th>{{Enrollment Period}}</th>
+                                                            <td>{{Class}}</td>
+                                                            <td>{{Class Start Date}}</td>
                                                             <td><button type="button" class="btn btn-light">Accept</button></td>
                                                             <td><button type="button" class="btn btn-light">Reject</button></td>
                                                             </tr>
