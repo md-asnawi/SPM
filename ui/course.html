@@ -17,6 +17,8 @@
             // console.log(one_lesson_material);
             document.getElementById("material" + lesson_id).innerHTML = one_lesson_material.join("");
         }
+
+        document.getElementById("checkbox1").disabled = false;
         
     }
 
@@ -25,7 +27,7 @@
             // Create empty array for lessons
             lessons_html = [];
             lesson_id_array = [];
-            all_materials_html = [];
+            // all_materials_html = [];
 
             lesson_url = `http://127.0.0.1:5007/lesson/` + course_name + `/` + class_id;
             var lesson_response = await fetch(lesson_url, {method: "GET"})
@@ -53,7 +55,7 @@
                                     <i class="fa" aria-hidden="true"></i> 
                                     ${lesson.description}
                                     <!--Completion Status-->
-                                    <span class="badge badge-light">Uncompleted</span>
+                                    <span class="badge badge-light" id="completion${lesson.lesson_id}">Uncompleted</span>
                                 </h5>
                             </div>
                             <div id="collapse${lesson.lesson_id}" class="collapse" data-parent="#accordion-three">
@@ -71,9 +73,15 @@
                                     <!--Student Completion Confirmation, input to include "checked" after checking-->
                                     <div class="form-check mb-3">
                                         <label class="form-check-label">
-                                            <input type="checkbox" class="form-check-input" value="#">
-                                        Lesson Material Completed
+                                            <input type="checkbox" class="form-check-input" id="checkbox${lesson.lesson_id}" onclick="materialChecked(${lesson.lesson_id})" disabled>
+                                            <label for="">Lesson ${lesson.lesson_id} Material(s) Completed</label>
                                         </label>
+                                    </div>
+
+                                    <!-- Quiz shown only after learner checked material completed -->
+                                    <!-- TO-DO: Quiz currently hardcoded, should be retrieved from DB -->
+                                    <div id="quiz${lesson.lesson_id}" style="display:none">
+                                        <a href="#" onclick="lessonQuizTaken(${lesson.lesson_id})">Quiz ${lesson.lesson_id}</a>
                                     </div>
                                 </div>
                             </div>
@@ -115,6 +123,29 @@
                 //     console.log(all_materials_html[material]);
                 // }
 
+                lessons_html.push(`
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0" data-toggle="collapse" data-target="#collapseQuiz" aria-expanded="false" aria-controls="collapseOne4">
+                                <i class="fa" aria-hidden="true"></i> 
+                                Final Graded Quiz
+                                <!--Completion Status-->
+                                <span class="badge badge-light" id="completionQuiz">Uncompleted</span>
+                            </h5>
+                        </div>
+                        <div id="collapseQuiz" class="collapse" data-parent="#accordion-three">
+                            <!--Display materials in here-->
+                            <div class="card-body">
+
+                                <span id="finalQuiz">Lessons not completed.</span>
+
+                            </div>
+                        </div>
+                    </div>
+
+                `);
+
                 document.getElementById("accordion-three").innerHTML = lessons_html.join("");
 
                 // console.log(all_materials_html.toString());
@@ -127,6 +158,8 @@
                     // document.getElementById("material" + lesson_array[i].lesson_id).innerHTML = `<h1>${lesson_array[i].lesson_id}</h1>`;
                     // console.log(all_materials_html[i]);
                 // }
+
+
 
             }
 
@@ -174,6 +207,47 @@
 
         return material_of_lesson_html;
     }
+
+    function materialChecked(lesson_id) {
+
+        var materialCheckbox = document.getElementById("checkbox" + lesson_id);
+        var quizDiv = document.getElementById("quiz" + lesson_id);
+
+        if (materialCheckbox.checked == true){
+            quizDiv.style.display = "block";
+            // TO-DO: maybe deactivate/disable checkbox after learner click completed so quiz will not go away
+        } else {
+            quizDiv.style.display = "none";
+        }
+
+    }
+
+    function lessonQuizTaken(lesson_id) {
+
+        document.getElementById("completion" + lesson_id).innerText = "Completed";
+        document.getElementById("completion" + lesson_id).classList.remove('badge-light');
+        document.getElementById("completion" + lesson_id).classList.add('badge-primary');
+
+        // check if last lesson
+        if (document.getElementById("checkbox" + (lesson_id + 1) ) == null) {
+            document.getElementById("finalQuiz").innerHTML = `<a href="#" onclick='finalQuizTaken()'>Final Quiz</a>`;            
+        }
+        else {
+            document.getElementById("checkbox" + (lesson_id + 1) ).disabled = false;
+        }
+
+    }
+
+    function finalQuizTaken() {
+
+        document.getElementById("completionQuiz").innerText = "Completed";
+        document.getElementById("completionQuiz").classList.remove('badge-light');
+        document.getElementById("completionQuiz").classList.add('badge-primary');
+        alert(`Congratulations, you have completed ${course_name}!`);
+
+    }
+
+
 
 </script>
 
