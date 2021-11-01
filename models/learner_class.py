@@ -22,6 +22,7 @@ CORS(app)
 class Learner_Class(db.Model):
 
     __tablename__ = 'learner_class'
+    __mapper_args__ = {'polymorphic_identity': 'learner_class'}
 
     course_name = db.Column(db.String(45),db.ForeignKey(Class.course_name), nullable=False, primary_key = True)
     class_id = db.Column(db.Integer,db.ForeignKey(Class.class_id), primary_key = True)
@@ -220,7 +221,7 @@ def get_pending_count():
             }
         )
 
-# test jenkin part 10 :(
+# test jenkin part 2
 # update pending status
 @app.route("/pending/<int:learner_id>/<string:course_name>", methods=["PUT"])
 def update_pending(learner_id, course_name):
