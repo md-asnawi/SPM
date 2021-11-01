@@ -157,20 +157,24 @@
                 var option3 = document.getElementById(elementid3);
                 var option4 = document.getElementById(elementid4);
 
-                if (option1.checked) {
+                if (option1 && option1.checked) {
                     user_input = option1.value;
                 }
 
-                else if (option2.checked) {
+                else if (option2 && option2.checked) {
                     user_input = option2.value;
                 }
 
-                else if (option3.checked) {
+                else if (option3 && option3.checked) {
                     user_input = option3.value;
                 }
 
-                else if (option4.checked) {
+                else if (option4 && option4.checked) {
                     user_input = option4.value;
+                }
+
+                else {
+                    user_input = '';
                 }
                 
                 console.log(user_input)
@@ -552,7 +556,7 @@ Scripts
     updateTimer();
 }
 
-countdown( "demo", 0, 20 ); //input min and seconds
+countdown( "demo", 0, 10 ); //input min and seconds
 
 </script>
 
