@@ -47,7 +47,7 @@ class TestLesson(unittest.TestCase):
                 'course_name': 'Course 111',
                 'class_id': 1,
                 'lesson_id': 1,
-                "description": "This is Course wrong"
+                "description": "This is Course 111"
             }
         )
 
