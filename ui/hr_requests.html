@@ -73,11 +73,11 @@
             
 
             // display it within the id
-            document.getElementById("pending_request").innerHTML = pending_html;
+            document.getElementById("pending_request").innerHTML = pending_html.join("");
         }
 
         else {
-            document.getElementById("pending_request").innerHTML = pending_html;
+            document.getElementById("pending_request").innerHTML = pending_html.join("");
             alert("No pending requests!"); // temporarily
         }
 
