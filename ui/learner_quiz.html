@@ -1,11 +1,215 @@
 <!DOCTYPE html>
 <html lang="en">
 
+<script>
+    var questionsLength; //get the number of questions
+
+    window.onload = function (e) {
+
+        course_name = "Course 111";
+        class_id = 1;
+        lesson_id = 1;
+        quiz_id = 2;
+        learner_id = 999;
+
+        display_g_quiz(course_name, class_id, lesson_id, quiz_id)
+    }
+
+    async function display_g_quiz(course_name, class_id, lesson_id, quiz_id) {
+        
+            // Create empty array
+        questions = []
+        each = []
+
+        quiz_url = `http://localhost:5011/quiz/question/` + course_name + `/` + class_id + `/` + lesson_id + `/` + quiz_id;
+
+        var quiz_questions = await fetch(quiz_url, { method: "GET" }).then(res => res.json());
+
+        console.log(quiz_questions);
+     
+        if (quiz_questions.code == 200) {
+        
+            questions_array = quiz_questions.data.quiz_questions;
+            console.log(questions_array);
+            //get the number of questions
+            questionsLength = questions_array.length;
+
+
+            for (i=0; i < questions_array.length; i++ ) {
+                questions.push(questions_array[i]);
+            }
+
+            for (let i = 0; i < questions.length; i++) {
+                let question = questions[i]
+                
+                if (question.question_type == "TF") {
+                    each.push(`
+                        <div class="question bg-white p-3 border-bottom">
+                            <div class="d-flex flex-row align-items-center question-title">
+                                <h3 class="text-danger">Q${question.question_number}.</h3>
+                                <h5 class="mt-1 ml-2">${question.question}</h5>
+                            </div>
+                            <div class="ans ml-2">
+                                <label class="radio"> <input type="radio" id="${question.question_number}option1" name="${question.question_number}" value="True"> 
+                                    <span>True</span>
+                                </label>
+                            </div>
+                            <div class="ans ml-2">
+                                <label class="radio"> <input type="radio" id="${question.question_number}option2" name="${question.question_number}" value="False"> 
+                                    <span>False</span>
+                                </label>
+                            </div>
+                        </div>`)
+                }
+
+                else if (question.question_type == "MCQ") {
+                    each.push(`
+                        <div class="question bg-white p-3 border-bottom">
+                            <div class="d-flex flex-row align-items-center question-title">
+                                <h3 class="text-danger">Q${question.question_number}.</h3>
+                                <h5 class="mt-1 ml-2">${question.question}</h5>
+                            </div>
+                        
+                            <div class="ans ml-2">
+                                <label class="radio"> <input type="radio" id="${question.question_number}option1" name="${question.question_number}" value="${question.option_1}"> 
+                                    <span>${question.option_1}</span>
+                                </label>
+                            </div>
+                            <div class="ans ml-2">
+                                <label class="radio"> <input type="radio" id="${question.question_number}option2" name="${question.question_number}" value="${question.option_2}">
+                                    <span>${question.option_2}</span>
+                                </label>
+                            </div>`)
+
+                            if (question.option_3  != null && question.option_3  != "null") {
+                                each.push(`<div class="ans ml-2">
+                                                <label class="radio"> <input type="radio" id="${question.question_number}option3" name="${question.question_number}" value="${question.option_3}">
+                                                    <span>${question.option_3}</span>
+                                                </label>
+                                            </div>`)
+                            }
+
+                            if (question.option_4 != null && question.option_4  != "null") {
+                                each.push(`<div class="ans ml-2">
+                                                <label class="radio"> <input type="radio" id="${question.question_number}option4" name="${question.question_number}" value="${question.option_4}">
+                                                    <span>${question.option_4}</span>
+                                                </label>
+                                            </div>`)
+                            }
+                        each.push('</div>')
+                }
+            }
+            document.getElementById("quizdisplay").innerHTML = each.join('');
+        }
+    }
+
+    async function calculate_score(learner_id) {
+
+        score = 0
+        question_count = 0
+        questions = []
+        each = []
+
+        quiz_url = `http://localhost:5011/quiz/question/` + course_name + `/` + class_id + `/` + lesson_id + `/` + quiz_id;
+        var quiz_questions = await fetch(quiz_url, { method: "GET" }).then(res => res.json());
+
+        if (quiz_questions.code == 200) {
+        
+            questions_array = quiz_questions.data.quiz_questions;
+            console.log(questions_array);
+
+            for (i=0; i < questions_array.length; i++ ) {
+                questions.push(questions_array[i]);
+            }
+            console.log(questions);
+            console.log(questions.length);
+
+            for (i=0; i < questions.length; i++ ) {
+                user_input = ""
+                question_count += 1
+                let question = questions[i]
+                
+                // get user input
+                // let elem = document.getElementsByName("1");
+                // console.log(elem.length);
+
+                // for (i=0; i < elem.length; i++ ) {
+                //     if(elem[i].checked) {
+                //         user_input = elem[i].value;
+                //         console.log(user_input);
+                //     }
+                // }
+                
+                elementid1 = question.question_number + 'option1'
+                // console.log(elementid1);
+
+                elementid2 = question.question_number + 'option2'
+                // console.log(elementid2);
+
+                elementid3 = question.question_number + 'option3'
+                // console.log(elementid3);
+
+                elementid4 = question.question_number + 'option4'
+                // console.log(elementid4);
+
+                var option1 = document.getElementById(elementid1);
+                var option2 = document.getElementById(elementid2);
+                var option3 = document.getElementById(elementid3);
+                var option4 = document.getElementById(elementid4);
+
+                if (option1 && option1.checked) {
+                    user_input = option1.value;
+                }
+
+                else if (option2 && option2.checked) {
+                    user_input = option2.value;
+                }
+
+                else if (option3 && option3.checked) {
+                    user_input = option3.value;
+                }
+
+                else if (option4 && option4.checked) {
+                    user_input = option4.value;
+                }
+
+                else {
+                    user_input = '';
+                }
+                
+                console.log(user_input)
+
+                answer = question.answer;
+                console.log(answer);
+
+                if (user_input == answer) {
+                    score += 1
+                }
+            }
+            percentage = parseInt((score/question_count) * 100)
+            alert("You got " + score + "/" + question_count + " (" + percentage +"%) correct!" )
+            //if percentage < 50%
+            if (percentage < 50) {
+                alert("Retake the quiz");
+                window.location.reload();
+            } else {
+                
+            }
+  
+
+            // update database
+            udpate_score_url = `http://127.0.0.1:5012/quizscore/` + course_name + `/` + class_id + `/` + lesson_id + `/` + quiz_id + `/` + learner_id + `/` + percentage;
+            console.log(udpate_score_url);
+            var update_score = await fetch(udpate_score_url, {method: "POST"}).then(res => res.json());
+        }
+    }
+</script>
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>LMS - Home</title>
+    <title>LMS - Quiz</title>
     <!-- Favicon icon -->
     <link rel="icon" type="image/png" sizes="16x16" href="images/favicon.png">
     <!-- Pignose Calender -->
@@ -242,74 +446,68 @@ QUIZ BEGINS HERE -->
             <div class="border">
                 <div class="question bg-white p-3 border-bottom">
                     <div class="d-flex flex-row justify-content-between align-items-center mcq">
-                        <h4>Graded MCQ Quiz on {module}</h4><span>({current question} of {total questions count})</span>
+                        <h4>Graded Quiz</h4>
+                        <span>
+                            <!-- insert timer here -->
+                            <p id="demo"></p>
+                        <!-- <p id="min"></p>
+                        <p id="secs"></p> -->
+                        </span>
                     </div>
                 </div>
-                <!-- QUESTION 1 -->
-                <div class="question bg-white p-3 border-bottom">
-                    <div class="d-flex flex-row align-items-center question-title">
-                        <h3 class="text-danger">Q1.</h3>
-                        <h5 class="mt-1 ml-2">INSERT FIRST QUESTION HERE: LOREM IPSUM BLAH</h5>
+                <div id='quizdisplay'>
+                    <!-- QUESTION 1 -->
+                    <div class="question bg-white p-3 border-bottom">
+                        <div class="d-flex flex-row align-items-center question-title">
+                            <h3 class="text-danger">Q1.</h3>
+                            <h5 class="mt-1 ml-2">INSERT FIRST QUESTION HERE: LOREM IPSUM BLAH</h5>
+                        </div>
+                        <div class="ans ml-2">
+                            <label class="radio"> <input type="radio" name="brazil" value="brazil"> <span>INSERT INPUT 1 
+                                <!-- PULL ANSWER SET BY TRAINER -->
+                            </span>
+                            </label>
+                        </div>
+                        <div class="ans ml-2">
+                            <label class="radio"> <input type="radio" name="Germany" value="Germany"> <span>INSERT INPUT 2
+                                <!-- PULL ANSWER SET BY TRAINER -->
+                            </span>
+                            </label>
+                        </div>
+                        <div class="ans ml-2">
+                            <label class="radio"> <input type="radio" name="Indonesia" value="Indonesia"> <span>INSERT INPUT 3</span>
+                            </label>
+                        </div>
+                        <div class="ans ml-2">
+                            <label class="radio"> <input type="radio" name="Russia" value="Russia"> <span>INSERT INPUT 4</span>
+                            </label>
+                        </div>
                     </div>
-                    <div class="ans ml-2">
-                        <label class="radio"> <input type="radio" name="brazil" value="brazil"> <span>INSERT INPUT 1 
-                            <!-- PULL ANSWER SET BY TRAINER -->
-                        </span>
-                        </label>
+                    <!-- QUESTION 2 -->
+                    <div class="question bg-white p-3 border-bottom">
+                        <div class="d-flex flex-row align-items-center question-title">
+                            <h3 class="text-danger">Q2.</h3>
+                            <h5 class="mt-1 ml-2">{{q2}}</h5>
+                        </div>
+                        <div class="ans ml-2">
+                            <label class="radio"> <input type="radio" name="#" value="#"> <span>True
+                                <!-- PULL ANSWER SET BY TRAINER -->
+                            </span>
+                            </label>
+                        </div>
+                        <div class="ans ml-2">
+                            <label class="radio"> <input type="radio" name="#" value="#"> <span>False
+                                <!-- PULL ANSWER SET BY TRAINER -->
+                            </span>
+                            </label>
+                        </div>
                     </div>
-                    <div class="ans ml-2">
-                        <label class="radio"> <input type="radio" name="Germany" value="Germany"> <span>INSERT INPUT 2
-                            <!-- PULL ANSWER SET BY TRAINER -->
-                        </span>
-                        </label>
-                    </div>
-                    <div class="ans ml-2">
-                        <label class="radio"> <input type="radio" name="Indonesia" value="Indonesia"> <span>INSERT INPUT 3</span>
-                        </label>
-                    </div>
-                    <div class="ans ml-2">
-                        <label class="radio"> <input type="radio" name="Russia" value="Russia"> <span>INSERT INPUT 4</span>
-                        </label>
-                    </div>
-                </div>
-                <!-- QUESTION 2 -->
-                <div class="question bg-white p-3 border-bottom">
-                    <div class="d-flex flex-row align-items-center question-title">
-                        <h3 class="text-danger">Q2.</h3>
-                        <h5 class="mt-1 ml-2">{{q2}}</h5>
-                    </div>
-                    <div class="ans ml-2">
-                        <label class="radio"> <input type="radio" name="#" value="#"> <span>True
-                            <!-- PULL ANSWER SET BY TRAINER -->
-                        </span>
-                        </label>
-                    </div>
-                    <div class="ans ml-2">
-                        <label class="radio"> <input type="radio" name="#" value="#"> <span>False
-                            <!-- PULL ANSWER SET BY TRAINER -->
-                        </span>
-                        </label>
-                    </div>
-                    
                 </div>
                 <!-- END -->
-                <!-- write function here:
-                if question count != no of questions:  -->
-                <div class="d-flex flex-row justify-content-between align-items-center p-3 bg-white"><button class="btn btn-primary d-flex align-items-center btn-danger" type="button"><i class="fa fa-angle-left mt-1 mr-1"></i>&nbsp;previous</button><button class="btn btn-primary border-success align-items-center btn-success" type="button">Next<i class="fa fa-angle-right ml-2"></i></button></div>
-                <!-- else: -->
-                <button class="btn btn-primary border-success align-items-center btn-success" type="button">Completed!<i class="fa fa-angle-right ml-2"></i></button>
-
-            </div>
-        </div>
-    </div>
-</div>
-
-
-<div class="footer">
-    <div class="copyright">
-        <p>Copyright &copy; All-in-One Printing Solutions</p>
-    </div>
-</div>
+                
+                <!-- Submit Button Here -->
+                <button class="btn btn-primary border-success align-items-center btn-success" type="button" onclick="calculate_score(learner_id)">Submit<i class="fa fa-angle-right ml-2"></i></button></div>
+                
 <!--**********************************
     Footer end
 ***********************************-->
@@ -321,6 +519,47 @@ Main wrapper end
 <!--**********************************
 Scripts
 ***********************************-->
+<!-- Countdown Clock -->
+<script>
+  function countdown( elementName, minutes, seconds )
+  {
+    var element, endTime, hours, mins, msLeft, time;
+
+    function twoDigits( n )
+    {
+        return (n <= 9 ? "0" + n : n);
+    }
+
+    function updateTimer()
+    {
+        msLeft = endTime - (+new Date);
+        if ( msLeft < 1000 ) {
+            console.log(questionsLength)
+            for (var i=1; i <= questionsLength; i++) {
+                var radioBtns = document.getElementsByName(i);
+                for (var j=0; j < radioBtns.length; j++) {
+                    radioBtns[j].disabled = true;
+                }
+            }
+            element.innerHTML = "Finished";
+        } else {
+            time = new Date( msLeft );
+            hours = time.getUTCHours();
+            mins = time.getUTCMinutes();
+            element.innerHTML = (hours ? hours + ':' + twoDigits( mins ) : mins) + ':' + twoDigits( time.getUTCSeconds() );
+            setTimeout( updateTimer, time.getUTCMilliseconds() + 500 );
+        }
+    }
+
+    element = document.getElementById( elementName );
+    endTime = (+new Date) + 1000 * (60*minutes + seconds) + 500;
+    updateTimer();
+}
+
+countdown( "demo", 0, 10 ); //input min and seconds
+
+</script>
+
 <script src="plugins/common/common.min.js"></script>
 <script src="js/custom.min.js"></script>
 <script src="js/settings.js"></script>

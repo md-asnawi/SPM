@@ -22,6 +22,7 @@ CORS(app)
 class Learner_Class(db.Model):
 
     __tablename__ = 'learner_class'
+    __mapper_args__ = {'polymorphic_identity': 'learner_class'}
 
     course_name = db.Column(db.String(45),db.ForeignKey(Class.course_name), nullable=False, primary_key = True)
     class_id = db.Column(db.Integer,db.ForeignKey(Class.class_id), primary_key = True)
@@ -33,10 +34,11 @@ class Learner_Class(db.Model):
     enrolment_status = db.Column(db.String(45), nullable=False)
     preassigned = db.Column(db.Boolean, nullable=False)
     withdrawal = db.Column(db.Boolean, nullable=False)
+    withdrawal_message = db.Column(db.String(255), nullable=True)
 
 
     def __init__(self, course_name = "", class_id = "", learner_id = "", date_assigned = "", start_date = "", end_date = "", 
-                    progress = "", enrolment_status = "", preassigned = "", withdrawal = ""):
+                    progress = "", enrolment_status = "", preassigned = "", withdrawal = "", withdrawal_message = ""):
         self.course_name = course_name
         self.class_id = class_id
         self.learner_id = learner_id
@@ -47,11 +49,12 @@ class Learner_Class(db.Model):
         self.enrolment_status = enrolment_status
         self.preassigned = preassigned
         self.withdrawal = withdrawal
+        self.withdrawal_message = withdrawal_message
 
     def json(self):
         return{"course_name": self.course_name, "class_id": self.class_id, "learner_id": self.learner_id, "date_assigned": self.date_assigned,
                 "start_date": self.start_date, "end_date": self.end_date, "progress": self.progress, "enrolment_status": self.enrolment_status, 
-                "preassigned": self.preassigned, "withdrawal": self.withdrawal}
+                "preassigned": self.preassigned, "withdrawal": self.withdrawal, "withdrawal_message": self.withdrawal_message}
 
     def get_course_name(self):
         return self.course_name
@@ -112,6 +115,12 @@ class Learner_Class(db.Model):
     
     def set_withdrawal(self, withdrawal):
         self.withdrawal = withdrawal
+
+    def get_withdrawal_message(self):
+        return self.withdrawal_message
+    
+    def set_withdrawal_message(self, withdrawal_message):
+        self.withdrawal_message = withdrawal_message
 
 # get all courses learner enrolled in using learner id
 @app.route("/learner_class/<int:learner_id>", methods=["GET"])
@@ -220,7 +229,7 @@ def get_pending_count():
             }
         )
 
-# test jenkin part 10 :(
+# test jenkin part 2
 # update pending status
 @app.route("/pending/<int:learner_id>/<string:course_name>", methods=["PUT"])
 def update_pending(learner_id, course_name):

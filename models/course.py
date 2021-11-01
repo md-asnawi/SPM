@@ -17,6 +17,7 @@ CORS(app)
 class Course(db.Model):
 
     __tablename__ = 'course'
+    __mapper_args__ = {'polymorphic_identity': 'course'}
 
     course_name = db.Column(db.String(45), nullable=False)
     course_id = db.Column(db.Integer, primary_key = True)
@@ -183,6 +184,43 @@ def get_completed(learner_id):
         return jsonify({
             "code": 404,
             "message": "No Course Completed"
+        }), 404
+
+@app.route("/course/enrolled/<int:learner_id>", methods=["GET"])
+def get_enrolled(learner_id):
+
+    enrolled_array = []
+    enrolled_course = []
+    courselist = Course.query.all()
+
+    # get learner course enrolled
+    learner_class = Learner_Class(db.Model).query.filter_by(learner_id=learner_id, enrolment_status="Enrolled", withdrawal=0).all()
+
+    for eachrow in learner_class:
+        # if in the learner_class and progress 100, means completed
+        if eachrow.json()["progress"] != 100:
+            enrolled_array.append(eachrow.json()["course_name"])
+
+    # if course completed, append to completed array.
+    if len(courselist):
+        for course in courselist:
+            if course.json()["course_name"] in enrolled_array:
+                enrolled_course.append(course)
+                
+    # display available array    
+    if len(enrolled_course):
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "course": [course.json() for course in enrolled_course]
+                }
+            }
+        )
+    else:
+        return jsonify({
+            "code": 404,
+            "message": "No Course Enrolled"
         }), 404
     
 @app.route("/course/<string:course_name>", methods=["GET"])
