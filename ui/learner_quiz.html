@@ -2,6 +2,8 @@
 <html lang="en">
 
 <script>
+    var questionsLength; //get the number of questions
+
     window.onload = function (e) {
 
         course_name = "Course 111";
@@ -24,11 +26,14 @@
         var quiz_questions = await fetch(quiz_url, { method: "GET" }).then(res => res.json());
 
         console.log(quiz_questions);
-
+     
         if (quiz_questions.code == 200) {
         
             questions_array = quiz_questions.data.quiz_questions;
             console.log(questions_array);
+            //get the number of questions
+            questionsLength = questions_array.length;
+
 
             for (i=0; i < questions_array.length; i++ ) {
                 questions.push(questions_array[i]);
@@ -179,6 +184,14 @@
             }
             percentage = parseInt((score/question_count) * 100)
             alert("You got " + score + "/" + question_count + " (" + percentage +"%) correct!" )
+            //if percentage < 80%
+            if (percentage < 80) {
+                alert("Retake the quiz");
+                window.location.reload();
+            } else {
+                
+            }
+  
 
             // update database
             udpate_score_url = `http://127.0.0.1:5012/quizscore/` + course_name + `/` + class_id + `/` + lesson_id + `/` + quiz_id + `/` + learner_id + `/` + percentage;
@@ -432,8 +445,9 @@ QUIZ BEGINS HERE -->
                         <h4>Graded Quiz</h4>
                         <span>
                             <!-- insert timer here -->
-                        <p id="min"></p>
-                        <p id="secs"></p>
+                            <p id="demo"></p>
+                        <!-- <p id="min"></p>
+                        <p id="secs"></p> -->
                         </span>
                     </div>
                 </div>
@@ -503,38 +517,42 @@ Scripts
 ***********************************-->
 <!-- Countdown Clock -->
 <script>
-   // The data/time we want to countdown to
-    var countDownDate = new Date().getTime();
+  function countdown( elementName, minutes, seconds )
+  {
+    var element, endTime, hours, mins, msLeft, time;
 
-    // Run function every second
-
-    var myfunc = setInterval(function() {
-
-    var now = new Date().getTime();
-    var timeleft = countDownDate - now;
-        
-    // Calculating the days, hours, minutes and seconds left
-    var days = Math.floor(timeleft / (1000 * 60 * 60 * 24));
-    var hours = Math.floor((timeleft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    var minutes = Math.floor((timeleft % (1000 * 60 * 60)) / (1000 * 60));
-    var seconds = Math.floor((timeleft % (1000 * 60)) / 1000);
-        
-    // Result is output to the specific element
-    document.getElementById("days").innerHTML = days + "d "
-    document.getElementById("hours").innerHTML = hours + "h " 
-    document.getElementById("mins").innerHTML = minutes + "m " 
-    document.getElementById("secs").innerHTML = seconds + "s " 
-        
-    // Display the message when countdown is over
-    if (timeleft < 0) {
-        clearInterval(myfunc);
-        document.getElementById("days").innerHTML = ""
-        document.getElementById("hours").innerHTML = "" 
-        document.getElementById("mins").innerHTML = ""
-        document.getElementById("secs").innerHTML = ""
-        document.getElementById("end").innerHTML = "You have exceeded the time";
+    function twoDigits( n )
+    {
+        return (n <= 9 ? "0" + n : n);
     }
-    }, 1000);
+
+    function updateTimer()
+    {
+        msLeft = endTime - (+new Date);
+        if ( msLeft < 1000 ) {
+            console.log(questionsLength)
+            for (var i=1; i <= questionsLength; i++) {
+                var radioBtns = document.getElementsByName(i);
+                for (var j=0; j < radioBtns.length; j++) {
+                    radioBtns[j].disabled = true;
+                }
+            }
+            element.innerHTML = "Finished";
+        } else {
+            time = new Date( msLeft );
+            hours = time.getUTCHours();
+            mins = time.getUTCMinutes();
+            element.innerHTML = (hours ? hours + ':' + twoDigits( mins ) : mins) + ':' + twoDigits( time.getUTCSeconds() );
+            setTimeout( updateTimer, time.getUTCMilliseconds() + 500 );
+        }
+    }
+
+    element = document.getElementById( elementName );
+    endTime = (+new Date) + 1000 * (60*minutes + seconds) + 500;
+    updateTimer();
+}
+
+countdown( "demo", 0, 10 ); //input min and seconds
 
 </script>
 
