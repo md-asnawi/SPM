@@ -184,8 +184,8 @@
             }
             percentage = parseInt((score/question_count) * 100)
             alert("You got " + score + "/" + question_count + " (" + percentage +"%) correct!" )
-            //if percentage < 80%
-            if (percentage < 80) {
+            //if percentage < 50%
+            if (percentage < 50) {
                 alert("Retake the quiz");
                 window.location.reload();
             } else {
@@ -552,7 +552,7 @@ Scripts
     updateTimer();
 }
 
-countdown( "demo", 0, 10 ); //input min and seconds
+countdown( "demo", 0, 20 ); //input min and seconds
 
 </script>
 
