@@ -182,7 +182,8 @@
         document.getElementById("allcourse").innerHTML = cards.join('');
         document.getElementById("newactive").innerHTML = `<li class="active"><a href="#" onclick="all_courses(999);">All Courses</a></li>
                                                             <li><a href="#" onclick="available_courses(999);">Available Courses</a></li>
-                                                            <li><a href="#" onclick="completed_courses(999);">Completed Courses</a></li>`;
+                                                            <li><a href="#" onclick="completed_courses(999);">Completed Courses</a></li>
+                                                            <li><a href="#" onclick="enrolled_courses(999);">Enrolled Courses</a></li>`;
     }
 
     async function available_courses(learner_id) {
@@ -276,7 +277,8 @@
         document.getElementById("allcourse").innerHTML = cards.join('');
         document.getElementById("newactive").innerHTML = `<li><a href="#" onclick="all_courses(999);">All Courses</a></li>
                                                     <li class="active"><a href="#" onclick="available_courses(999);">Available Courses</a></li>
-                                                    <li><a href="#" onclick="completed_courses(999);">Completed Courses</a></li>`;
+                                                    <li><a href="#" onclick="completed_courses(999);">Completed Courses</a></li>
+                                                    <li><a href="#" onclick="enrolled_courses(999);">Enrolled Courses</a></li>`;
     }
 
     async function completed_courses(learner_id) {
@@ -325,11 +327,54 @@
         document.getElementById("allcourse").innerHTML = cards.join('');
         document.getElementById("newactive").innerHTML = `<li><a href="#" onclick="all_courses(999);">All Courses</a></li>
                                                     <li><a href="#" onclick="available_courses(999);">Available Courses</a></li>
-                                                    <li class="active"><a href="#" onclick="completed_courses(999);">Completed Courses</a></li>`;
+                                                    <li class="active"><a href="#" onclick="completed_courses(999);">Completed Courses</a></li>
+                                                    <li><a href="#" onclick="enrolled_courses(999);">Enrolled Courses</a></li>`;
     }
 
-    async function add_course_to() {
+    async function enrolled_courses(learner_id) {
+        enrolled_course = []
+        cards = []
 
+        url = `http://127.0.0.1:5001/course/enrolled/` + learner_id;
+
+        var enrolled_courses = await fetch(url, { method: "GET" }).then(res => res.json());
+
+        if (enrolled_courses.code == 200) {
+            enrolled_course_array = enrolled_courses.data.course;
+
+            for (i = 0; i < enrolled_course_array.length; i++) {
+                enrolled_course.push(enrolled_course_array[i]);
+            }
+
+            if (enrolled_course) {
+                for (let i = 0; i < enrolled_course.length; i++) {
+                    let course = enrolled_course[i]
+
+                    cards.push(`
+                <div class="col-md-6 col-lg-3">
+                    <div class="card">
+                        <img class="img-fluid" src="images/big/img2.jpg" alt="">
+                        <div class="card-body">
+                            <h5 class="card-title">${course.course_name}</h5>
+                            <p class="card-text">${course.description}</p>
+                            <h5><b>Not Enrollable</b></h5>
+                        </div>
+                    </div>
+                </div>
+            `);
+                }
+            }
+        }
+
+        else {
+            cards.push(`<h5>No Enrolled Course</h5>`);
+        }
+
+        document.getElementById("allcourse").innerHTML = cards.join('');
+        document.getElementById("newactive").innerHTML = `<li><a href="#" onclick="all_courses(999);">All Courses</a></li>
+                                                    <li><a href="#" onclick="available_courses(999);">Available Courses</a></li>
+                                                    <li><a href="#" onclick="completed_courses(999);">Completed Courses</a></li>
+                                                    <li class="active"><a href="#" onclick="enrolled_courses(999);">Enrolled Courses</a></li>`;
     }
 
 
@@ -724,6 +769,7 @@
                     <li class="active"><a href="#" onclick="all_courses();">All Courses</a></li>
                     <li><a href="#" onclick="available_courses(999);">Available Courses</a></li>
                     <li><a href="#" onclick="completed_courses(999);">Completed Courses</a></li>
+                    <li><a href="#" onclick="enrolled_courses(999);">Enrolled Courses</a></li>
                 </ul>
 
                 <div class="row">
