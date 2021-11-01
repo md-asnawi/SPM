@@ -25,8 +25,6 @@
         selectedOptions.clear()
         keys.length = 0
         keys.splice(0, keys.length)
-        console.log(selectedOptions)
-        console.log(addedToList)
 
         if (addedToList.includes(element)) {
             alert("There already exist " + element + " in your cart!")
@@ -43,9 +41,8 @@
         addedToList.splice(listIndex, 1);
         selectedOptions.delete(element)
         var keysIndex = keys.indexOf(element)
-        keys.splice(keysIndex,1);
-        document.getElementById("container"+index).remove()
-        console.log(addedToList)
+        keys.splice(keysIndex, 1);
+        document.getElementById("container" + index).remove()
         // showAllAddedCourses();
     }
 
@@ -87,6 +84,7 @@
             for (let i = 0; i < all.length; i++) {
                 let course = all[i]
                 if (JSON.stringify(available).includes(JSON.stringify(course))) {
+
                     cards.push(`<div class="col-md-6 col-lg-3">
                             <div class="card">
                                 <img class="img-fluid" src="images/big/img2.jpg" alt="">
@@ -102,29 +100,35 @@
 
                     if (class_information.code == 200) { //if theres information means class is available
                         classes = class_information.data.classes; //inform - classes change to class
-                        cards.push(`<h5 id="class_information">`)
+                        var courseDate = new Date(course.enrolment_end_date)
+                        if (new Date() > courseDate) {
+                            cards.push(`<h5 id="class_information"><b>Non-enrollable period</b></h5>`)
+                        } else {
+                            cards.push(`<h5 id="class_information">`)
 
-                        for (let i = 0; i < classes.length; i++) {
-                            let eachclass = classes[i]
-                            cards.push(`<b>Class ${eachclass.class_id}</b>
-                                <br><br>
-                                Class Date: ${eachclass.start_date} to ${eachclass.end_date}
-                                <br><br>
-                                Class Time: ${eachclass.start_time} to ${eachclass.end_time}
-                                <br><br>
-                                Trainer Name: ${eachclass.trainer_name}
-                                <br><br>`)
+                            for (let i = 0; i < classes.length; i++) {
+                                let eachclass = classes[i]
+                                cards.push(`<b>Class ${eachclass.class_id}</b>
+        <br><br>
+        Class Date: ${eachclass.start_date} to ${eachclass.end_date}
+        <br><br>
+        Class Time: ${eachclass.start_time} to ${eachclass.end_time}
+        <br><br>
+        Trainer Name: ${eachclass.trainer_name}
+        <br><br>`)
 
-                            class_cap_url = `http://127.0.0.1:5003/class/count/` + course.course_name + `/` + eachclass.class_id;
-                            var class_cap = await fetch(class_cap_url, { method: "GET" }).then(res => res.json());
-                            enrolment_info_url = `http://127.0.0.1:5001/course/` + course.course_name;
-                            var enrolment_info = await fetch(enrolment_info_url, { method: "GET" }).then(res => res.json());
+                                class_cap_url = `http://127.0.0.1:5003/class/count/` + course.course_name + `/` + eachclass.class_id;
+                                var class_cap = await fetch(class_cap_url, { method: "GET" }).then(res => res.json());
+                                enrolment_info_url = `http://127.0.0.1:5001/course/` + course.course_name;
+                                var enrolment_info = await fetch(enrolment_info_url, { method: "GET" }).then(res => res.json());
 
-                            cards.push(`Current Capacity: ${class_cap.data.inclass_count}/${eachclass.class_size}
-                                        <br><br>`)
+                                cards.push(`Current Capacity: ${class_cap.data.inclass_count}/${eachclass.class_size}
+                <br><br>`)
+
+                            }
+                            cards.push(`</h5><a href="#" class="btn btn-dark" id="button" onClick="addCourse('${course.course_name}')">Add</a>`)
 
                         }
-                        cards.push(`</h5><a href="#" class="btn btn-dark" id="button" onClick="addCourse('${course.course_name}')">Add</a>`)
                     } else {
                         cards.push(`<h5 id="class_information"><b>No Class Available</b></h5>`)
                     }
@@ -216,32 +220,38 @@
 
                     if (class_information.code == 200) {
                         classes = class_information.data.classes;
-                        cards.push(`<h5 id="class_information">`);
+                        var courseDate = new Date(course.enrolment_end_date)
+                        if (new Date() > courseDate) {
+                            cards.push(`<h5 id="class_information"><b>Non-enrollable period</b></h5>`)
+                        } else {
+                            cards.push(`<h5 id="class_information">`);
 
-                        for (let i = 0; i < classes.length; i++) {
-                            let eachclass = classes[i]
+                            for (let i = 0; i < classes.length; i++) {
+                                let eachclass = classes[i]
 
-                            cards.push(`<b>Class ${eachclass.class_id}</b>
-                                                    <br><br>
-                                                    Class Date: ${eachclass.start_date} to ${eachclass.end_date}
-                                                    <br><br>
-                                                    Class Time: ${eachclass.start_time} to ${eachclass.end_time}
-                                                    <br><br>
-                                                    Trainer Name: ${eachclass.trainer_name}
-                                                    <br><br>`);
+                                cards.push(`<b>Class ${eachclass.class_id}</b>
+                            <br><br>
+                            Class Date: ${eachclass.start_date} to ${eachclass.end_date}
+                            <br><br>
+                            Class Time: ${eachclass.start_time} to ${eachclass.end_time}
+                            <br><br>
+                            Trainer Name: ${eachclass.trainer_name}
+                            <br><br>`);
 
-                            class_cap_url = `http://127.0.0.1:5003/class/count/` + course.course_name + `/` + eachclass.class_id;
-                            var class_cap = await fetch(class_cap_url, { method: "GET" }).then(res => res.json());
+                                class_cap_url = `http://127.0.0.1:5003/class/count/` + course.course_name + `/` + eachclass.class_id;
+                                var class_cap = await fetch(class_cap_url, { method: "GET" }).then(res => res.json());
 
-                            enrolment_info_url = `http://127.0.0.1:5001/course/` + course.course_name;
-                            var enrolment_info = await fetch(enrolment_info_url, { method: "GET" }).then(res => res.json());
+                                enrolment_info_url = `http://127.0.0.1:5001/course/` + course.course_name;
+                                var enrolment_info = await fetch(enrolment_info_url, { method: "GET" }).then(res => res.json());
 
-                            cards.push(`Current Capacity: ${class_cap.data.inclass_count}/${eachclass.class_size}
-                                                    <br><br>`);
+                                cards.push(`Current Capacity: ${class_cap.data.inclass_count}/${eachclass.class_size}
+                            <br><br>`);
+                            }
+
+                            cards.push(`</h5>
+            <a href="#" class="btn btn-dark" onClick="addCourse('${course.course_name}')">Add</a>`);
                         }
 
-                        cards.push(`</h5>
-                                    <a href="#" class="btn btn-dark" onClick="addCourse('${course.course_name}')">Add</a>`);
                     }
 
                     // exclude add button for course with no class available
@@ -859,8 +869,6 @@
                         let message;
                         selectedOptions.set(target.id.split("w")[0], parseInt(target.id.split("w")[1]))
                         keys = [...selectedOptions.keys()]
-                        console.log(selectedOptions)
-                        console.log(keys)
                     });
 
                     contentForDropdown.innerHTML = content

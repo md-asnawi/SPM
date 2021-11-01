@@ -3,6 +3,7 @@
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from Class import Class
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/is212'
@@ -14,23 +15,25 @@ CORS(app)
 
 class Lesson(db.Model):
 
-    course_name = db.Column(db.String(45), primary_key = True)
-    class_id = db.Column(db.Integer, primary_key = True)
-    lesson_id = db.Column(db.Integer, primary_key = True)
-    ungraded_quiz = db.Column(db.Boolean, nullable = False)
-    completion_status = db.Column(db.Integer, nullable = False)
+    __tablename__ = 'lesson'
+    __mapper_args__ = {'polymorphic_identity': 'lesson'}
 
-    def __init__(self, course_name, class_id, lesson_id, ungraded_quiz, completion_status):
+    course_name = db.Column(db.String(45), db.ForeignKey(Class.course_name), primary_key = True)
+    class_id = db.Column(db.Integer, db.ForeignKey(Class.class_id), primary_key = True)
+    lesson_id = db.Column(db.Integer, primary_key = True)
+    description = db.Column(db.String(100), nullable = False)
+    # completion_status = db.Column(db.Integer, nullable = False)
+
+    def __init__(self, course_name, class_id, lesson_id, description):
         self.course_name = course_name
         self.class_id = class_id
         self.lesson_id = lesson_id
-        self.ungraded_quiz = ungraded_quiz
-        self.completion_status = completion_status
+        self.description = description
+        # self.completion_status = completion_status
 
     def json(self):
         return {
-                "course_name": self.course_name, "class_id": self.class_id, "lesson_id": self.lesson_id, 
-                "ungraded_quiz": self.ungraded_quiz, "completion_status": self.completion_status
+            "course_name": self.course_name, "class_id": self.class_id, "lesson_id": self.lesson_id, "description": self.description
         }
 
     def get_course_name(self):
@@ -51,17 +54,17 @@ class Lesson(db.Model):
     def set_lesson_id(self, lesson_id):
         self.lesson_id = lesson_id
 
-    def get_ungraded_quiz(self):
-        return self.ungraded_quiz
+    def get_description(self):
+        return self.description
 
-    def set_ungraded_quiz(self, ungraded_quiz):
-        self.ungraded_quiz = ungraded_quiz
+    def set_description(self, description):
+        self.description = description
 
-    def get_completion_status(self):
-        return self.completion_status
+    # def get_completion_status(self):
+    #     return self.completion_status
 
-    def set_completion_status(self, completion_status):
-        self.completion_status = completion_status
+    # def set_completion_status(self, completion_status):
+    #     self.completion_status = completion_status
 
 
 # GET all lessons with course name & class id
@@ -110,6 +113,30 @@ def get_lesson(course_name, class_id, lesson_id):
         }
     )
 
+# create new lesson
+@app.route("/lesson/<string:course_name>/<int:class_id>/<int:lesson_id>", methods=["POST"])
+def new_lesson(course_name, class_id, lesson_id):
+
+    description = 'This is Lesson ' + str(lesson_id)
+    new_lesson = Lesson(course_name, class_id, lesson_id, description)
+    
+    try:
+        db.session.add(new_lesson)
+        db.session.commit()
+        
+        return jsonify (
+            {
+                "code": 201,
+                "data": {
+                    "new_lesson": new_lesson.json()
+                },
+                "message": "Lesson commited to database."
+            }
+        ), 201
+    except Exception as e:
+        return jsonify({
+            "message": "Unable to commit to database."
+        }), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5007, debug=True)
