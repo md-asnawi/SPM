@@ -16,8 +16,7 @@ class TestCourse(unittest.TestCase):
             'course_id': 111,
             'description': 'This is Course 111',
             'prerequisite': '',
-            'enrolment_start_date': '2021-01-01',
-            'enrolment_end_date': '2021-05-01'
+            'enrolment_start_date': '2021-01-01'
             }
         )
 # # Test for class Class
