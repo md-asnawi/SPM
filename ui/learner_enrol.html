@@ -236,7 +236,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>LMS - All Courses</title>
+    <title>LMS - Enrolment</title>
     <!-- Favicon icon -->
     <link rel="icon" type="image/png" sizes="16x16" href="images/favicon.png">
     <!-- Pignose Calender -->
@@ -524,7 +524,9 @@
             
             <div class="row page-titles mx-0">
                 <div class="col p-md-0">
-                    Enrolled Courses
+                    <h2>Manage Enrolment </h2>
+                    <h4>ANNOUNCEMENT:<br>Learners may only withdraw self-enrolled courses before or during self-enrollment period. Self-enrollment period is subjective to course</h4>
+                    <h4>To withdraw outside of this time window, please write in to L&D via the form provided here</h4>
                 </div>
             </div>
 
@@ -533,12 +535,12 @@
 
                 <ul class="nav nav-tabs" id="newactive">
                     <li><a href="" onclick="enrolled_courses(999);"></a></li>
-                    <li><a href="course.html">View Course Material</a></li>
+                    
                 </ul>
 
                 <div class="row">
                     <div class="col-9 m-b-30">
-
+                        
                         <p><h4 class="d-inline"></h4></p>
                         <div class="row" id="allcourse">
                              
@@ -549,8 +551,76 @@
                 </div>
                 
             </div>
+<!-- manage enrolment table -->
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="active-member">
+                                <div class="table-responsive">
+                                    <table class="table table-xs mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>Courses Enrolled</th>
+                                                <th>Status</th>
+                                                <th>Manage</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Art of Ink 101</td>
+                                                <td>Self-Enrolled</td>
+                                                <td>
+                                                    <div>
+                                                        <a href="" class="btn btn-light" role="button">Withdraw</a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Art of Ink 102</td>
+                                                <td>Pre-assigned</td>
+                                                <td>
+                                                    <div>
+                                                        Withdrawal is not allowed. 
+                                                    </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                              
+                                        </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>                        
+                </div>
+<!-- L&D form -->
+<h2>Withdrawal Form</h2>
+<p>Your message and request will be submitted to L&D for review. Please allow the L&D team a week to process your request.</p>
+<!-- Form begins here -->
+<div class="col-lg-8">
+<form>
+    <div class="form-group">
+      <label for="exampleFormControlInput1">Full Name</label>
+      <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="Full name">
+    </div>
+    
+    <div class="form-group">
+      <label for="exampleFormControlTextarea1">Withdrawal Request</label>
+      <textarea class="form-control" id="exampleFormControlTextarea1" rows="4"></textarea>
+    </div>
+
+
+    <button type="submit" class="btn btn-light">Submit</button>
+
+  </form>
+  </div>
             <!-- #/ container -->
         </div>
+        
+        
+
         <!--**********************************
             Content body end
         ***********************************-->
@@ -575,7 +645,9 @@
     <!--**********************************
         Scripts
     ***********************************-->
-
+    <script>
+        alert("ANNOUNCEMENT: Learners may only withdraw self-enrolled courses before or during self-enrollment period. Self-enrollment period is subjective to course. To withdraw outside of this time window, please write in to L&D via the form provided here.")
+    </script>
     <script>
             var list = document.getElementById('cart');
      //show all added courses
