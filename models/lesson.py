@@ -21,19 +21,19 @@ class Lesson(db.Model):
     course_name = db.Column(db.String(45), db.ForeignKey(Class.course_name), primary_key = True)
     class_id = db.Column(db.Integer, db.ForeignKey(Class.class_id), primary_key = True)
     lesson_id = db.Column(db.Integer, primary_key = True)
-    description = db.Column(db.String(100), nullable = False)
-    # completion_status = db.Column(db.Integer, nullable = False)
+    description = db.Column(db.String(45), nullable = False)
 
     def __init__(self, course_name, class_id, lesson_id, description):
         self.course_name = course_name
         self.class_id = class_id
         self.lesson_id = lesson_id
         self.description = description
-        # self.completion_status = completion_status
+
 
     def json(self):
         return {
-            "course_name": self.course_name, "class_id": self.class_id, "lesson_id": self.lesson_id, "description": self.description
+                "course_name": self.course_name, "class_id": self.class_id, "lesson_id": self.lesson_id, 
+                "description": self.description
         }
 
     def get_course_name(self):
@@ -59,12 +59,6 @@ class Lesson(db.Model):
 
     def set_description(self, description):
         self.description = description
-
-    # def get_completion_status(self):
-    #     return self.completion_status
-
-    # def set_completion_status(self, completion_status):
-    #     self.completion_status = completion_status
 
 
 # GET all lessons with course name & class id
