@@ -7,7 +7,7 @@
 
 </script>
 <script>
-
+    alert("ANNOUNCEMENT: Learners may only withdraw self-enrolled courses before or during self-enrollment period. Self-enrollment period is subjective to course. To withdraw outside of this time window, please write in to L&D via the form provided here.")
     window.onload = function (e) {
         learner_id = 999;
         all_courses(learner_id);
@@ -90,46 +90,54 @@
                                 <img class="img-fluid" src="images/big/img2.jpg" alt="">
                                 <div class="card-body">
                                     <h5 class="card-title">${course.course_name}</h5>
-                                    <p class="card-text">${course.description}</p>
-                                    <h5>Enrolment Period: ${course.enrolment_start_date} to ${course.enrolment_end_date}</h5>`)
+                                    <p class="card-text">${course.description}</p>`)
 
                     // get class_info (count and capacity)... if count less than cap means class available + 1
-
                     class_information_url = `http://127.0.0.1:5004/class/` + course.course_name;
                     var class_information = await fetch(class_information_url, { method: "GET" }).then(res => res.json());
 
-                    if (class_information.code == 200) { //if theres information means class is available
-                        classes = class_information.data.classes; //inform - classes change to class
-                        var courseDate = new Date(course.enrolment_end_date)
-                        if (new Date() > courseDate) {
-                            cards.push(`<h5 id="class_information"><b>Non-enrollable period</b></h5>`)
-                        } else {
-                            cards.push(`<h5 id="class_information">`)
+                    if (class_information.code == 200) {
+                        classes = class_information.data.classes;
+                        class_count = 0
 
-                            for (let i = 0; i < classes.length; i++) {
-                                let eachclass = classes[i]
-                                cards.push(`<b>Class ${eachclass.class_id}</b>
-        <br><br>
-        Class Date: ${eachclass.start_date} to ${eachclass.end_date}
-        <br><br>
-        Class Time: ${eachclass.start_time} to ${eachclass.end_time}
-        <br><br>
-        Trainer Name: ${eachclass.trainer_name}
-        <br><br>`)
+                        for (let i = 0; i < classes.length; i++) {
+                            let eachclass = classes[i]
+                            
+                            // check learner course status.. only show course classes that are not enrolled (pending, rejected don't show)
+                            class_status_url = `http://127.0.0.1:5003/learner_class/status/` + course.course_name + "/" + eachclass.class_id + "/" + learner_id;
+                            var class_status = await fetch(class_status_url, { method: "GET" }).then(res => res.json());
 
-                                class_cap_url = `http://127.0.0.1:5003/class/count/` + course.course_name + `/` + eachclass.class_id;
-                                var class_cap = await fetch(class_cap_url, { method: "GET" }).then(res => res.json());
-                                enrolment_info_url = `http://127.0.0.1:5001/course/` + course.course_name;
-                                var enrolment_info = await fetch(enrolment_info_url, { method: "GET" }).then(res => res.json());
+                            status = class_status.data.learner_class_status
 
-                                cards.push(`Current Capacity: ${class_cap.data.inclass_count}/${eachclass.class_size}
-                <br><br>`)
+                            if (status == "Not Enrolled") {
+                                var class_enrolmentDate = new Date(eachclass.enrolment_end_date)
+                                if (new Date() < class_enrolmentDate) {
+                                    cards.push(`<h5 id="class_information">`);
+                                    cards.push(`<b>Class ${eachclass.class_id}</b>
+                                                <br><br>
+                                                <h5>Enrolment Period: ${eachclass.enrolment_start_date} to ${eachclass.enrolment_end_date}</h5>
+                                                Class DateTime: ${eachclass.class_start_date} ${eachclass.start_time}  to ${eachclass.class_end_date} ${eachclass.end_time}
+                                                <br><br>
+                                                Trainer Name: ${eachclass.trainer_name}
+                                                <br><br>`);
 
-                            }
-                            cards.push(`</h5><a href="#" class="btn btn-dark" id="button" onClick="addCourse('${course.course_name}')">Add</a>`)
+                                    class_cap_url = `http://127.0.0.1:5003/class/count/` + course.course_name + `/` + eachclass.class_id;
+                                    var class_cap = await fetch(class_cap_url, { method: "GET" }).then(res => res.json());
 
+                                    enrolment_info_url = `http://127.0.0.1:5001/course/` + course.course_name;
+                                    var enrolment_info = await fetch(enrolment_info_url, { method: "GET" }).then(res => res.json());
+
+                                    cards.push(`Current Capacity: ${class_cap.data.inclass_count}/${eachclass.class_size}<br><br>`); 
+                                    cards.push(`</h5><a href="#" class="btn btn-dark" onClick="addCourse('${course.course_name}')">Add</a>`);                              
+                                    class_count += 1
+                                }                  
+                            }          
                         }
-                    } else {
+                        if (class_count == 0) {
+                            cards.push(`<h5 id="class_information"><b>Non-enrollable period</b></h5>`)
+                        }
+                    }
+                    else {
                         cards.push(`<h5 id="class_information"><b>No Class Available</b></h5>`)
                     }
                     cards.push(`</div></div></div>`)
@@ -147,7 +155,6 @@
 
                 }
             }
-
         }
 
         else {
@@ -210,8 +217,7 @@
                             <img class="img-fluid" src="images/big/img2.jpg" alt="">
                             <div class="card-body">
                                 <h5 class="card-title">${course.course_name}</h5>
-                                <p class="card-text">${course.description}</p>
-                                <h5>Enrolment Period: ${course.enrolment_start_date} to ${course.enrolment_end_date}</h5>`);
+                                <p class="card-text">${course.description}</p>`)
 
                     // get class_info (count and capacity)... if count less than cap means class available + 1
 
@@ -220,38 +226,43 @@
 
                     if (class_information.code == 200) {
                         classes = class_information.data.classes;
-                        var courseDate = new Date(course.enrolment_end_date)
-                        if (new Date() > courseDate) {
-                            cards.push(`<h5 id="class_information"><b>Non-enrollable period</b></h5>`)
-                        } else {
-                            cards.push(`<h5 id="class_information">`);
+                        class_count = 0
 
-                            for (let i = 0; i < classes.length; i++) {
-                                let eachclass = classes[i]
+                        for (let i = 0; i < classes.length; i++) {
+                            let eachclass = classes[i]
+                            // check learner course status.. only show course classes that are not enrolled (pending, rejected don't show)
+                            class_status_url = `http://127.0.0.1:5003/learner_class/status/` + course.course_name + "/" + eachclass.class_id + "/" + learner_id;
+                            var class_status = await fetch(class_status_url, { method: "GET" }).then(res => res.json());
 
-                                cards.push(`<b>Class ${eachclass.class_id}</b>
-                            <br><br>
-                            Class Date: ${eachclass.start_date} to ${eachclass.end_date}
-                            <br><br>
-                            Class Time: ${eachclass.start_time} to ${eachclass.end_time}
-                            <br><br>
-                            Trainer Name: ${eachclass.trainer_name}
-                            <br><br>`);
+                            status = class_status.data.learner_class_status
 
-                                class_cap_url = `http://127.0.0.1:5003/class/count/` + course.course_name + `/` + eachclass.class_id;
-                                var class_cap = await fetch(class_cap_url, { method: "GET" }).then(res => res.json());
+                            if (status == "Not Enrolled") {
+                                var class_enrolmentDate = new Date(eachclass.enrolment_end_date)
+                                if (new Date() < class_enrolmentDate) {
+                                    cards.push(`<h5 id="class_information">`);
+                                    cards.push(`<b>Class ${eachclass.class_id}</b>
+                                                <br><br>
+                                                <h5>Enrolment Period: ${eachclass.enrolment_start_date} to ${eachclass.enrolment_end_date}</h5>
+                                                Class DateTime: ${eachclass.class_start_date} ${eachclass.start_time}  to ${eachclass.class_end_date} ${eachclass.end_time}
+                                                <br><br>
+                                                Trainer Name: ${eachclass.trainer_name}
+                                                <br><br>`);
 
-                                enrolment_info_url = `http://127.0.0.1:5001/course/` + course.course_name;
-                                var enrolment_info = await fetch(enrolment_info_url, { method: "GET" }).then(res => res.json());
+                                    class_cap_url = `http://127.0.0.1:5003/class/count/` + course.course_name + `/` + eachclass.class_id;
+                                    var class_cap = await fetch(class_cap_url, { method: "GET" }).then(res => res.json());
 
-                                cards.push(`Current Capacity: ${class_cap.data.inclass_count}/${eachclass.class_size}
-                            <br><br>`);
-                            }
+                                    enrolment_info_url = `http://127.0.0.1:5001/course/` + course.course_name;
+                                    var enrolment_info = await fetch(enrolment_info_url, { method: "GET" }).then(res => res.json());
 
-                            cards.push(`</h5>
-            <a href="#" class="btn btn-dark" onClick="addCourse('${course.course_name}')">Add</a>`);
+                                    cards.push(`Current Capacity: ${class_cap.data.inclass_count}/${eachclass.class_size}<br><br>`); 
+                                    cards.push(`</h5><a href="#" class="btn btn-dark" onClick="addCourse('${course.course_name}')">Add</a>`);                              
+                                    class_count += 1
+                                }                  
+                            }     
                         }
-
+                        if (class_count == 0) {
+                            cards.push(`<h5 id="class_information"><b>Non-enrollable period</b></h5>`)
+                        }
                     }
 
                     // exclude add button for course with no class available
@@ -309,7 +320,6 @@
                         <div class="card-body">
                             <h5 class="card-title">${course.course_name}</h5>
                             <p class="card-text">${course.description}</p>
-                            <h5><b>Not Enrollable</b></h5>
                         </div>
                     </div>
                 </div>
@@ -335,12 +345,12 @@
         enrolled_course = []
         cards = []
 
-        url = `http://127.0.0.1:5001/course/enrolled/` + learner_id;
+        url = `http://127.0.0.1:5003/learner_class/inprogress/` + learner_id;
 
         var enrolled_courses = await fetch(url, { method: "GET" }).then(res => res.json());
 
         if (enrolled_courses.code == 200) {
-            enrolled_course_array = enrolled_courses.data.course;
+            enrolled_course_array = enrolled_courses.data.learner_class;
 
             for (i = 0; i < enrolled_course_array.length; i++) {
                 enrolled_course.push(enrolled_course_array[i]);
@@ -348,20 +358,32 @@
 
             if (enrolled_course) {
                 for (let i = 0; i < enrolled_course.length; i++) {
-                    let course = enrolled_course[i]
+                    let enrolled = enrolled_course[i]
+
+                    url = `http://127.0.0.1:5001/course/` + enrolled.course_name;
+                    var courses = await fetch(url, { method: "GET" }).then(res => res.json());
+                    single_course = courses.data.course;
 
                     cards.push(`
-                <div class="col-md-6 col-lg-3">
-                    <div class="card">
-                        <img class="img-fluid" src="images/big/img2.jpg" alt="">
-                        <div class="card-body">
-                            <h5 class="card-title">${course.course_name}</h5>
-                            <p class="card-text">${course.description}</p>
-                            <h5><b>Not Enrollable</b></h5>
-                        </div>
-                    </div>
-                </div>
-            `);
+                    <div class="col-md-6 col-lg-3">
+                        <div class="card">
+                            <img class="img-fluid" src="images/big/img2.jpg" alt="">
+                            <div class="card-body">
+                                <h5 class="card-title">${enrolled.course_name}</h5>
+                                <p class="card-text">${single_course.description}</p>`)
+
+                                if (enrolled.preassigned == true) {
+                                    cards.push(`<h5>Preassigned: Yes</h5></div>`)
+                                    cards.push(`<h5><center><strong>Withdrawal is not allowed.</strong></center></h5>`)
+                                }
+
+                                else {
+                                    cards.push(`<h5>Preassigned: No</h5></div>`)
+                                    cards.push(`<a href="#" class="btn btn-dark" onClick="withdraw('${enrolled.course_name}, ${enrolled.class_id}')">Withdraw</a>`)
+                                }
+
+                        cards.push(`</div>
+                    </div>`);
                 }
             }
         }
@@ -755,10 +777,9 @@
 
             <div class="row page-titles mx-0">
                 <div class="col p-md-0">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="javascript:void(0)">Overview</a></li>
-                        <li class="breadcrumb-item active"><a href="javascript:void(0)">All Courses</a></li>
-                    </ol>
+                    <h2>Manage Enrolment</h2>
+                    <h4>ANNOUNCEMENT:<br>Learners may only withdraw self-enrolled courses before or during self-enrollment period. Self-enrollment period is subjective to course</h4>
+                    <h4>To withdraw outside of this time window, please write in to L&D via the form provided here</h4>
                 </div>
             </div>
 

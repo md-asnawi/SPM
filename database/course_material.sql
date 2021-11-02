@@ -13,8 +13,8 @@ CREATE TABLE IF NOT EXISTS `course_material` (
 );
 
 INSERT INTO `course_material` (`material_id`, `material_name`, `material_type`, `course_name`) VALUES
-(898456, 'Material 111', 'docx', 'Course 111'),
-(564866, 'Material 222', 'pptx', 'Course 111'),
-(364252, 'Material 333', 'pdf', 'Course 222'),
-(364253, 'Material 444', 'mp4', 'Course 222'),
-(135495, 'Material 555', 'hyperlinks', 'Course 444');
+(898456, 'Material 111', 'docx', 'Ink Course'),
+(564866, 'Material 222', 'pptx', 'Ink Course'),
+(364252, 'Material 333', 'pdf', 'Data Course'),
+(364253, 'Material 444', 'mp4', 'Data Course'),
+(135495, 'Material 555', 'hyperlinks', 'Design Course');

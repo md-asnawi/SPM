@@ -54,14 +54,14 @@
                     <tr>
                         <td>${course.course_name}</td>
                         <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">${course.trainer_name}</td>
-                        <td><a href="">C${course.class_id}</a></td>
-                        <td><a href="">${inclass_count.data.inclass_count}/${course.class_size}</a></td>
+                        <td>C${course.class_id}</td>
+                        <td>${inclass_count.data.inclass_count}/${course.class_size}</td>
                     </tr>
                 `);
             }
         }
 
-        document.getElementById("class_information").innerHTML = rows;
+        document.getElementById("class_information").innerHTML = rows.join("");
     }
 </script>
 <head>
@@ -407,14 +407,14 @@
                                                     <td>Intro to Ink Practices</td>
                                                     <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">John Watson</td>
                                                     <td><a href="">C1</a></td>
-                                                    <td><a href="">32/40</a></td>
+                                                    <td>32/40</td>
                                                 </tr>
 
                                                 <tr>
                                                     <td>Advanced IBM Printers</td>
                                                     <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">John Watson</td>
-                                                    <td><a href="">C1</a></td>
-                                                    <td><a href="">38/40</a></td>
+                                                    <td>C1</td>
+                                                    <td>38/40</td>
                                                 </tr>
                                             </tbody>
                                         </table>

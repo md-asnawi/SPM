@@ -13,10 +13,16 @@ CREATE TABLE IF NOT EXISTS `lesson` (
 );
 
 INSERT INTO `lesson` (`course_name`, `class_id`, `lesson_id`, `description`) VALUES
-('Course 111', 1, 1, 'This is Lesson 1'),
-('Course 111', 1, 2, 'This is Lesson 2'),
-('Course 111', 1, 3, 'This is Lesson 3'),
-('Course 111', 2, 1, 'This is Lesson 1'),
-('Course 111', 2, 2, 'This is Lesson 2'),
-('Course 222', 1, 1, 'This is Lesson 1'),
-('Course 222', 1, 2, 'This is Lesson 2');
+('Ink Course', 1, 1, 'This is Lesson 1'),
+('Ink Course', 1, 2, 'This is Lesson 2'),
+('Ink Course', 1, 3, 'This is Lesson 3'),
+('Ink Course', 2, 1, 'This is Lesson 1'),
+('Ink Course', 2, 2, 'This is Lesson 2'),
+('Ink Course', 2, 3, 'This is Lesson 3'),
+('Ink Course', 2, 4, 'This is Lesson 4'),
+('Ink Course', 2, 5, 'This is Lesson 5'),
+('Data Course', 1, 1, 'This is Lesson 1'),
+('Data Course', 1, 2, 'This is Lesson 2'),
+('Data Course', 1, 3, 'This is Lesson 3'),
+('Data Course', 1, 4, 'This is Lesson 4'),
+('Data Course', 1, 5, 'This is Lesson 5');
