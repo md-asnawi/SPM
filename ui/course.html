@@ -6,19 +6,41 @@
     window.onload = async function (e) {
         course_name = 'Course 111';
         class_id = 1;
+        learner_id = 999;
 
         document.getElementById("course-title").innerText = course_name;
         lesson_id_arr = await display_lessons(course_name, class_id);
         
         // console.log(lesson_id_arr);
 
+        completed_lesson_id_arr = [];
+        completed_lessons = await progressUpdate(course_name, learner_id);
+        for (completed_lesson of completed_lessons) {
+            completed_lesson_id_arr.push(completed_lesson.lesson_id);
+        }
+
         for (lesson_id of lesson_id_arr) {
             one_lesson_material = await display_material_of_lesson(course_name, class_id, lesson_id);
             // console.log(one_lesson_material);
             document.getElementById("material" + lesson_id).innerHTML = one_lesson_material.join("");
+
+            if (completed_lesson_id_arr.includes(lesson_id)) {
+                // console.log("Completed " + lesson_id);
+                document.getElementById("checkbox" + lesson_id).checked = true;
+                materialChecked(lesson_id);
+                lessonQuizTaken(lesson_id);
+            }
         }
 
-        document.getElementById("checkbox1").disabled = false;
+        // 
+
+        // document.getElementById("checkbox1").disabled = false;
+        // completed_lessons = await progressUpdate(course_name, learner_id);
+        // for (completed_lesson of completed_lessons) {
+        //     console.log(completed_lesson);
+        //     document.getElementById("checkbox" + lesson_id).checked = true;
+        //     materialChecked(completed_lesson.lesson_id);
+        // }
         
     }
 
@@ -213,11 +235,9 @@
         var materialCheckbox = document.getElementById("checkbox" + lesson_id);
         var quizDiv = document.getElementById("quiz" + lesson_id);
 
-        if (materialCheckbox.checked == true){
+        if (materialCheckbox.checked == true) {
             quizDiv.style.display = "block";
-            // TO-DO: maybe deactivate/disable checkbox after learner click completed so quiz will not go away
-        } else {
-            quizDiv.style.display = "none";
+            document.getElementById("checkbox" + lesson_id).disabled = true;
         }
 
     }
@@ -244,6 +264,18 @@
         document.getElementById("completionQuiz").classList.remove('badge-light');
         document.getElementById("completionQuiz").classList.add('badge-primary');
         alert(`Congratulations, you have completed ${course_name}!`);
+
+    }
+
+    async function progressUpdate(course_name, learner_id) {
+
+        completed_lessons_url = `http://127.0.0.1:5013/learner_lesson/completed/` + course_name + `/` + learner_id;
+        var completed_lesson_response = await fetch(completed_lessons_url, {method: "GET"})
+                .then(res => res.json())
+                .catch(error => console.log(error));
+        // console.log(completed_lesson_response);
+
+        return completed_lesson_response.data.learner_lesson;
 
     }
 
