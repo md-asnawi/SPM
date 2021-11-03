@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<script>
+
+    // Alert for successful enrolment
+    function myAlert(){
+        alert("Enrolment Successful!")
+    }
+
+    window.onload = function (e) {
+        course_name = "Course 111"
+        // class_id = "1"
+        course_dropdown();
+        class_dropdown(course_name);
+        available_learner(course_name);
+    }
+
+    async function course_dropdown() {
+
+        // Create empty array
+        all = []
+        dropdown = []
+
+        all_url = `http://127.0.0.1:5001/course`;
+        var all_course = await fetch(all_url, {method: "GET"}).then(res => res.json());
+
+        if (all_course.code == 200) {
+        
+            all_course_array = all_course.data.course;
+
+            for (i=0; i < all_course_array.length; i++ ) {
+                all.push(all_course_array[i]);
+            }
+
+            for (let i = 0; i < all.length; i++) {
+                let course = all[i]
+                
+                dropdown.push(`
+                    <option value="${course.course_name}">${course.course_name}</option>
+                `)
+            }
+        }
+
+        else {
+            dropdown.push(`<option value="nocourse">No Course</option>`);
+        }
+
+        document.getElementById("course_dropdown").innerHTML = dropdown;
+    }
+
+    async function class_dropdown(course_name) {
+
+        // Create empty array
+        all1 = []
+        dropdown1 = []
+
+        course_class_url = `http://127.0.0.1:5004/class/` + course_name;
+    
+        var all_course_class = await fetch(course_class_url, {method: "GET"}).then(res => res.json());
+
+        if (all_course_class.code == 200) {
+
+            all_course_class_array = all_course_class.data.classes;
+
+            console.log(all_course_class_array);
+
+            for (i=0; i < all_course_class_array.length; i++ ) {
+                all1.push(all_course_class_array[i]);
+            }
+
+            for (let i = 0; i < all1.length; i++) {
+                let course_class = all1[i]
+                
+                // check capacity of class
+                single_class_url = `http://127.0.0.1:5004/class/` + course_class.course_name + `/` + course_class.class_id;
+                var single_class = await fetch(single_class_url, {method: "GET"}).then(res => res.json());
+                class_size = single_class.data.single_class.class_size;
+            
+
+                // check current class size
+                class_count_url = `http://127.0.0.1:5003/class/count/` + course_class.course_name + `/` + course_class.class_id
+                var class_count = await fetch(class_count_url, {method: "GET"}).then(res => res.json());
+                class_cap = class_count.data.inclass_count;
+
+                dropdown1.push(`
+                    <option value="${course_class.class_id}" course_name="${course_class.course_name}">${course_class.class_id} - (${class_cap}/${class_size})</option>
+                `)
+            }
+        }
+
+        else {
+            dropdown1.push(`<option value="noclass">No Class</option>`);
+        }
+
+        document.getElementById("class_dropdown").innerHTML = dropdown1;
+
+    }
+
+    async function available_learner(course_name) {
+
+        // must complete prereq, not taken course, class not packed
+
+        course_list_a = []
+        all_learner_a = []
+        course_completed_a = []
+        prereq_course_completed_a = []
+        available = []
+        
+        // get the current course list and learner list
+        course_list_url = `http://127.0.0.1:5003/class/` + course_name;
+        all_learner_url = `http://127.0.0.1:5005/all`;
+        course_completed_url = `http://127.0.0.1:5003/course_completed/` + course_name;
+        
+        var course_list = await fetch(course_list_url, {method: "GET"}).then(res => res.json());
+        var all_learner = await fetch(all_learner_url, {method: "GET"}).then(res => res.json());
+        var course_completed = await fetch(course_completed_url, {method: "GET"}).then(res => res.json());
+
+        // check for prereq
+        all_courses_url = `http://127.0.0.1:5001/course`;
+        var all_course_list = await fetch(all_courses_url, {method: "GET"}).then(res => res.json());
+        all_course_list_array = all_course_list.data.course;
+
+        for (let i = 0; i < all_course_list_array.length; i++) {
+            let course1 = all_course_list_array[i]
+
+            if (course1.course_name ==  course_name) {
+                prereq = course1.prerequisite
+            }
+        }
+
+        if (prereq != null) {
+            prereq_course_completed_url = `http://127.0.0.1:5003/course_completed/` + prereq;
+            var prereq_course_completed_list = await fetch(prereq_course_completed_url, {method: "GET"}).then(res => res.json());
+
+            if (prereq_course_completed_list.code == 200) {
+                prereq_course_completed_list_array = prereq_course_completed_list.data.completed_learner;
+
+                for (i=0; i < prereq_course_completed_list_array.length; i++ ) {
+                    prereq_course_completed_a.push(prereq_course_completed_list_array[i]);
+                }   
+            }
+        }
+
+        // if learner not in current list, means available
+        
+        if (course_list.code == 200) {
+            course_list_array = course_list.data.inclass;
+            all_learner_array = all_learner.data.learner;
+            course_completed_array = course_completed.data.completed_learner;
+
+
+            for (i=0; i < course_list_array.length; i++ ) {
+                course_list_a.push(course_list_array[i]);
+            }
+
+            for (i=0; i < all_learner_array.length; i++ ) {
+                all_learner_a.push(all_learner_array[i]);
+            }
+
+            for (i=0; i < course_completed_array.length; i++ ) {
+                course_completed_a.push(course_completed_array[i]);
+            }
+
+            for (let i = 0; i < all_learner_a.length; i++) {
+                let learner = all_learner_a[i]
+
+                // check if the leaner_id is part of class_list
+                if (JSON.stringify(course_list_a).includes(JSON.stringify(learner.learner_id)) == false) {
+
+                    // if learner is not in class, check if he fulfil the prerequisite
+                    if (prereq != null ) {
+                        if (JSON.stringify(prereq_course_completed_a).includes(JSON.stringify(learner.learner_id))) {
+                            available.push(`
+                                <tr>
+                                    <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">${learner.engineer_name}</td>
+                                    <td>${learner.learner_id}</td>
+                                    <td><div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="${learner.learner_id}" id="${learner.learner_id}">
+                                    </div></td>
+                                </tr>
+                            `);
+                        }
+                    }
+
+                    else {
+                        available.push(`
+                            <tr>
+                                <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">${learner.engineer_name}</td>
+                                <td>${learner.learner_id}</td>
+                                <td><div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="${learner.learner_id}" id="${learner.learner_id}">
+                                </div></td>
+                            </tr>
+                        `);
+                    }
+                }
+            }
+        }
+
+        // if no one in course list
+        else {
+            // all learners avaliable
+            all_learner_array = all_learner.data.learner;
+
+            for (i=0; i < all_learner_array.length; i++ ) {
+                all_learner_a.push(all_learner_array[i]);
+            }
+
+            for (let i = 0; i < all_learner_a.length; i++) {
+                let learner = all_learner_a[i]
+                
+                // check if prereq fulfilled
+                if (prereq != null) {
+                    if (JSON.stringify(prereq_course_completed_a).includes(JSON.stringify(learner.learner_id))) {
+                        available.push(`
+                            <tr>
+                                <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">${learner.engineer_name}</td>
+                                <td>${learner.learner_id}</td>
+                                <td><div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="${learner.learner_id}" id="${learner.learner_id}">
+                                </div></td>
+                            </tr>
+                        `);
+                    }
+                }
+                // if no prereq, anyone can take
+                else {
+                        available.push(`
+                                <tr>
+                                    <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">${learner.engineer_name}</td>
+                                    <td>${learner.learner_id}</td>
+                                    <td><div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="${learner.learner_id}" id="${learner.learner_id}">
+                                    </div></td>
+                                </tr>
+                            `);
+                    }
+            }
+        }
+        document.getElementById("available_learner").innerHTML = available.join("");
+        console.log(course_name);
+    }
+
+    async function enrolment(course_name) {
+        enrol_learner = []
+
+        // get course_name
+        course_name =  document.getElementById("course_dropdown").value;
+
+        // get class information
+        class_id =  document.getElementById("class_dropdown").value;
+        // console.log(course_name);
+        // console.log(class_id);
+        
+        // no class available
+        if (class_id == "noclass"){
+            alert("No available class for selected course.")
+        }
+
+        // class available
+        else {            
+            // if learner checked, append learner_id 
+            checkedbox = $('.form-check:checkbox:checked');
+
+            $('input.form-check-input:checkbox:checked').each(function () {
+                enrol_learner.push($(this).val());
+            });
+            // console.log(enrol_learner);
+
+            for (let i = 0; i < enrol_learner.length; i++) {
+
+                // check capacity of class
+                single_class_url = `http://127.0.0.1:5004/class/` + course_name + `/` + class_id;
+                var single_class = await fetch(single_class_url, {method: "GET"}).then(res => res.json());
+                class_size = single_class.data.single_class.class_size;
+                // console.log(class_size);
+
+                // check current class size
+                class_count_url = `http://127.0.0.1:5003/class/count/` + course_name + `/` + class_id
+                var class_count = await fetch(class_count_url, {method: "GET"}).then(res => res.json());
+                class_cap = class_count.data.inclass_count;
+                // console.log(class_cap);
+
+                // count + 1 lower than class_size, add
+                if (class_cap+1 <= class_size) {
+                    let learner_id = enrol_learner[i]
+                    console.log(learner_id);
+                    console.log(course_name);
+
+                    enrolment_url = `http://127.0.0.1:5003/enrol/` + course_name + `/` + class_id + `/` + learner_id;
+                    console.log(enrolment_url);
+                    var enrol = await fetch(enrolment_url, {method: "POST"}).then(res => res.json());
+                    // console.log(enrol);
+
+                    if (enrol.code == 201) {
+                        alert("You have successfully enrolled Learner " + learner_id + " into " + course_name + " C" + class_id + "!")
+                    }
+
+                    else {
+                        alert("Enrolment Unsuccessful!")
+                    }
+                }
+                else {
+                    alert("Selected class full. Enrolment Unsuccessful!")
+                }
+            }
+        }
+        
+
+        // rerun the page
+        class_dropdown(course_name);
+        available_learner(course_name);
+    }
+
+</script>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Enrol</title>
+    <!-- Favicon icon -->
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon.png">
+    <!-- Pignose Calender -->
+    <link href="./plugins/pg-calendar/css/pignose.calendar.min.css" rel="stylesheet">
+    <!-- Chartist -->
+    <link rel="stylesheet" href="./plugins/chartist/css/chartist.min.css">
+    <link rel="stylesheet" href="./plugins/chartist-plugin-tooltips/css/chartist-plugin-tooltip.css">
+    <!-- Custom Stylesheet -->
+    <link href="css/style.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+    <!--*******************
+        Preloader start
+    ********************-->
+    <div id="preloader">
+        <div class="loader">
+            <svg class="circular" viewBox="25 25 50 50">
+                <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="3" stroke-miterlimit="10" />
+            </svg>
+        </div>
+    </div>
+    <!--*******************
+        Preloader end
+    ********************-->
+
+    
+    <!--**********************************
+        Main wrapper start
+    ***********************************-->
+    <div id="main-wrapper">
+
+        <!--**********************************
+            Nav header start
+        ***********************************-->
+        <div class="nav-header">
+            <div class="brand-logo">
+                <a href="hr.html">
+                    <b class="logo-abbr"><img src="images/logo.png" alt=""> </b>
+                    <span class="logo-compact"><img src="./images/logo-compact.png" alt=""></span>
+                    <span class="brand-title">
+                        <img src="images/aio_logo.png" alt="">
+                    </span>
+                </a>
+            </div>
+        </div>
+        <!--**********************************
+            Nav header end
+        ***********************************-->
+
+        <!--**********************************
+            Header start
+        ***********************************-->
+        <div class="header">    
+            <div class="header-content clearfix">
+                
+                <div class="nav-control">
+                    <div class="hamburger">
+                        <span class="toggle-icon"><i class="icon-menu"></i></span>
+                    </div>
+                </div>
+                <div class="header-left">
+                    <!-- <div class="input-group icons">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text bg-transparent border-0 pr-2 pr-sm-3" id="basic-addon1"><i class="mdi mdi-magnify"></i></span>
+                        </div>
+                        <input type="search" class="form-control" placeholder="Search Dashboard" aria-label="Search Dashboard">
+                        <div class="drop-down animated flipInX d-md-none">
+                            <form action="#">
+                                <input type="text" class="form-control" placeholder="Search">
+                            </form>
+                        </div>
+                    </div> -->
+                </div>
+                <div class="header-right">
+                    <ul class="clearfix">
+                        <li class="icons dropdown"><a href="javascript:void(0)" data-toggle="dropdown">
+                                <i class="mdi mdi-email-outline"></i>
+                                <span class="badge badge-pill gradient-1">3</span>
+                            </a>
+                            <div class="drop-down animated fadeIn dropdown-menu">
+                                <div class="dropdown-content-heading d-flex justify-content-between">
+                                    <span class="">3 New Messages</span>  
+                                    <a href="javascript:void()" class="d-inline-block">
+                                        <span class="badge badge-pill gradient-1">3</span>
+                                    </a>
+                                </div>
+                                <div class="dropdown-content-body">
+                                    <ul>
+                                        <li class="notification-unread">
+                                            <a href="javascript:void()">
+                                                <img class="float-left mr-3 avatar-img" src="images/avatar/1.jpg" alt="">
+                                                <div class="notification-content">
+                                                    <div class="notification-heading">Saiful Islam</div>
+                                                    <div class="notification-timestamp">08 Hours ago</div>
+                                                    <div class="notification-text">Hi Teddy, Just wanted to let you ...</div>
+                                                </div>
+                                            </a>
+                                        </li>
+                                        <li class="notification-unread">
+                                            <a href="javascript:void()">
+                                                <img class="float-left mr-3 avatar-img" src="images/avatar/2.jpg" alt="">
+                                                <div class="notification-content">
+                                                    <div class="notification-heading">Adam Smith</div>
+                                                    <div class="notification-timestamp">08 Hours ago</div>
+                                                    <div class="notification-text">Can you do me a favour?</div>
+                                                </div>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:void()">
+                                                <img class="float-left mr-3 avatar-img" src="images/avatar/3.jpg" alt="">
+                                                <div class="notification-content">
+                                                    <div class="notification-heading">Barak Obama</div>
+                                                    <div class="notification-timestamp">08 Hours ago</div>
+                                                    <div class="notification-text">Hi Teddy, Just wanted to let you ...</div>
+                                                </div>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:void()">
+                                                <img class="float-left mr-3 avatar-img" src="images/avatar/4.jpg" alt="">
+                                                <div class="notification-content">
+                                                    <div class="notification-heading">Hilari Clinton</div>
+                                                    <div class="notification-timestamp">08 Hours ago</div>
+                                                    <div class="notification-text">Hello</div>
+                                                </div>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                    
+                                </div>
+                            </div>
+                        </li>
+                        <li class="icons dropdown"><a href="javascript:void(0)" data-toggle="dropdown">
+                                <i class="mdi mdi-bell-outline"></i>
+                                <span class="badge badge-pill gradient-2">3</span>
+                            </a>
+                            <div class="drop-down animated fadeIn dropdown-menu dropdown-notfication">
+                                <div class="dropdown-content-heading d-flex justify-content-between">
+                                    <span class="">2 New Notifications</span>  
+                                    <a href="javascript:void()" class="d-inline-block">
+                                        <span class="badge badge-pill gradient-2">5</span>
+                                    </a>
+                                </div>
+                                <div class="dropdown-content-body">
+                                    <ul>
+                                        <li>
+                                            <a href="javascript:void()">
+                                                <span class="mr-3 avatar-icon bg-success-lighten-2"><i class="icon-present"></i></span>
+                                                <div class="notification-content">
+                                                    <h6 class="notification-heading">Events near you</h6>
+                                                    <span class="notification-text">Within next 5 days</span> 
+                                                </div>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:void()">
+                                                <span class="mr-3 avatar-icon bg-danger-lighten-2"><i class="icon-present"></i></span>
+                                                <div class="notification-content">
+                                                    <h6 class="notification-heading">Event Started</h6>
+                                                    <span class="notification-text">One hour ago</span> 
+                                                </div>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:void()">
+                                                <span class="mr-3 avatar-icon bg-success-lighten-2"><i class="icon-present"></i></span>
+                                                <div class="notification-content">
+                                                    <h6 class="notification-heading">Event Ended Successfully</h6>
+                                                    <span class="notification-text">One hour ago</span>
+                                                </div>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:void()">
+                                                <span class="mr-3 avatar-icon bg-danger-lighten-2"><i class="icon-present"></i></span>
+                                                <div class="notification-content">
+                                                    <h6 class="notification-heading">Events to Join</h6>
+                                                    <span class="notification-text">After two days</span> 
+                                                </div>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                    
+                                </div>
+                            </div>
+                        </li>
+                        <li class="icons dropdown d-none d-md-flex">
+                            <a href="javascript:void(0)" class="log-user"  data-toggle="dropdown">
+                                <span>English</span>  <i class="fa fa-angle-down f-s-14" aria-hidden="true"></i>
+                            </a>
+                            <div class="drop-down dropdown-language animated fadeIn  dropdown-menu">
+                                <div class="dropdown-content-body">
+                                    <ul>
+                                        <li><a href="javascript:void()">English</a></li>
+                                        <li><a href="javascript:void()">Dutch</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="icons dropdown">
+                            <div class="user-img c-pointer position-relative"   data-toggle="dropdown">
+                                <span class="activity active"></span>
+                                <img src="images/user/1.png" height="40" width="40" alt="">
+                            </div>
+                            <div class="drop-down dropdown-profile animated fadeIn dropdown-menu">
+                                <div class="dropdown-content-body">
+                                    <ul>
+                                        <li>
+                                            <a href="app-profile.html"><i class="icon-user"></i> <span>Profile</span></a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:void()">
+                                                <i class="icon-envelope-open"></i> <span>Inbox</span> <div class="badge gradient-3 badge-pill gradient-1">3</div>
+                                            </a>
+                                        </li>
+                                        
+                                        <hr class="my-2">
+                                        <li>
+                                            <a href="page-lock.html"><i class="icon-lock"></i> <span>Lock Screen</span></a>
+                                        </li>
+                                        <li><a href="page-login.html"><i class="icon-key"></i> <span>Logout</span></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!--**********************************
+            Header end ti-comment-alt
+        ***********************************-->
+
+        <!--**********************************
+            Sidebar start
+        ***********************************-->
+        <div class="nk-sidebar">           
+            <div class="nk-nav-scroll">
+                <ul class="metismenu" id="menu">
+                    <li>
+                        <a href="hr.html" aria-expanded="false">
+                            <i class="icon-speedometer menu-icon"></i><span class="nav-text">Home</span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a class="has-arrow" href="javascript:void()" aria-expanded="false">
+                            <i class="icon-envelope menu-icon"></i> <span class="nav-text">Enrollment</span>
+                        </a>
+                        <ul aria-expanded="false">
+                            <li><a href="hr_enrol.html">Enrol</a></li>
+                            <li><a href="hr_requests.html">Requests</a></li>
+                            <li><a href="hr_class.html">Classlist</a></li>
+                        </ul>
+                    </li>
+                    
+                            
+                </ul>
+            </div>
+        </div>
+        <!--**********************************
+            Sidebar end
+        ***********************************-->
+
+
+        <!--**********************************
+            Content body start
+        ***********************************-->
+        <div class="content-body">
+            
+            <div class="row page-titles mx-0">
+                <div class="col p-md-0">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="javascript:void(0)">HR</a></li>
+                        <li class="breadcrumb-item active"><a href="javascript:void(0)">Enrol</a></li>
+                    </ol>
+                </div>
+            </div>
+            <!-- row -->
+
+            <div class="container-fluid">
+                <!-- End Row -->
+
+                <div class="row">
+                    <div class="col-12 m-b-30">
+                        <!-- tabs -->
+                        
+                        <!-- end of tabs -->
+                        <p><h3 class="d-inline">Class Progress</h3></p>
+                        <div></div>
+                        <br>
+                        <!-- PULL COURSE NAME INTO CHECKBOX -->
+                        <label for="course">Choose a Course:</label>
+                            <select name="course" id="course_dropdown" onchange="available_learner(value); class_dropdown(value);">
+                            <option value="course1">{{Course1}}</option>
+                            <option value="course2">{{Course2}}</option>
+                            <option value="course3">{{Course3}}</option>
+                            
+                            </select>
+                        
+                        <br>
+                        <label for="class">Choose a Class:</label>
+                            <select name="course_class" id="class_dropdown">
+                            <option value="">Select a course to see available class</option>
+                            
+                            </select>
+                        
+                          <br><br>
+                          <!-- insert progress here -->
+                          <div class="row">
+                            <div class="col-lg-8">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="active-member">
+                                            <div class="table-responsive">
+                                                <table class="table table-xs mb-0">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Name</th>
+                                                            <th>Student ID</th>
+                                                            <th>Course</th>
+                                                            <th>Progress</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">Rachel</td>
+                                                            <td>1234</td>
+                                                            <td><a href="course1.html">Art of Ink 101</a></td>
+                                                            
+                                                            <td>
+                                                                <div>
+                                                                    <span class="float-right">50%</span>
+                                                                    <div class="progress" style="height: 6px">
+                                                                        <div class="progress-bar bg-success" style="width: 50%" role="progressbar"></div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">Name2</td>
+                                                            <td>4321</td>
+                                                            <td><a href="course1.html">Art of Ink 102</a></td>
+                                                            
+                                                            <td>
+                                                                <div>
+                                                                    <span class="float-right">90%</span>
+                                                                    <div class="progress" style="height: 6px">
+                                                                        <div class="progress-bar bg-success" style="width: 50%" role="progressbar"></div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                          
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>                        
+                            </div>
+                          
+        
+                        
+                    </div>       
+                    <!-- INSERT ENROL REQUEST HERE -->
+                          
+                  </div>
+                  </div>
+                  </div>
+            <!-- #/ container -->
+        </div>
+        <!--**********************************
+            Content body end
+        ***********************************-->
+        
+        
+        <!--**********************************
+            Footer start
+        ***********************************-->
+        <div class="footer">
+            <div class="copyright">
+                <p>Copyright &copy; All-in-One Printing Solutions</p>
+            </div>
+        </div>
+        <!--**********************************
+            Footer end
+        ***********************************-->
+    </div>
+    <!--**********************************
+        Main wrapper end
+    ***********************************-->
+
+    <!--**********************************
+        Scripts
+    ***********************************-->
+    <script src="plugins/common/common.min.js"></script>
+    <script src="js/custom.min.js"></script>
+    <script src="js/settings.js"></script>
+    <script src="js/gleek.js"></script>
+    <script src="js/styleSwitcher.js"></script>
+    <!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+</body>
+
+</html>
