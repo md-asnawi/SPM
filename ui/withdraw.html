@@ -369,6 +369,53 @@
                     </ol>
                 </div>
             </div>
+        
+        <!-- manage enrolment table -->
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h1 class="card-title">Manage Courses</h1>
+                                <div class="active-member">
+                                    <div class="table-responsive">
+                                        <table class="table table-xs mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Courses Enrolled</th>
+                                                    <th>Status</th>
+                                                    <th>Manage</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Art of Ink 101</td>
+                                                    <td>Self-Enrolled</td>
+                                                    <td>
+                                                        <div>
+                                                            <a href="" class="btn btn-light" role="button">Withdraw</a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Art of Ink 102</td>
+                                                    <td>Pre-assigned</td>
+                                                    <td>
+                                                        <div>
+                                                            Withdrawal is not allowed. 
+                                                        </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                
+                                            </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>                        
+                    </div>
             <!-- row -->
 
             <div class="container-fluid">
@@ -376,7 +423,8 @@
                     <div class="col-lg-12">
                         <div class="card">
                             <div class="card-body">
-                                <h1 class="card-title">Course Withdrawal</h1>
+                                <h1 class="card-title">Request for Withdrawal</h1>
+                                <p text-align:"center">Please note that learners may only withdraw self-enrolled courses before or during self-enrollment period. Self-enrollment period is subjective to course. To withdraw outside of this time window, please write in to L&D via the form provided here.</p>
                                 <div class="basic-form">
                                     <form>
                                         <div class="form-row align-items-center">
@@ -445,6 +493,9 @@
     <script src="js/settings.js"></script>
     <script src="js/gleek.js"></script>
     <script src="js/styleSwitcher.js"></script>
+    <script>
+        alert("ANNOUNCEMENT: Learners may only withdraw self-enrolled courses before or during self-enrollment period. Self-enrollment period is subjective to course. To withdraw outside of this time window, please write in to L&D via the form provided here.")
+    </script>
 
 </body>
 
