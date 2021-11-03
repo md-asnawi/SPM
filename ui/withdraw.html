@@ -10,9 +10,9 @@
     async function course_dropdown(learner_id) {
 
         // Create empty array
-        dropdown = []
+        dropdown = [`<option value="unselected">--- Select course ---</option>`]
 
-        course_url = `http://127.0.0.1:5003/learner_class/` + learner_id;
+        course_url = `http://127.0.0.1:5003/learner_class/withdrawal/` + learner_id;
         var course_response = await fetch(course_url, {method: "GET"}).then(res => res.json());
 
         if (course_response.code == 200) {
@@ -38,26 +38,52 @@
 
     async function submit_withdrawal() {
 
-        // console.log("Submit withdrawal is clicked");
         // get course_name chosen
-        course_name =  document.getElementById("course_dropdown").value;
-
-        // console.log(course_name);
-
-        alertMsg = "Learner " + learner_id + ", you have submitted your withdrawal from " + course_name + "!";
-        // data = {'withdrawal': 'True'};
-
-        url = `http://127.0.0.1:5003/learner_class/update_withdrawal/` + learner_id + `/` + course_name;
-
-        var withdrawal_response = await fetch(url, {method: "PUT", headers: { 'Content-Type': 'application/json' }}).then(res => res.json());
-
-        if (withdrawal_response.data.course_name == "nocourse") {
-            alertMsg = "Learner " + learner_id + ", you are not enrolled in any courses.";
+        var course_name = document.getElementById("course_dropdown").value;
+        if (course_name == "unselected") {
+            alert("Please select a course.");
+            return;
         }
-        
-        alert(alertMsg);
 
-        course_dropdown(learner_id);
+        if (course_name == "nocourse") {
+            alert("Learner " + learner_id + ", you are not enrolled in any self-enrolled courses.");
+            return;
+        }
+
+        var message = document.getElementById("comment").value;
+        if (message == "") {
+            // console.log("Empty text");
+            alert("Please fill in the reason for withdrawal.");
+            return;
+        }
+
+        var checkWithdrawal = document.getElementById("checkWithdrawal").checked;
+        console.log(checkWithdrawal);
+        if (!checkWithdrawal) {
+            alert("Please check the confirm withdrawal checkbox.");
+            return;
+        }
+
+        // console.log(message)
+        message_request_body = { "withdrawal_message" : message };
+
+        message_url = `http://127.0.0.1:5003/learner_class/withdrawal_message/` + learner_id + `/` + course_name;
+        var message_response = await fetch(message_url,{
+            method: "PUT",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(message_request_body)
+        })
+        .then(res => res.json());
+
+        console.log(message_response);
+
+        // status_url = `http://127.0.0.1:5003/learner_class/update_withdrawal/` + learner_id + `/` + course_name;
+        // var withdrawal_response = await fetch(status_url, {method: "PUT", headers: { 'Content-Type': 'application/json' }}).then(res => res.json());  
+        
+        alert("Learner " + learner_id + ", you have submitted your withdrawal from " + course_name + "!");
+
+        // course_dropdown(learner_id);
+        location.reload();
 
     }
 
@@ -372,7 +398,7 @@
                                         <br>
                                         <div class="form-check mb-3">
                                             <label class="form-check-label">
-                                                <input type="checkbox" class="form-check-input" value="">
+                                                <input type="checkbox" class="form-check-input" id="checkWithdrawal">
                                             I confirm that I am withdrawing out of this course.
                                             </label>
                                         </div>
