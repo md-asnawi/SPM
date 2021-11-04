@@ -20,26 +20,31 @@ class Class(db.Model):
     course_name = db.Column(db.String(45), primary_key = True)
     class_id = db.Column(db.Integer, primary_key = True)
     class_size = db.Column(db.Integer, nullable = False)
-    start_date = db.Column(db.Date, nullable = False)
-    end_date = db.Column(db.Date, nullable = False)
+    enrolment_start_date = db.Column(db.Date, nullable=False)
+    enrolment_end_date = db.Column(db.Date, nullable=False)
+    class_start_date = db.Column(db.Date, nullable = False)
+    class_end_date = db.Column(db.Date, nullable = False)
     start_time = db.Column(db.Time, nullable = False)
     end_time = db.Column(db.Time, nullable = False)
     trainer_name = db.Column(db.String, nullable = False)
 
-    def __init__(self, course_name, class_id, class_size, start_date, end_date, start_time, end_time, trainer_name):
+    def __init__(self, course_name, class_id, class_size, enrolment_start_date, enrolment_end_date, class_start_date, class_end_date, start_time, end_time, trainer_name):
         self.course_name = course_name
         self.class_id = class_id
         self.class_size = class_size
-        self.start_date = start_date
-        self.end_date = end_date
+        self.enrolment_start_date = enrolment_start_date
+        self.enrolment_end_date = enrolment_end_date
+        self.class_start_date = class_start_date
+        self.class_end_date = class_end_date
         self.start_time = start_time
         self.end_time = end_time
         self.trainer_name = trainer_name
 
     def json(self):
         return {
-                "course_name": self.course_name, "class_id": self.class_id, "class_size": self.class_size, 
-                "start_date": str(self.start_date), "end_date": str(self.end_date), "start_time": str(self.start_time),
+                "course_name": self.course_name, "class_id": self.class_id, "class_size": self.class_size,
+                "enrolment_start_date": str(self.enrolment_start_date), "enrolment_end_date": str(self.enrolment_end_date),
+                "class_start_date": str(self.class_start_date), "class_end_date": str(self.class_end_date), "start_time": str(self.start_time),
                 "end_time": str(self.end_time), "trainer_name": self.trainer_name
         }
 
@@ -61,17 +66,29 @@ class Class(db.Model):
     def set_class_size(self, class_size):
         self.class_size = class_size
 
-    def get_start_date(self):
-        return self.start_date
+    def get_enrolment_start_date(self):
+        return self.enrolment_start_date
 
-    def set_start_date(self, start_date):
-        self.start_date = start_date
+    def set_enrolment_start_date(self, enrolment_start_date):
+        self.enrolment_start_date = enrolment_start_date
 
-    def get_end_date(self):
-        return self.end_date
+    def get_enrolment_end_date(self):
+        return self.enrolment_end_date
 
-    def set_end_date(self, end_date):
-        self.end_date = end_date
+    def set_enrolment_end_date(self, enrolment_end_date):
+        self.enrolment_end_date = enrolment_end_date
+
+    def get_class_start_date(self):
+        return self.class_start_date
+
+    def set_class_start_date(self, class_start_date):
+        self.class_start_date = class_start_date
+
+    def get_class_end_date(self):
+        return self.class_end_date
+
+    def set_class_end_date(self, class_end_date):
+        self.class_end_date = class_end_date
 
     def get_start_time(self):
         return self.start_time
@@ -161,10 +178,10 @@ def get_one_class(course_name, class_id):
 def create_class():
     data = request.get_json()
     if not all(key in data.keys() for
-               key in ('course_name', 'class_id',
-                       'class_size', 'start_date',
-                       'end_date', 'start_time',
-                       'end_time', 'trainer_name')):
+               key in ('course_name', 'class_id', 'class_size', 
+                       'enrolment_start_date', 'enrolment_end_date',
+                       'class_start_date', 'class_end_date', 
+                       'start_time', 'end_time', 'trainer_name')):
         return jsonify({
             "message": "Incorrect JSON object provided."
         }), 500

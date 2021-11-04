@@ -14,8 +14,9 @@ CREATE TABLE IF NOT EXISTS `quiz` (
 );
 
 INSERT INTO `quiz` (`course_name`, `class_id`, `lesson_id`, `quiz_id`, `quiz_type`) VALUES
-('Course 111', 1, 1, 1, 'Ungraded'),
-('Course 111', 1, 1, 2, 'Graded'),
-('Course 111', 1, 2, 1, 'Ungraded'),
-('Course 111', 1, 2, 2, 'Graded');
+('Ink Course', 1, 1, 1, 'Ungraded'),
+('Ink Course', 1, 2, 2, 'Ungraded'),
+('Ink Course', 1, 3, 3, 'Graded'),
+('Ink Course', 2, 2, 1, 'Ungraded'),
+('Ink Course', 2, 2, 2, 'Graded');
 

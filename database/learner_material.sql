@@ -17,8 +17,8 @@ CREATE TABLE IF NOT EXISTS `learner_material` (
 );
 
 INSERT INTO `learner_material` (`course_name`, `class_id`, `lesson_id`, `material_id`, `learner_id`, `completion_status`) VALUES
-('Course 111', 1, 1, 1, 456, 'Incomplete'),
-('Course 111', 1, 1, 2, 999, 'Complete');
+('Ink Course', 1, 1, 1, 456, 'Incomplete'),
+('Ink Course', 1, 1, 2, 999, 'Complete');
 
 
 -- Learner class

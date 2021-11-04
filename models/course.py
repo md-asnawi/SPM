@@ -23,20 +23,15 @@ class Course(db.Model):
     course_id = db.Column(db.Integer, primary_key = True)
     description = db.Column(db.String(45), nullable=False)
     prerequisite = db.Column(db.Integer, nullable=False)
-    enrolment_start_date = db.Column(db.Date, nullable=False)
-    enrolment_end_date = db.Column(db.Date, nullable=False)
 
-    def __init__(self, course_name = "", course_id = "", description = "", prerequisite = "", enrolment_start_date = "", enrolment_end_date = ""):
+    def __init__(self, course_name = "", course_id = "", description = "", prerequisite = ""):
         self.course_name = course_name
         self.course_id = course_id
         self.description = description
         self.prerequisite = prerequisite
-        self.enrolment_start_date = enrolment_start_date
-        self.enrolment_end_date = enrolment_end_date
-
+        
     def json(self):
-        return{"course_name": self.course_name, "course_id": self.course_id, "description": self.description, "prerequisite": self.prerequisite,
-                "enrolment_start_date": str(self.enrolment_start_date), "enrolment_end_date": str(self.enrolment_end_date)}
+        return{"course_name": self.course_name, "course_id": self.course_id, "description": self.description, "prerequisite": self.prerequisite}
 
     def get_course_name(self):
         return self.course_name
@@ -61,18 +56,6 @@ class Course(db.Model):
 
     def set_prerequisite(self, prerequisite):
         self.prerequisite = prerequisite
-
-    def get_enrolment_start_date(self):
-        return self.enrolment_start_date
-
-    def set_enrolment_start_date(self, enrolment_start_date):
-        self.enrolment_start_date = enrolment_start_date
-
-    def get_enrolment_end_date(self):
-        return self.enrolment_end_date
-
-    def set_enrolment_end_date(self, enrolment_end_date):
-        self.enrolment_end_date = enrolment_end_date
     
 # all course
 @app.route("/course", methods=["GET"])
@@ -122,8 +105,12 @@ def get_available(learner_id):
     learner_class = Learner_Class(db.Model).query.filter_by(learner_id=learner_id).all()
 
     for eachrow in learner_class:
-        # if in the learner_class and not withdrawn, means unavailable
-        if eachrow.json()["withdrawal"] == False:
+        # if in the learner_class enrolled and not withdrawn, means unavailable
+        if eachrow.json()["withdrawal"] == False and eachrow.json()["enrolment_status"] == "Enrolled":
+            unavailable_array.append(eachrow.json()["course_name"])
+
+        # if in the learner_class pending enrolment, means unavailable
+        if eachrow.json()["enrolment_status"] == "Pending":
             unavailable_array.append(eachrow.json()["course_name"])
     
     # if course not in completed array, append to available array.
