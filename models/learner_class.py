@@ -262,7 +262,7 @@ def update_pending(learner_id, course_name):
         ), 404
 
         
-
+# get inclass count
 @app.route("/class/count/<string:course_name>/<int:class_id>", methods=["GET"])
 def get_inclass_count(course_name, class_id):
 
@@ -271,6 +271,36 @@ def get_inclass_count(course_name, class_id):
     if len(inclass_count):
         count = 0
         for learner in inclass_count:
+            count += 1
+
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "inclass_count": count
+                }
+            }
+        )
+
+    else:
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "inclass_count": 0
+                }
+            }
+        )
+
+# get inclass count with progress 100
+@app.route("/class/count/<string:course_name>/<int:class_id>", methods=["GET"])
+def get_inclass_count_completedcourse(course_name, class_id):
+
+    get_inclass_count_completedcourse = Learner_Class(db.Model).query.filter_by(course_name=course_name,class_id=class_id,enrolment_status="Enrolled",withdrawal=0, progress=100).all()
+
+    if len(get_inclass_count_completedcourse):
+        count = 0
+        for learner in get_inclass_count_completedcourse:
             count += 1
 
         return jsonify(
