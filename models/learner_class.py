@@ -128,6 +128,29 @@ def get_courses_by_learner_id(learner_id):
             }
         ), 404
 
+# get all non-preassigned courses learner enrolled in using learner id
+@app.route("/learner_class/withdrawal/<int:learner_id>", methods=["GET"])
+def get_non_preassigned_courses_by_learner_id(learner_id):
+
+    learner_class_list = Learner_Class(db.Model).query.filter_by(learner_id=learner_id, enrolment_status="Enrolled", preassigned=0, withdrawal=0).all()
+ 
+    if len(learner_class_list):
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "learner_class": [learner_class.json() for learner_class in learner_class_list]
+                }
+            }
+        )
+        
+
+    return jsonify(
+            {
+                "message": "Learner courses not found."
+            }
+        ), 404
+
 @app.route("/learner_class/inprogress/<int:learner_id>", methods=["GET"])
 def get_inprogress_courses_by_learner_id(learner_id):
 
@@ -140,76 +163,59 @@ def get_inprogress_courses_by_learner_id(learner_id):
             if eachrow.json()["progress"] != 100:
                 class_inprogress.append(eachrow)
 
-        return jsonify(
-                    {
-                        "code": 200,
-                        "data": {
-                            "learner_class": [learner_class.json() for learner_class in class_inprogress]
-                        }
-                    }
-                )
-        
-
-    return jsonify(
-            {
-                "message": "Learner courses not found."
-            }
-        ), 404
-
-# check if learner enrolment status for the class
-@app.route("/learner_class/status/<string:course_name>/<int:class_id>/<int:learner_id>", methods=["GET"])
-def get_status(course_name, class_id, learner_id):
-    learner_class = Learner_Class(db.Model).query.filter_by(course_name=course_name, class_id=class_id, learner_id=learner_id).first()
-
-    if learner_class:
-        if (learner_class.enrolment_status == "Rejected"):
-            return jsonify(
-                    {
-                        "code": 200,
-                        "data": {
-                            "learner_class_status": "Rejected"
-                        }
-                    }
-                )
-
-        elif (learner_class.enrolment_status == "Pending"):
-            return jsonify(
-                    {
-                        "code": 200,
-                        "data": {
-                            "learner_class_status": "Pending"
-                        }
-                    }
-                )
-        else:
             return jsonify(
                         {
                             "code": 200,
                             "data": {
-                                "learner_class_status": "Enrolled"
+                                "learner_class": [learner_class.json() for learner_class in class_inprogress]
                             }
                         }
                     )
-    return jsonify(
-                {
-                    "code": 200,
-                    "data": {
-                        "learner_class_status": "Not Enrolled"
-                    }
-                }
-            )
-
 
 # learner_class/update_withdrawal/
 # update withdrawal status
+# only can withdraw if course is not preassigned by HR
+# actually this one not used, if refactoring delete this
 @app.route("/learner_class/update_withdrawal/<int:learner_id>/<string:course_name>", methods=["PUT"])
-def update_withdrawal(learner_id, course_name):
+def update_withdrawal_status(learner_id, course_name):
 
-    learner_class = Learner_Class(db.Model).query.filter_by(learner_id=learner_id, course_name=course_name).first()
+    learner_class = Learner_Class(db.Model).query.filter_by(learner_id=learner_id, course_name=course_name, preassigned = 0).first()
     
     if learner_class:
         # data = request.get_json()
         # if data['withdrawal']:
+        learner_class.withdrawal = True
+        db.session.commit()
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "learner_class": learner_class.json()
+                }
+            }
+        )
+
+    return jsonify(
+            {
+                "code": 404,
+                "data": {
+                    "learner_id": learner_id,
+                    "course_name": course_name
+                },
+                "message": "Learner or Class not found"
+            }
+        ), 404
+
+
+@app.route("/learner_class/withdrawal_message/<int:learner_id>/<string:course_name>", methods=["PUT"])
+def update_withdrawal_message(learner_id, course_name):
+
+    learner_class = Learner_Class(db.Model).query.filter_by(learner_id=learner_id, course_name=course_name, preassigned = 0).first()
+    
+    if learner_class:
+        data = request.get_json()
+        # if data['withdrawal']:
+        learner_class.withdrawal_message = data['withdrawal_message']
         learner_class.withdrawal = True
         db.session.commit()
         return jsonify(
