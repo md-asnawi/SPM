@@ -5,7 +5,7 @@ from course import Course
 from Class import Class
 from lesson import Lesson
 from material import Material
-# testing jenkin3
+# testing jenkin4
 # Test for class Course
 class TestCourse(unittest.TestCase):
     def test_to_json(self):
