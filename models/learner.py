@@ -51,7 +51,7 @@ def get_all_learners():
 
 # get a learner using learner id
 @app.route("/learner/<int:learner_id>", methods=["GET"])
-def get_learner_byid(learner_id):
+def get_learner_by_id(learner_id):
 
     learner = Learner.query.filter_by(learner_id = learner_id).first()
     

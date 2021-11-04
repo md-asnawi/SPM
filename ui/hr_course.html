@@ -3,285 +3,13 @@
 
 <script>
 
-    // Alert for successful enrolment
-    function myAlert(){
-        alert("Enrolment Successful!")
-    }
-
-    window.onload = function (e) {
-        course_name = "Data Course"
-        // class_id = "1"
-        course_dropdown();
-        class_dropdown(course_name);
-        // inclass_learner(course_name, class_id);
-    }
-
-    async function course_dropdown() {
-
-        // Create empty array
-        all = []
-        dropdown = []
-
-        all_url = `http://127.0.0.1:5001/course`;
-        var all_course = await fetch(all_url, {method: "GET"}).then(res => res.json());
-
-        if (all_course.code == 200) {
-        
-            all_course_array = all_course.data.course;
-
-            for (i=0; i < all_course_array.length; i++ ) {
-                all.push(all_course_array[i]);
-            }
-
-            for (let i = 0; i < all.length; i++) {
-                let course = all[i]
-                
-                dropdown.push(`
-                    <option value="${course.course_name}">${course.course_name}</option>
-                `)
-            }
-        }
-
-        else {
-            dropdown.push(`<option value="nocourse">No Course</option>`);
-        }
-
-        document.getElementById("course_dropdown").innerHTML = dropdown;
-    }
-
-    async function class_dropdown(course_name) {
-
-        // Create empty array
-        all1 = []
-        dropdown1 = []
-
-        course_class_url = `http://127.0.0.1:5004/class/` + course_name;
-    
-        var all_course_class = await fetch(course_class_url, {method: "GET"}).then(res => res.json());
-
-        if (all_course_class.code == 200) {
-
-            all_course_class_array = all_course_class.data.classes;
-
-            // console.log(all_course_class_array);
-
-            for (i=0; i < all_course_class_array.length; i++ ) {
-                all1.push(all_course_class_array[i]);
-            }
-
-            for (let i = 0; i < all1.length; i++) {
-                let course_class = all1[i]
-                
-                // check capacity of class
-                single_class_url = `http://127.0.0.1:5004/class/` + course_class.course_name + `/` + course_class.class_id;
-                var single_class = await fetch(single_class_url, {method: "GET"}).then(res => res.json());
-                class_size = single_class.data.single_class.class_size;
-            
-
-                // check current class size
-                class_count_url = `http://127.0.0.1:5003/class/count/` + course_class.course_name + `/` + course_class.class_id
-                var class_count = await fetch(class_count_url, {method: "GET"}).then(res => res.json());
-                class_cap = class_count.data.inclass_count;
-
-                dropdown1.push(`
-                    <option value="${course_class.class_id}" course_name="${course_class.course_name}">${course_class.class_id} - (${class_cap}/${class_size})</option>
-                `)
-            }
-        }
-
-        else {
-            dropdown1.push(`<option value="noclass">No Class</option>`);
-        }
-
-        document.getElementById("class_dropdown").innerHTML = dropdown1;
-
-    }
-
-    async function inclass_learner() {
-
-        // must complete prereq, not taken course, class not packed
-
-        course_name = document.getElementById("course_dropdown").value;
-        // console.log(course_name);
-        class_id = document.getElementById("class_dropdown").value;
-        // console.log(class_id);
-
-        inclass = []
-        inclass_list_a = []        
-
-        // check if got class
-        if (class_id != "noclass") {
-        
-            // get the class list
-            inclass_list_url = `http://127.0.0.1:5003/class/` + course_name + `/` + class_id;
-            
-            var inclass_list = await fetch(inclass_list_url, {method: "GET"}).then(res => res.json());
-
-            // if inclass list 200, means have learner
-            
-            if (inclass_list.code == 200) {
-                inclass_list_array = inclass_list.data.inclass;
-
-                for (i=0; i < inclass_list_array.length; i++ ) {
-                    inclass_list_a.push(inclass_list_array[i]);
-                }
-
-                for (let i = 0; i < inclass_list_a.length; i++) {
-                    let learner = inclass_list_a[i]
-                    
-                    // get learner_name
-                    learner_info_url = `http://127.0.0.1:5005/learner/` + learner.learner_id;
-                    var learner_info = await fetch(learner_info_url, {method: "GET"}).then(res => res.json());
-                    learner_name = learner_info.data.learner;
-
-                    inclass.push(`
-                        <tr>
-                            <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">${learner_name.engineer_name}</td>
-                            <td>${learner.learner_id}</td>
-                            <td>${learner.date_assigned}</td>
-                            <td>${learner.enrolment_status}</td>
-                        </tr>
-                    `);
-                }
-            }
-
-            // else means no learner
-            else {
-                message = inclass_list.data.inclass;
-                console.log(message);
-                inclass.push(`<tr>
-                                <td>${message}</td>   
-                                <td></td>
-                                <td></td>   
-                                <td></td>
-                             </tr>`);
-            }
-        }
-
-        // no class 
-        else {
-            alert("No class available");
-            inclass.push(`<tr>
-                            <td>No class available. Please select a course with available class</td>      
-                            <td></td>
-                            <td></td>  
-                            <td></td>
-                        </tr>`);
-        }
-        // }
-        document.getElementById("inclass_learner").innerHTML = inclass.join("");
-    }
-
-    async function search_classlist(name) {
-        filtered = []
-
-        nameinput = document.getElementById("nameinput").value;
-        // name = " " + nameinput + " ";
-        // console.log(name);
-
-        if (nameinput == "") {
-            alert("Please enter a name");
-        }
-
-        else {
-
-            classlist = document.getElementById("inclass_learner").innerHTML;
-            // console.log(classlist);
-            course_name = document.getElementById("course_dropdown").value;
-            // console.log(course_name);
-            class_id = document.getElementById("class_dropdown").value;
-            // console.log(class_id);
-
-            // no class available and still search for name
-            if (classlist.includes("No class")) {
-                alert("No class available. Please select a course with available class.")
-            }
-
-            // no one enrolled and still search for name
-            else if (classlist.includes("No one enrolled")) {
-                alert("No one enrolled in this class. Please select another class.")
-            }
-
-            // class not filtered and still search for name
-            else if (classlist.includes("Select a Course and a Class and click the button `See Class List` to see class list")) {
-                alert("Course and Class not filtered. Please select a Course and a Class and click the button `See Class List` to see class list")
-            }
-
-            // class have enrolment
-            else {
-
-                // get learnerid by name
-                learner_byid_url = `http://127.0.0.1:5005/learner/` + nameinput;
-                var learner_byid = await fetch(learner_byid_url, {method: "GET"}).then(res => res.json());
-            
-                // check if learner even exist 
-                if (learner_byid.code == 200) {
-                    // check if in class
-                    learner_info = learner_byid.data.learner;
-                    // get learner_info in class by uid
-                    learner_inclass_byid_url = `http://127.0.0.1:5003/class/` + course_name + `/` + class_id + `/` + learner_info.learner_id;
-                    var learner_inclass_byid = await fetch(learner_inclass_byid_url, {method: "GET"}).then(res => res.json());
-                    
-                    if (learner_inclass_byid.code == 200) {
-                        learner_inclass_info = learner_inclass_byid.data.inclass;
-                        console.log(learner_inclass_info);
-
-                        // prepare array to update innerHTML
-                        filtered.push(`
-                                <tr>
-                                    <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">${learner_info.engineer_name}</td>
-                                    <td>${learner_inclass_info.learner_id}</td>
-                                    <td>${learner_inclass_info.date_assigned}</td>
-                                    <td>${learner_inclass_info.enrolment_status}</td>
-                                </tr>
-
-                                <tr>
-                                    <td>To search for another learner in class, go back to the class list.</td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            `);
-
-                        // replace innerHTML with searched learner info only
-                        document.getElementById("inclass_learner").innerHTML = filtered.join("");
-                    }
-
-                    // not in class
-                    else {
-                        alert("Learner is not in this class");
-                        // filtered.push(`
-                        //         <tr>
-                        //             <td>${learner_inclass_byid.data.message} Go back to the class list again to search for name.</td>
-                        //             <td></td>
-                        //             <td></td>
-                        //         </tr>
-                        //     `);
-                    }
-                }
-
-                else {
-                    alert("Learner not found.")
-                    // filtered.push(`
-                    //             <tr>
-                    //                 <td>${learner_byid.message} Go back to the class list again to search for name.</td>
-                    //                 <td></td>
-                    //                 <td></td>
-                    //             </tr>
-                    //         `);
-                }            
-            }
-            document.getElementById("nameinput").value = "";
-        }
-    }
-
 </script>
 
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Enrol</title>
+    <title>LMS - Create Course</title>
     <!-- Favicon icon -->
     <link rel="icon" type="image/png" sizes="16x16" href="images/favicon.png">
     <!-- Pignose Calender -->
@@ -291,6 +19,31 @@
     <link rel="stylesheet" href="./plugins/chartist-plugin-tooltips/css/chartist-plugin-tooltip.css">
     <!-- Custom Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
+
+    <!-- Date picker plugins css -->
+    <link href="./plugins/bootstrap-datepicker/bootstrap-datepicker.min.css" rel="stylesheet">
+    <!-- Daterange picker plugins css -->
+    <link href="./plugins/timepicker/bootstrap-timepicker.min.css" rel="stylesheet">
+    <link href="./plugins/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">
+
+    <style>
+        h6, h3{
+            text-align: center;
+        }
+
+        #add, #remove{
+            float: right;
+        }
+
+        .submit{
+            display: flex;  
+            justify-content: center;  
+            align-items: center;  
+            margin-top: 30px;
+        }
+
+    </style>
+    
 
 </head>
 
@@ -345,8 +98,8 @@
                         <span class="toggle-icon"><i class="icon-menu"></i></span>
                     </div>
                 </div>
-                <div class="header-left">
-                    <!-- <div class="input-group icons">
+                <!-- <div class="header-left">
+                    <div class="input-group icons">
                         <div class="input-group-prepend">
                             <span class="input-group-text bg-transparent border-0 pr-2 pr-sm-3" id="basic-addon1"><i class="mdi mdi-magnify"></i></span>
                         </div>
@@ -356,8 +109,8 @@
                                 <input type="text" class="form-control" placeholder="Search">
                             </form>
                         </div>
-                    </div> -->
-                </div>
+                    </div>
+                </div> -->
                 <div class="header-right">
                     <ul class="clearfix">
                         <li class="icons dropdown"><a href="javascript:void(0)" data-toggle="dropdown">
@@ -530,6 +283,12 @@
                             <i class="icon-speedometer menu-icon"></i><span class="nav-text">Home</span>
                         </a>
                     </li>
+
+                    <li>
+                        <a href="hr_course.html" aria-expanded="false">
+                            <i class="icon-note menu-icon"></i><span class="nav-text">Create Course</span>
+                        </a>
+                    </li>
                     
                     <li>
                         <a class="has-arrow" href="javascript:void()" aria-expanded="false">
@@ -539,6 +298,7 @@
                             <li><a href="hr_enrol.html">Enrol</a></li>
                             <li><a href="hr_requests.html">Requests</a></li>
                             <li><a href="hr_class.html">Classlist</a></li>
+                            <li><a href="hr_uncompleted_learners.html">Uncompleted Learners</a></li>
                         </ul>
                     </li>
                     
@@ -550,102 +310,157 @@
             Sidebar end
         ***********************************-->
 
-
         <!--**********************************
             Content body start
         ***********************************-->
         <div class="content-body">
-            
-            <div class="row page-titles mx-0">
-                <div class="col p-md-0">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="javascript:void(0)">HR</a></li>
-                        <li class="breadcrumb-item active"><a href="javascript:void(0)">Classlist</a></li>
-                    </ol>
-                </div>
-            </div>
+
             <!-- row -->
 
             <div class="container-fluid">
-                <!-- End Row -->
-
                 <div class="row">
-                    <div class="col-12 m-b-30">
-                        <!-- tabs -->
-                        
-                        <!-- end of tabs -->
-                        <p><h3 class="d-inline">Classlist</h3></p>
-                        <div></div>
-                        <br>
-                        <!-- PULL COURSE NAME INTO CHECKBOX -->
-                        <label for="course">Choose a Course:</label>
-                            <select name="course" id="course_dropdown" onchange="class_dropdown(value);">
-                            <option value="course1">{{Course1}}</option>
-                            <option value="course2">{{Course2}}</option>
-                            <option value="course3">{{Course3}}</option>
-                            
-                            </select>
-                        
-                        <br>
-                        <label for="class">Choose a Class:</label>
-                            <select name="course_class" id="class_dropdown">
-                            <option value="">Select a course to see available class</option>
-
-                            </select>
-                        
-                        <br>
-                        <button type="button" class="btn btn-primary" id="courseclassfilter" onclick="inclass_learner();">See Class List</button>
-                        
-                          <br><br>
-                          <!-- search bar here  --> 
-                          <div class="input-group col-sm-3">
-                            <input type="search" class="form-control rounded" placeholder="Search by Name" id="nameinput" aria-label="Search"
-                            aria-describedby="search-addon"/>
-                            <br><br>
-                            <button type="button" class="btn btn-primary" onclick="search_classlist();">Search</button>
-                          </div>
-                          <p><h4 class="d-inline"></h4></p>      
-                          <div class="row">
-                            <div class="col-lg-8">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <div class="active-member">
-                                            <div class="table-responsive">
-                                                <table class="table table-xs mb-0">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>Name</th>
-                                                            <th>ID</th>
-                                                            <th>Enrollment Date</th>
-                                                            <th>Status</th>
-                                                        </tr>
-                                                    </thead>
-                                                <!-- INSERT LEARNERS DATA HERE -->
-                                                    <tbody id="inclass_learner">
-                                                            <tr>
-                                                                <td>Select a Course and a Class and click the button `See Class List` to see class list"</td>
-                                                                <td></td>
-                                                                <td></td>
-                                                            </tr>
-                                                            <!-- <tr>
-                                                                <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">{{Learner2}}</td>
-                                                                <td>{{ID2}}</td>
-                                                                <td>{{start_date}} from learner_class</td>
-                                                            </tr> -->
-                                                    </tbody>
-                                                </table>
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-title">Course Creation</h6>
+                                <div class="basic-form">
+                                    <form>
+                                        <div class="form-group row">
+                                            <label class="col-lg-4 col-form-label">Course Name</label>
+                                            <div class="col-lg-6">
+                                                <input type="text" class="form-control" id="courseName" name="courseName" placeholder="Enter Course Name">
                                             </div>
                                         </div>
-                                    </div>
-                                </div>                        
-                            </div>
-        
-                        
-                    </div>       
+
+                                        <div class="form-group row">
+                                            <label class="col-lg-4 col-form-label">Enrollment Start and End Date</label>
+                                            <div class="col-lg-6">
+                                                <input type="text" class="form-control input-daterange-timepicker" name="daterange" value="#">
+                                            </div>
+                                        </div>
                     
-                  </div>
-                  </div>
-                  </div>
+                                        <h3 class="card-title">Add Class</h3>
+
+                                        <div class="form-group row">
+                                            <label class="col-lg-4 col-form-label">Class</label>
+                                            <div class="col-lg-6">
+                                                <input type="text" class="form-control" id="className" name="className" placeholder="Enter Class Name">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <label class="col-lg-4 col-form-label">Capacity</label>
+                                            <div class="col-lg-6">
+                                                <input type="text" class="form-control" id="capacity" name="capacity" placeholder="Enter Class Capacity">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <label class="col-lg-4 col-form-label">Instructor</label>
+                                            <div class="col-lg-6">
+                                                <!--Pull instructor list here-->
+                                                <select class="form-control" id="instructor" name="instructor">
+                                                    <option value="">Please select</option>
+                                                    <option value="name">Name of Instructor</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <label class="col-lg-4 col-form-label">Day</label>
+                                            <div class="col-lg-6">
+                                                <!--Pull instructor list here-->
+                                                <select class="form-control" id="classDay" name="classDay">
+                                                    <option value="">Please select</option>
+                                                    <option value="Monday">Monday</option>
+                                                    <option value="Tuesday">Tuesday</option>
+                                                    <option value="Wednesday">Wednesday</option>
+                                                    <option value="Thursday">Thursday</option>
+                                                    <option value="Friday">Friday</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <label class="col-lg-4 col-form-label">Start Time</label>
+                                            <div class="col-lg-6">
+                                                <!--Pull instructor list here-->
+                                                <select class="form-control" id="classTime" name="classTime">
+                                                    <option value="">Please select</option>
+                                                    <option value="8:15AM">8:15 AM</option>
+                                                    <option value="12PM">12 PM</option>
+                                                    <option value="3:30PM">3:30 PM</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <label class="col-lg-4 col-form-label">Class Duration</label>
+                                            <div class="col-lg-6">
+                                                <!--Pull instructor list here-->
+                                                <select class="form-control" id="classTime" name="classTime">
+                                                    <option value="">Please select</option>
+                                                    <option value="1">1 hour</option>
+                                                    <option value="2">2 hours</option>
+                                                    <option value="3">3 hours</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <button id="add" class="btn btn-info btn-rounded" onclick="" type="button">Add Class</button>
+
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="card-title">Classes Added</h6>
+                                <div class="basic-list-group">
+                                    <ul class="list-group">
+                                        <!--Insert Added class in here-->
+                                        <li class="list-group-item">
+                                            <ul>
+                                                <li>Class Name:</li>
+                                                <li>Instructor:</li>
+                                                <li>Day:</li>
+                                                <li>Time:</li> <!--To show start time + duration-->
+                                                <button id="remove" class="btn btn-danger btn-rounded" onclick="" type="button">Remove Class</button>
+                                            </ul>
+                                        </li>
+
+                                        <li class="list-group-item">
+                                            <ul>
+                                                <li>Class Name:</li>
+                                                <li>Instructor:</li>
+                                                <li>Day:</li>
+                                                <li>Time:</li> <!--To show start time + duration-->
+                                                <button id="remove" class="btn btn-danger btn-rounded" onclick="" type="button">Remove Class</button>
+                                            </ul>
+                                        </li>
+
+                                    </ul>
+                                    
+                                    <div class="submit">
+                                        <button id="submit" class="btn btn-success btn-rounded" onclick="" type="button">Confirm Class Creation</button>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+
+
+
+            </div>
             <!-- #/ container -->
         </div>
         <!--**********************************
@@ -677,14 +492,25 @@
     <script src="js/settings.js"></script>
     <script src="js/gleek.js"></script>
     <script src="js/styleSwitcher.js"></script>
-    <!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
 
-<!-- jQuery library -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="./plugins/moment/moment.js"></script>
+    <script src="./plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js"></script>
+    <!-- Clock Plugin JavaScript -->
+    <script src="./plugins/clockpicker/dist/jquery-clockpicker.min.js"></script>
+    <!-- Color Picker Plugin JavaScript -->
+    <script src="./plugins/jquery-asColorPicker-master/libs/jquery-asColor.js"></script>
+    <script src="./plugins/jquery-asColorPicker-master/libs/jquery-asGradient.js"></script>
+    <script src="./plugins/jquery-asColorPicker-master/dist/jquery-asColorPicker.min.js"></script>
+    <!-- Date Picker Plugin JavaScript -->
+    <script src="./plugins/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+    <!-- Date range Plugin JavaScript -->
+    <script src="./plugins/timepicker/bootstrap-timepicker.min.js"></script>
+    <script src="./plugins/bootstrap-daterangepicker/daterangepicker.js"></script>
 
-<!-- Latest compiled JavaScript -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="./js/plugins-init/form-pickers-init.js"></script>
+
+
+    <script src="./js/dashboard/dashboard-1.js"></script>
 
 </body>
 
