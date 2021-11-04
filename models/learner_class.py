@@ -384,6 +384,48 @@ def get_inclass_count_completedcourse(course_name, class_id):
             }
         )
 
+@app.route("/learner_class/status/<string:course_name>/<int:class_id>/<int:learner_id>", methods=["GET"])
+def get_status(course_name, class_id, learner_id):
+    learner_class = Learner_Class(db.Model).query.filter_by(course_name=course_name, class_id=class_id, learner_id=learner_id).first()
+
+    if learner_class:
+        if (learner_class.enrolment_status == "Rejected"):
+            return jsonify(
+                    {
+                        "code": 200,
+                        "data": {
+                            "learner_class_status": "Rejected"
+                        }
+                    }
+                )
+
+        elif (learner_class.enrolment_status == "Pending"):
+            return jsonify(
+                    {
+                        "code": 200,
+                        "data": {
+                            "learner_class_status": "Pending"
+                        }
+                    }
+                )
+        else:
+            return jsonify(
+                        {
+                            "code": 200,
+                            "data": {
+                                "learner_class_status": "Enrolled"
+                            }
+                        }
+                    )
+    return jsonify(
+                {
+                    "code": 200,
+                    "data": {
+                        "learner_class_status": "Not Enrolled"
+                    }
+                }
+            )
+            
 # incourse regardless of class
 @app.route("/class/<string:course_name>", methods=["GET"])
 def get_incourse(course_name):

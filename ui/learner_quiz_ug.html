@@ -53,6 +53,7 @@
                                     <span>False</span>
                                 </label>
                             </div>
+                            <div id="correctanswer${question.question_number}"></div>
                         </div>`)
                 }
 
@@ -90,7 +91,8 @@
                                                 </label>
                                             </div>`)
                             }
-                        each.push('</div>')
+                        each.push(`<div id="correctanswer${question.question_number}"></div>
+                                </div>`)
                 }
             }
             document.getElementById("quizdisplay").innerHTML = each.join('');
@@ -168,8 +170,45 @@
                 }
             }
             percentage = parseInt((score/question_count) * 100)
-            alert("You got " + score + "/" + question_count + " (" + percentage +"%) correct!" )
+
+            if (percentage < 85) {
+                document.getElementById("finalresult").innerHTML = `<h3>Result: ${score}/${question_count} (${percentage}%)</h3>`
+                document.getElementById("passfailstatus").innerHTML = `<h4>Status: Fail</h4>`
+                document.getElementById("buttonchange").innerHTML = `<button class="btn btn-primary border-success align-items-center btn-success" type="button" onclick="">Continue<i class="fa fa-angle-right ml-2"></i></button></div>`
+            } else {
+                document.getElementById("finalresult").innerHTML = `<h3>Result: ${score}/${question_count} (${percentage}%)</h3>`
+                document.getElementById("passfailstatus").innerHTML = `<h4>Status: Pass</h4>`
+                document.getElementById("buttonchange").innerHTML = `<button class="btn btn-primary border-success align-items-center btn-success" type="button" onclick="">Continue<i class="fa fa-angle-right ml-2"></i></button></div>`
+            }
         }
+    }
+
+    async function show_answer() {
+
+        questions = []
+        each = []
+
+        quiz_url = `http://localhost:5011/quiz/question/` + course_name + `/` + class_id + `/` + lesson_id + `/` + quiz_id;
+        var quiz_questions = await fetch(quiz_url, { method: "GET" }).then(res => res.json());
+
+        if (quiz_questions.code == 200) {
+
+            questions_array = quiz_questions.data.quiz_questions;
+
+            for (i=0; i < questions_array.length; i++ ) {
+                questions.push(questions_array[i]);
+            }
+
+            for (i=0; i < questions.length; i++ ) {
+                let question = questions[i]
+                
+                // get question answer
+                eachquestion_url = `http://localhost:5011/question/` + course_name + `/` + class_id + `/` + lesson_id + `/` + quiz_id + `/` + question.question_number
+                var eachquestion = await fetch(eachquestion_url, { method: "GET" }).then(res => res.json());
+
+                document.getElementById("correctanswer"+question.question_number).innerHTML = `<h4>Correct Answer: ${eachquestion.data.questions.answer}</h4>`
+            }
+        }   
     }
 </script>
 
@@ -469,8 +508,21 @@ QUIZ BEGINS HERE -->
                 </div>
                 <!-- END -->
 
+                <!-- result -->
+                <br>
+                <div id="finalresult">
+                </div>
+                
+                <!-- pass fail status -->
+                <div id="passfailstatus">
+                </div>
+                <br>
+
                 <!-- Submit Button Here -->
-                <button class="btn btn-primary border-success align-items-center btn-success" type="button" onclick="calculate_score()">Submit<i class="fa fa-angle-right ml-2"></i></button></div>
+                <div id="buttonchange">
+                    <button class="btn btn-primary border-success align-items-center btn-success" type="button" onclick="calculate_score(); show_answer()">Submit<i class="fa fa-angle-right ml-2"></i></button></div>
+                </div>
+                
 
             </div>
         </div>
