@@ -25,8 +25,8 @@ CREATE TABLE IF NOT EXISTS `material` (
 -- (5, 'Material 5', NULL, 'Learning Package', 9999, 'Course 222', 1, 4);
 
 INSERT INTO `material` (`course_name`, `class_id`, `lesson_id`, `material_id`, `material_name`, `format`, `uploader`) VALUES
-('Course 111', 1, 1, 1, 'Material 1', 'pdf', 9990),
-('Course 111', 1, 1, 2, 'Material 2', 'ppt', 9991),
-('Course 111', 1, 1, 3, 'Material 3', 'txt', 9992),
-('Course 111', 1, 2, 4, 'Material 1', 'ppt', 9993),
-('Course 111', 1, 3, 5, 'Material 1', 'pdf', 9999);
+('Ink Course', 1, 1, 1, 'Material 1', 'pdf', 9990),
+('Ink Course', 1, 1, 2, 'Material 2', 'ppt', 9991),
+('Ink Course', 1, 1, 3, 'Material 3', 'txt', 9992),
+('Ink Course', 1, 2, 4, 'Material 1', 'ppt', 9993),
+('Ink Course', 1, 3, 5, 'Material 1', 'pdf', 9999);
