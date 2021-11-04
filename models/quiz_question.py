@@ -170,5 +170,28 @@ def create_quiz_question(course_name, class_id, lesson_id, quiz_id, question_num
             "error": e
         }), 500
 
+
+@app.route("/question/<string:course_name>/<int:class_id>/<int:lesson_id>/<int:quiz_id>/<int:question_number>", methods=["GET"])
+def get_question(course_name, class_id, lesson_id, quiz_id, question_number):
+    questions = Quiz_Question.query.filter_by(course_name = course_name, class_id = class_id, lesson_id = lesson_id, quiz_id = quiz_id, question_number = question_number).first()
+    
+    if questions:
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "questions": questions.json()
+                }
+            }
+        )
+
+    return jsonify(
+        {
+            "message": "No questions found."
+        }
+    ), 500
+
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5011, debug=True)

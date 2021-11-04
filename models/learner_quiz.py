@@ -104,9 +104,9 @@ def get_quiz_score(course_name, class_id, lesson_id, quiz_id, learner_id):
 
 
 @app.route("/quizscore/<string:course_name>/<int:class_id>/<int:lesson_id>/<int:quiz_id>/<int:learner_id>/<int:score>", methods=["POST"])
-def update_quiz_score(course_name, class_id, lesson_id, quiz_id, learner_id, score):
+def create_quiz_score(course_name, class_id, lesson_id, quiz_id, learner_id, score):
 
-    if (score >= 75):
+    if (score >= 85):
         new_quiz_score = Learner_Quiz(course_name, class_id, lesson_id, quiz_id, learner_id, score, True)
     else:
         new_quiz_score = Learner_Quiz(course_name, class_id, lesson_id, quiz_id, learner_id, score, False)
@@ -130,6 +130,34 @@ def update_quiz_score(course_name, class_id, lesson_id, quiz_id, learner_id, sco
             "message": "Unable to commit to database.",
             "error": e
         }), 500
+
+@app.route("/quizscore/update/<string:course_name>/<int:class_id>/<int:lesson_id>/<int:quiz_id>/<int:learner_id>/<int:score>", methods=["PUT"])
+def update_quiz_score(course_name, class_id, lesson_id, quiz_id, learner_id, score):
+
+    quiz_score = Learner_Quiz.query.filter_by(course_name = course_name, class_id = class_id, lesson_id = lesson_id, quiz_id = quiz_id, learner_id = learner_id).first()
+
+    if quiz_score:
+        quiz_score.score = score
+        if score >= 85:
+            quiz_score.passboolean = True
+        else:
+            quiz_score.passboolean  = False
+
+        db.session.commit()
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "quiz_score": quiz_score.json()
+                }
+            }
+        )
+    
+    return jsonify(
+            {
+                "message": "Failed to update score"
+            }
+        ), 404
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5012, debug=True)
