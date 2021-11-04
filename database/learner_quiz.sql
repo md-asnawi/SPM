@@ -20,4 +20,4 @@ CREATE TABLE IF NOT EXISTS `learner_quiz` (
 INSERT INTO `learner_quiz` (`course_name`, `class_id`, `lesson_id`, `quiz_id`, `learner_id`, `score`, `passboolean`) VALUES
 ('Ink Course', 1, 1, 1, 456, 50, FALSE),
 ('Ink Course', 1, 2, 2, 456, 100, TRUE),
-('Ink Course', 1, 1, 1, 999, 50, TRUE);
+('Ink Course', 1, 1, 1, 999, 100, TRUE);

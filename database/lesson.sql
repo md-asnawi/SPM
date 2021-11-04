@@ -26,3 +26,6 @@ INSERT INTO `lesson` (`course_name`, `class_id`, `lesson_id`, `description`) VAL
 ('Data Course', 1, 3, 'This is Lesson 3'),
 ('Data Course', 1, 4, 'This is Lesson 4'),
 ('Data Course', 1, 5, 'This is Lesson 5');
+('Printer Course', 1, 1, 'This is Lesson 1'),
+('Design Course', 1, 1, 'This is Lesson 1'),
+('Drawing Course', 1, 1, 'This is Lesson 1');
