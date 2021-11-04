@@ -15,7 +15,7 @@
 # print(g1.get_start_date())
 # print(g1.get_end_date())
 
-from learner import Learner
+# from learner import Learner
 
-daniel = Learner("Deez", 1234, 4321)
-print(daniel.get_engineer_name())
+# daniel = Learner("Deez", 1234, 4321)
+# print(daniel.get_engineer_name())

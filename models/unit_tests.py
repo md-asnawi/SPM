@@ -9,15 +9,12 @@ from material import Material
 # Test for class Course
 class TestCourse(unittest.TestCase):
     def test_to_json(self):
-        course1 = Course('Course 111', 111, 'This is Course 111',
-                         '', datetime.date(2021, 1, 1), datetime.date(2021, 5, 1))
+        course1 = Course('Course 111', 111, 'This is Course 111', '')
         self.assertEqual(course1.json(), {
             'course_name': 'Course 111',
             'course_id': 111,
             'description': 'This is Course 111',
-            'prerequisite': '',
-            'enrolment_start_date': '2021-01-01',
-            'enrolment_end_date': '2021-05-01'
+            'prerequisite': ''
             }
         )
 # Test for class Class

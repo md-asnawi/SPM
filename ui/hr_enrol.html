@@ -9,7 +9,7 @@
     }
 
     window.onload = function (e) {
-        course_name = "Course 111"
+        course_name = "Ink Course"
         // class_id = "1"
         course_dropdown();
         class_dropdown(course_name);
@@ -35,10 +35,14 @@
 
             for (let i = 0; i < all.length; i++) {
                 let course = all[i]
-                
-                dropdown.push(`
-                    <option value="${course.course_name}">${course.course_name}</option>
-                `)
+
+                if (course.course_name == "Ink Course") {
+                    dropdown.push(`<option value="${course.course_name}" selected>${course.course_name}</option>`)
+                }
+
+                else {
+                    dropdown.push(`<option value="${course.course_name}">${course.course_name}</option>`)
+                }
             }
         }
 
@@ -626,7 +630,7 @@
                         
                         <br>
                         <label for="class">Choose a Class:</label>
-                            <select name="course_class" id="class_dropdown">
+                            <select name="course_class" id="class_dropdown" >
                             <option value="">Select a course to see available class</option>
                             
                             </select>

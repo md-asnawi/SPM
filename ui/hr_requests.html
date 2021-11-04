@@ -36,7 +36,7 @@
 
                 learner_object = learner_response.data.learner
 
-                // console.log(learner_object);
+                console.log(learner_object);
 
                 pending_html.push(`
                     <tr>
@@ -44,31 +44,26 @@
                         <td>${pending_object.learner_id}</td>
                         <td>${pending_object.course_name}</td>`)
 
-                        // get course_enrolment_period
-                        url = `http://127.0.0.1:5001/course/` + pending_object.course_name;
-                        
-                        var course_response = await fetch(url, {method: "GET"}).then(res => res.json());
-
-                        course_object = course_response.data.course
-
-                        pending_html.push(
-                            `<td>${course_object.enrolment_start_date} to ${course_object.enrolment_end_date}</td>
-                            <td>${pending_object.class_id}</td>`)
-
-                        // get class start data
+                        // get class information
 
                         url = `http://127.0.0.1:5004/class/` + pending_object.course_name + `/` + pending_object.class_id
+
+                        console.log(url)
 
                         var class_response = await fetch(url, {method: "GET"}).then(res => res.json());
 
                         class_object = class_response.data.single_class
 
+                        console.log(class_object)
+
                         pending_html.push(
-                            `<td>${class_object.start_date}</td>
+                            `<td>${class_object.enrolment_start_date} to ${class_object.enrolment_end_date}</td>
+                            <td>${class_object.class_id}</td>
+                            <td>${class_object.class_start_date}</td>
                             <td><button type="button" class="btn btn-light" onclick="interact_request('${pending_object.learner_id}', '${pending_object.course_name}', 'accept')">Accept</button></td>
                             <td><button type="button" class="btn btn-light" onclick="interact_request('${pending_object.learner_id}', '${pending_object.course_name}', 'reject')">Reject</button></td>
-                        </tr>
-                    `);
+                    </tr>
+                `);
             }
             
 

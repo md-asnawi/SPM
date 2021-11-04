@@ -21,9 +21,11 @@ CREATE TABLE IF NOT EXISTS `quiz_question` (
 );
 
 INSERT INTO `quiz_question` (`course_name`, `class_id`, `lesson_id`, `quiz_id`, `question_number`, `question`, `question_type`, `option_1`, `option_2`, `option_3`, `option_4`, `answer`) VALUES
-('Course 111', 1, 1, 1, 1, 'Is this True?', 'TF', 'True', 'False', NULL, NULL, 'True'),
-('Course 111', 1, 1, 1, 2, 'Is this Really True?', 'TF', 'True', 'False', NULL, NULL, 'False'),
-('Course 111', 1, 1, 1, 3, 'A or B or C?', 'MCQ', 'A', 'B', 'C', NULL, 'A'),
-('Course 111', 1, 1, 2, 1, 'Is this True?', 'TF', 'True', 'False', NULL, NULL, 'False'),
-('Course 111', 1, 1, 2, 2, 'Is this Really Really True?', 'TF', 'True', 'False', NULL, NULL, 'True'),
-('Course 111', 1, 1, 2, 3, 'A or B or C or D?', 'MCQ', 'A', 'B', 'C', 'D', 'B');
+('Ink Course', 1, 1, 1, 1, 'The ink is black', 'TF', 'True', 'False', NULL, NULL, 'True'),
+('Ink Course', 1, 1, 1, 2, 'The ink is purple', 'TF', 'True', 'False', NULL, NULL, 'False'),
+('Ink Course', 1, 1, 1, 3, 'Black, Pink or Purple Ink', 'MCQ', 'Black', 'Pink', 'Purple', NULL, 'Black'),
+('Ink Course', 1, 2, 2, 1, 'The ink is Orange', 'TF', 'True', 'False', NULL, NULL, 'False'),
+('Ink Course', 1, 2, 2, 2, 'Red or Blue', 'MCQ', 'Red', 'Blue', NULL, NULL, 'Blue'),
+('Ink Course', 1, 3, 3, 1, 'The ink is Pink', 'TF', 'True', 'False', NULL, NULL, 'False'),
+('Ink Course', 1, 3, 3, 2, 'The ink is Red', 'TF', 'True', 'False', NULL, NULL, 'True'),
+('Ink Course', 1, 3, 3, 3, 'Red, Blue, Green or Yellow', 'MCQ', 'Red', 'Blue', 'Green', 'Yellow', 'Blue');
