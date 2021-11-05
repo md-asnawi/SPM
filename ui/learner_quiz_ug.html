@@ -4,12 +4,22 @@
 <script>
     window.onload = function (e) {
 
-        course_name = "Ink Course";
-        class_id = 1;
-        lesson_id = 2;
-        quiz_id = 2;
+        // TODO
+        course_name = getParam('course_name');
+        class_id = getParam('class_id');
+        lesson_id = getParam('lesson_id');
+        quiz_id = getParam('lesson_id');
+
+        // console.log(getParam('course_name'));
+        // console.log(getParam('class_id'));
+        // console.log(getParam('lesson_id'));
 
         display_ug_quiz(course_name, class_id, lesson_id, quiz_id)
+    }
+
+    // TODO
+    function getParam(param){
+        return new URLSearchParams(window.location.search).get(param);
     }
 
     async function display_ug_quiz(course_name, class_id, lesson_id, quiz_id) {
@@ -171,14 +181,15 @@
             }
             percentage = parseInt((score/question_count) * 100)
 
+            // TODO
             if (percentage < 85) {
                 document.getElementById("finalresult").innerHTML = `<h3>Result: ${score}/${question_count} (${percentage}%)</h3>`
                 document.getElementById("passfailstatus").innerHTML = `<h4>Status: Fail</h4>`
-                document.getElementById("buttonchange").innerHTML = `<button class="btn btn-primary border-success align-items-center btn-success" type="button" onclick="">Continue<i class="fa fa-angle-right ml-2"></i></button></div>`
+                document.getElementById("buttonchange").innerHTML = `<a href="course.html?lesson_id=${lesson_id}" target="_blank" class="btn btn-primary border-success align-items-center btn-success" type="button" onclick="backToCourse">Continue<i class="fa fa-angle-right ml-2"></i></a></div>`
             } else {
                 document.getElementById("finalresult").innerHTML = `<h3>Result: ${score}/${question_count} (${percentage}%)</h3>`
                 document.getElementById("passfailstatus").innerHTML = `<h4>Status: Pass</h4>`
-                document.getElementById("buttonchange").innerHTML = `<button class="btn btn-primary border-success align-items-center btn-success" type="button" onclick="">Continue<i class="fa fa-angle-right ml-2"></i></button></div>`
+                document.getElementById("buttonchange").innerHTML = `<a href="course.html?lesson_id=${lesson_id}" target="_blank" class="btn btn-primary border-success align-items-center btn-success" type="button" onclick="backToCourse">Continue<i class="fa fa-angle-right ml-2"></i></a></div>`
             }
         }
     }
@@ -210,6 +221,14 @@
             }
         }   
     }
+
+    // TODO
+    async function backToCourse() {
+        update_url = `http://localhost:5013/learner_lesson/update_completion/` + course_name + `/` + learner_id + `/` + lesson_id;
+        var update_response = await fetch(update_url, { method: "PUT" }).then(res => res.json());
+        console.log(update_response);
+    }
+
 </script>
 
 
