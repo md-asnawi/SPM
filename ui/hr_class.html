@@ -140,6 +140,14 @@
                             <td>${learner.learner_id}</td>
                             <td>${learner.date_assigned}</td>
                             <td>${learner.enrolment_status}</td>
+                            <td>
+                                <div>
+                                    <span class="float-right">${learner.progress}%</span>
+                                    <div class="progress" style="height: 6px">
+                                        <div class="progress-bar bg-success" style="width: ${learner.progress}%" role="progressbar"></div>
+                                    </div>
+                                </div>    
+                            </td>
                         </tr>
                     `);
                 }
@@ -154,6 +162,7 @@
                                 <td></td>
                                 <td></td>   
                                 <td></td>
+                                <td></td>
                              </tr>`);
             }
         }
@@ -165,6 +174,7 @@
                             <td>No class available. Please select a course with available class</td>      
                             <td></td>
                             <td></td>  
+                            <td></td>
                             <td></td>
                         </tr>`);
         }
@@ -233,10 +243,23 @@
                                     <td>${learner_inclass_info.learner_id}</td>
                                     <td>${learner_inclass_info.date_assigned}</td>
                                     <td>${learner_inclass_info.enrolment_status}</td>
+                                    <td>
+                                        <div>
+                                            <span class="float-right">${learner_inclass_info.progress}%</span>
+                                            <div class="progress" style="height: 6px">
+                                                <div class="progress-bar bg-success" style="width: ${learner_inclass_info.progress}%" role="progressbar"></div>
+                                            </div>
+                                        </div> 
+                                    </td>
                                 </tr>
 
                                 <tr>
-                                    <td>To search for another learner in class, go back to the class list.</td>
+                                    <td>
+                                        To search for another learner in class,
+                                        <br>
+                                        go back to the class list.
+                                    </td>
+                                    <td></td>
                                     <td></td>
                                     <td></td>
                                     <td></td>
@@ -250,25 +273,11 @@
                     // not in class
                     else {
                         alert("Learner is not in this class");
-                        // filtered.push(`
-                        //         <tr>
-                        //             <td>${learner_inclass_byid.data.message} Go back to the class list again to search for name.</td>
-                        //             <td></td>
-                        //             <td></td>
-                        //         </tr>
-                        //     `);
                     }
                 }
 
                 else {
                     alert("Learner not found.")
-                    // filtered.push(`
-                    //             <tr>
-                    //                 <td>${learner_byid.message} Go back to the class list again to search for name.</td>
-                    //                 <td></td>
-                    //                 <td></td>
-                    //             </tr>
-                    //         `);
                 }            
             }
             document.getElementById("nameinput").value = "";
@@ -530,7 +539,11 @@
                             <i class="icon-speedometer menu-icon"></i><span class="nav-text">Home</span>
                         </a>
                     </li>
-                    
+                    <li>
+                        <a href="hr_course.html" aria-expanded="false">
+                            <i class="icon-speedometer menu-icon"></i><span class="nav-text">Create Course</span>
+                        </a>
+                    </li>
                     <li>
                         <a class="has-arrow" href="javascript:void()" aria-expanded="false">
                             <i class="icon-envelope menu-icon"></i> <span class="nav-text">Enrollment</span>
@@ -539,10 +552,9 @@
                             <li><a href="hr_enrol.html">Enrol</a></li>
                             <li><a href="hr_requests.html">Requests</a></li>
                             <li><a href="hr_class.html">Classlist</a></li>
+                            <li><a href="hr_uncompleted_learners.html">Uncompleted Learners</a></li>
                         </ul>
-                    </li>
-                    
-                            
+                    </li>            
                 </ul>
             </div>
         </div>
@@ -618,12 +630,15 @@
                                                             <th>ID</th>
                                                             <th>Enrollment Date</th>
                                                             <th>Status</th>
+                                                            <th>Progress</th>
                                                         </tr>
                                                     </thead>
                                                 <!-- INSERT LEARNERS DATA HERE -->
                                                     <tbody id="inclass_learner">
                                                             <tr>
                                                                 <td>Select a Course and a Class and click the button `See Class List` to see class list"</td>
+                                                                <td></td>
+                                                                <td></td>
                                                                 <td></td>
                                                                 <td></td>
                                                             </tr>
