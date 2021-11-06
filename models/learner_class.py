@@ -355,7 +355,7 @@ def get_inclass_count(course_name, class_id):
         )
 
 # get inclass count with progress 100
-@app.route("/class/count/<string:course_name>/<int:class_id>", methods=["GET"])
+@app.route("/class/count/completedCourse/<string:course_name>/<int:class_id>", methods=["GET"])
 def get_inclass_count_completedcourse(course_name, class_id):
 
     get_inclass_count_completedcourse = Learner_Class(db.Model).query.filter_by(course_name=course_name,class_id=class_id,enrolment_status="Enrolled",withdrawal=0, progress=100).all()

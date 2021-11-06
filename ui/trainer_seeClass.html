@@ -3,316 +3,133 @@
 
 <script>
 
-    // Alert for successful enrolment
-    function myAlert(){
-        alert("Enrolment Successful!")
-    }
-
     window.onload = function (e) {
-        course_name = "Course 111"
-        // class_id = "1"
-        course_dropdown();
-        class_dropdown(course_name);
-        available_learner(course_name);
+        trainer_name = "Kook"
+        courseclass_dropdown(trainer_name);
     }
 
-    async function course_dropdown() {
+    async function courseclass_dropdown(trainer_name) {
 
         // Create empty array
         all = []
         dropdown = []
 
-        all_url = `http://127.0.0.1:5001/course`;
-        var all_course = await fetch(all_url, {method: "GET"}).then(res => res.json());
+        trainercourseclass_url = `http://127.0.0.1:5004/classbytrainer/` + trainer_name;
+        var trainercourseclass = await fetch(trainercourseclass_url, {method: "GET"}).then(res => res.json());
 
-        if (all_course.code == 200) {
+        if (trainercourseclass.code == 200) {
         
-            all_course_array = all_course.data.course;
+            trainercourseclass_a = trainercourseclass.data.trainer_class;
 
-            for (i=0; i < all_course_array.length; i++ ) {
-                all.push(all_course_array[i]);
+            for (i=0; i < trainercourseclass_a.length; i++ ) {
+                all.push(trainercourseclass_a[i]);
             }
 
             for (let i = 0; i < all.length; i++) {
-                let course = all[i]
+                let courseclass = all[i]
                 
                 dropdown.push(`
-                    <option value="${course.course_name}">${course.course_name}</option>
+                    <option value="${courseclass.course_name}_${courseclass.class_id}">${courseclass.course_name} Class ${courseclass.class_id}</option>
                 `)
             }
         }
 
         else {
-            dropdown.push(`<option value="nocourse">No Course</option>`);
+            dropdown.push(`<option value="nocourse">No Course Class</option>`);
         }
 
-        document.getElementById("course_dropdown").innerHTML = dropdown;
+        document.getElementById("courseclass_dropdown").innerHTML = dropdown;
     }
 
-    async function class_dropdown(course_name) {
+    async function classlist() {
 
-        // Create empty array
-        all1 = []
-        dropdown1 = []
+        inclass_a = []
+        all_learner_a = []
+        inclasslist = []
+        courseclass = document.getElementById("courseclass_dropdown").value
 
-        course_class_url = `http://127.0.0.1:5004/class/` + course_name;
-    
-        var all_course_class = await fetch(course_class_url, {method: "GET"}).then(res => res.json());
+        course_name = courseclass.split('_')[0]
+        class_id = courseclass.split('_')[1]
+        // console.log(course_name)
+        // console.log(class_id)
 
-        if (all_course_class.code == 200) {
+        inclass_url = `http://127.0.0.1:5003/class/` + course_name + `/` + class_id
+        var inclass = await fetch(inclass_url, {method: "GET"}).then(res => res.json());
 
-            all_course_class_array = all_course_class.data.classes;
+        if (inclass.code == 200) {
+            inclass_array = inclass.data.inclass
 
-            console.log(all_course_class_array);
-
-            for (i=0; i < all_course_class_array.length; i++ ) {
-                all1.push(all_course_class_array[i]);
+            for (i=0; i < inclass_array.length; i++ ) {
+                inclass_a.push(inclass_array[i]);
             }
 
-            for (let i = 0; i < all1.length; i++) {
-                let course_class = all1[i]
-                
-                // check capacity of class
-                single_class_url = `http://127.0.0.1:5004/class/` + course_class.course_name + `/` + course_class.class_id;
-                var single_class = await fetch(single_class_url, {method: "GET"}).then(res => res.json());
-                class_size = single_class.data.single_class.class_size;
+            for (let i = 0; i < inclass_a.length; i++) {
+                let learner = inclass_a[i]
+                console.log(learner)
+
+                // get name
+                learner_url = `http://127.0.0.1:5005/learner/` + learner.learner_id
+                var learner_info = await fetch(learner_url, {method: "GET"}).then(res => res.json());
+                single_learner = learner_info.data.learner;
+
+                inclasslist.push(`<tr>
+                                    <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">${single_learner.engineer_name}</td>
+                                    <td>${learner.learner_id}</td>
+                                    <td>
+                                        <div>
+                                            <span class="float-right">${learner.progress}%</span>
+                                            <div class="progress" style="height: 6px">
+                                                <div class="progress-bar bg-success" style="width: ${learner.progress}%" role="progressbar"></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>`)
+            }
             
 
-                // check current class size
-                class_count_url = `http://127.0.0.1:5003/class/count/` + course_class.course_name + `/` + course_class.class_id
-                var class_count = await fetch(class_count_url, {method: "GET"}).then(res => res.json());
-                class_cap = class_count.data.inclass_count;
+            // overall progress
+            inclasscompleted_url = `http://127.0.0.1:5003/class/count/completedCourse/` + course_name + `/` + class_id
+            var inclasscompleted = await fetch(inclasscompleted_url, {method: "GET"}).then(res => res.json());
+            inclasscompleted_count = inclasscompleted.data.inclass_count;
+            // console.log(inclasscompleted_count)
 
-                dropdown1.push(`
-                    <option value="${course_class.class_id}" course_name="${course_class.course_name}">${course_class.class_id} - (${class_cap}/${class_size})</option>
-                `)
-            }
+            inclass_url = `http://127.0.0.1:5003/class/count/` + course_name + `/` + class_id
+            var inclasscount = await fetch(inclass_url, {method: "GET"}).then(res => res.json());
+            inclass_count = inclasscount.data.inclass_count;
+            // console.log(inclass_count)
+
+            classprogress = (inclasscompleted_count/inclass_count)*100
+            // console.log(classprogress)
+
+            inclasslist.push(`<tr>
+                                    <td><b>Overall Class Progress</b></td>
+                                    <td></td>
+                                    <td>
+                                        <div>
+                                            <span class="float-right">${classprogress}%</span>
+                                            <div class="progress" style="height: 6px">
+                                                <div class="progress-bar bg-success" style="width: ${classprogress}%" role="progressbar"></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>`)
+
+
+            document.getElementById("classlistupdate").innerHTML = inclasslist.join("");
         }
 
         else {
-            dropdown1.push(`<option value="noclass">No Class</option>`);
+            document.getElementById("classlistupdate").innerHTML = `<tr>
+                                                                        <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">No classlist found. Select another class</td>
+                                                                        <td></td>
+                                                                        <td>
+                                                                            <div></div>
+                                                                        </td>
+                                                                    </tr>`
         }
-
-        document.getElementById("class_dropdown").innerHTML = dropdown1;
-
     }
 
-    async function available_learner(course_name) {
-
-        // must complete prereq, not taken course, class not packed
-
-        course_list_a = []
-        all_learner_a = []
-        course_completed_a = []
-        prereq_course_completed_a = []
-        available = []
-        
-        // get the current course list and learner list
-        course_list_url = `http://127.0.0.1:5003/class/` + course_name;
-        all_learner_url = `http://127.0.0.1:5005/all`;
-        course_completed_url = `http://127.0.0.1:5003/course_completed/` + course_name;
-        
-        var course_list = await fetch(course_list_url, {method: "GET"}).then(res => res.json());
-        var all_learner = await fetch(all_learner_url, {method: "GET"}).then(res => res.json());
-        var course_completed = await fetch(course_completed_url, {method: "GET"}).then(res => res.json());
-
-        // check for prereq
-        all_courses_url = `http://127.0.0.1:5001/course`;
-        var all_course_list = await fetch(all_courses_url, {method: "GET"}).then(res => res.json());
-        all_course_list_array = all_course_list.data.course;
-
-        for (let i = 0; i < all_course_list_array.length; i++) {
-            let course1 = all_course_list_array[i]
-
-            if (course1.course_name ==  course_name) {
-                prereq = course1.prerequisite
-            }
-        }
-
-        if (prereq != null) {
-            prereq_course_completed_url = `http://127.0.0.1:5003/course_completed/` + prereq;
-            var prereq_course_completed_list = await fetch(prereq_course_completed_url, {method: "GET"}).then(res => res.json());
-
-            if (prereq_course_completed_list.code == 200) {
-                prereq_course_completed_list_array = prereq_course_completed_list.data.completed_learner;
-
-                for (i=0; i < prereq_course_completed_list_array.length; i++ ) {
-                    prereq_course_completed_a.push(prereq_course_completed_list_array[i]);
-                }   
-            }
-        }
-
-        // if learner not in current list, means available
-        
-        if (course_list.code == 200) {
-            course_list_array = course_list.data.inclass;
-            all_learner_array = all_learner.data.learner;
-            course_completed_array = course_completed.data.completed_learner;
-
-
-            for (i=0; i < course_list_array.length; i++ ) {
-                course_list_a.push(course_list_array[i]);
-            }
-
-            for (i=0; i < all_learner_array.length; i++ ) {
-                all_learner_a.push(all_learner_array[i]);
-            }
-
-            for (i=0; i < course_completed_array.length; i++ ) {
-                course_completed_a.push(course_completed_array[i]);
-            }
-
-            for (let i = 0; i < all_learner_a.length; i++) {
-                let learner = all_learner_a[i]
-
-                // check if the leaner_id is part of class_list
-                if (JSON.stringify(course_list_a).includes(JSON.stringify(learner.learner_id)) == false) {
-
-                    // if learner is not in class, check if he fulfil the prerequisite
-                    if (prereq != null ) {
-                        if (JSON.stringify(prereq_course_completed_a).includes(JSON.stringify(learner.learner_id))) {
-                            available.push(`
-                                <tr>
-                                    <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">${learner.engineer_name}</td>
-                                    <td>${learner.learner_id}</td>
-                                    <td><div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="${learner.learner_id}" id="${learner.learner_id}">
-                                    </div></td>
-                                </tr>
-                            `);
-                        }
-                    }
-
-                    else {
-                        available.push(`
-                            <tr>
-                                <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">${learner.engineer_name}</td>
-                                <td>${learner.learner_id}</td>
-                                <td><div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="${learner.learner_id}" id="${learner.learner_id}">
-                                </div></td>
-                            </tr>
-                        `);
-                    }
-                }
-            }
-        }
-
-        // if no one in course list
-        else {
-            // all learners avaliable
-            all_learner_array = all_learner.data.learner;
-
-            for (i=0; i < all_learner_array.length; i++ ) {
-                all_learner_a.push(all_learner_array[i]);
-            }
-
-            for (let i = 0; i < all_learner_a.length; i++) {
-                let learner = all_learner_a[i]
-                
-                // check if prereq fulfilled
-                if (prereq != null) {
-                    if (JSON.stringify(prereq_course_completed_a).includes(JSON.stringify(learner.learner_id))) {
-                        available.push(`
-                            <tr>
-                                <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">${learner.engineer_name}</td>
-                                <td>${learner.learner_id}</td>
-                                <td><div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="${learner.learner_id}" id="${learner.learner_id}">
-                                </div></td>
-                            </tr>
-                        `);
-                    }
-                }
-                // if no prereq, anyone can take
-                else {
-                        available.push(`
-                                <tr>
-                                    <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">${learner.engineer_name}</td>
-                                    <td>${learner.learner_id}</td>
-                                    <td><div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="${learner.learner_id}" id="${learner.learner_id}">
-                                    </div></td>
-                                </tr>
-                            `);
-                    }
-            }
-        }
-        document.getElementById("available_learner").innerHTML = available.join("");
-        console.log(course_name);
-    }
-
-    async function enrolment(course_name) {
-        enrol_learner = []
-
-        // get course_name
-        course_name =  document.getElementById("course_dropdown").value;
-
-        // get class information
-        class_id =  document.getElementById("class_dropdown").value;
-        // console.log(course_name);
-        // console.log(class_id);
-        
-        // no class available
-        if (class_id == "noclass"){
-            alert("No available class for selected course.")
-        }
-
-        // class available
-        else {            
-            // if learner checked, append learner_id 
-            checkedbox = $('.form-check:checkbox:checked');
-
-            $('input.form-check-input:checkbox:checked').each(function () {
-                enrol_learner.push($(this).val());
-            });
-            // console.log(enrol_learner);
-
-            for (let i = 0; i < enrol_learner.length; i++) {
-
-                // check capacity of class
-                single_class_url = `http://127.0.0.1:5004/class/` + course_name + `/` + class_id;
-                var single_class = await fetch(single_class_url, {method: "GET"}).then(res => res.json());
-                class_size = single_class.data.single_class.class_size;
-                // console.log(class_size);
-
-                // check current class size
-                class_count_url = `http://127.0.0.1:5003/class/count/` + course_name + `/` + class_id
-                var class_count = await fetch(class_count_url, {method: "GET"}).then(res => res.json());
-                class_cap = class_count.data.inclass_count;
-                // console.log(class_cap);
-
-                // count + 1 lower than class_size, add
-                if (class_cap+1 <= class_size) {
-                    let learner_id = enrol_learner[i]
-                    console.log(learner_id);
-                    console.log(course_name);
-
-                    enrolment_url = `http://127.0.0.1:5003/enrol/` + course_name + `/` + class_id + `/` + learner_id;
-                    console.log(enrolment_url);
-                    var enrol = await fetch(enrolment_url, {method: "POST"}).then(res => res.json());
-                    // console.log(enrol);
-
-                    if (enrol.code == 201) {
-                        alert("You have successfully enrolled Learner " + learner_id + " into " + course_name + " C" + class_id + "!")
-                    }
-
-                    else {
-                        alert("Enrolment Unsuccessful!")
-                    }
-                }
-                else {
-                    alert("Selected class full. Enrolment Unsuccessful!")
-                }
-            }
-        }
-        
-
-        // rerun the page
-        class_dropdown(course_name);
-        available_learner(course_name);
-    }
-
+    
 </script>
 
 <head>
@@ -604,10 +421,6 @@
             <!-- row -->
             <!-- filter by class,by course -->
             <div class="container-fluid">
-                <ul class="nav nav-tabs" id="newactive">
-                    <li class="active"><a href="#" onclick="all_courses();">By Students</a></li>
-                    <li><a href="#" onclick="available_courses(999);">By Classes</a></li>
-                </ul>
                 <!-- End Row -->
                 <div class="row">
                     <div class="col-12 m-b-30">
@@ -618,22 +431,17 @@
                         <div></div>
                         <br>
                         <!-- PULL COURSE NAME INTO CHECKBOX -->
-                        <label for="course">Choose a Course:</label>
-                            <select name="course" id="course_dropdown" onchange="available_learner(value); class_dropdown(value);">
+                        <label for="course">Choose a Course Class:</label>
+                            <select name="course" id="courseclass_dropdown">
                             <option value="course1">{{Course1}}</option>
                             <option value="course2">{{Course2}}</option>
                             <option value="course3">{{Course3}}</option>
                             
                             </select>
+
+                            <button class="btn btn-primary" type="submit" onclick="classlist()">Search</button>
                         
                         <br>
-                        <label for="class">Choose a Class:</label>
-                            <select name="course_class" id="class_dropdown">
-                            <option value="">Select a course to see available class</option>
-                            
-                            </select>
-                        
-                          <br><br>
                           <!-- insert progress here -->
 
                     <!-- If filter by students  -->
@@ -652,109 +460,24 @@
                                                             <th>Progress</th>
                                                         </tr>
                                                     </thead>
-                                                    <tbody>
+                                                    <tbody id="classlistupdate">
                                                         <tr>
-                                                            <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">Rachel</td>
-                                                            <td>1234</td>
-
-                                                            
+                                                            <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">Press Search button to see classlist</td>
+                                                            <td></td>
                                                             <td>
-                                                                <div>
-                                                                    <span class="float-right">50%</span>
-                                                                    <div class="progress" style="height: 6px">
-                                                                        <div class="progress-bar bg-success" style="width: 50%" role="progressbar"></div>
-                                                                    </div>
-                                                                </div>
+                                                                <div></div>
                                                             </td>
                                                         </tr>
-                                                        <tr>
-                                                            <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">Name2</td>
-                                                            <td>4321</td>
-
-                                                            
-                                                            <td>
-                                                                <div>
-                                                                    <span class="float-right">90%</span>
-                                                                    <div class="progress" style="height: 6px">
-                                                                        <div class="progress-bar bg-success" style="width: 50%" role="progressbar"></div>
-                                                                    </div>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                          
                                                     </tbody>
                                                 </table>
                                             </div>
                                         </div>
                                     </div>
                                 </div>                        
-                            </div>
-
-                          <!-- If filter by class -->
-
-         <div class="row">
-            <div class="col-lg-8">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="active-member">
-                            <div class="table-responsive">
-                                <table class="table table-xs mb-0">
-                                    <thead>
-                                        <tr>
-                                            <th>Class</th>
-                                            <th>Course</th>
-                                            <th>Progress</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">G1</td>
-                                            <td>Ink 101</td>
-                                            <td>
-                                                <div>
-                                                    <span class="float-right">50%</span>
-                                                    <div class="progress" style="height: 6px">
-                                                        <div class="progress-bar bg-success" style="width: 50%" role="progressbar"></div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">G2</td>
-                                            <td>Ink 101</td>
-                                            <td>
-                                                <div>
-                                                    <span class="float-right">50%</span>
-                                                    <div class="progress" style="height: 6px">
-                                                        <div class="progress-bar bg-success" style="width: 50%" role="progressbar"></div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td><img src="./images/avatar/1.jpg" class=" rounded-circle mr-3" alt="">G3</td>
-                                            <td>Ink 101</td>
-                                            <td>
-                                                <div>
-                                                    <span class="float-right">50%</span>
-                                                    <div class="progress" style="height: 6px">
-                                                        <div class="progress-bar bg-success" style="width: 50%" role="progressbar"></div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                          
-                                    </tbody>
-                                </table>
-                            </div>
+                            </div>                          
                         </div>
-                    </div>
-                </div>                        
-            </div>
-                    </div>       
- 
-                          
-                  </div>
+
+
                   </div>
                   </div>
             <!-- #/ container -->

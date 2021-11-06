@@ -173,6 +173,32 @@ def get_one_class(course_name, class_id):
         }
     )
 
+@app.route("/classbytrainer/<string:trainer_name>", methods=["GET"])
+def get_classbytrainer(trainer_name):
+
+    trainer_class = Class.query.filter_by(trainer_name=trainer_name).all()
+
+    if len(trainer_class):
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "trainer_class": [trainerclass.json() for trainerclass in trainer_class]
+                }
+            }
+        )
+
+    else:
+        return jsonify(
+            {
+                "code": 404,
+                "data": {
+                    "trainer_class": "No class taught by trainer."
+                }
+            }
+        )
+
+
 # CREATE new class
 @app.route("/class", methods=['POST'])
 def create_class():
