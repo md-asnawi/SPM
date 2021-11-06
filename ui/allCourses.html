@@ -100,10 +100,10 @@
                             var class_status = await fetch(class_status_url, { method: "GET" }).then(res => res.json());
 
                             status = class_status.data.learner_class_status
-
                             if (status == "Not Enrolled") {
                                 var class_enrolmentDate = new Date(eachclass.enrolment_end_date)
-                                if (new Date() < class_enrolmentDate) {
+                                var class_enrolmentStartDate = new Date(eachclass.enrolment_start_date)
+                                if (new Date() < class_enrolmentDate && new Date() > class_enrolmentStartDate) {
                                     cards.push(`<h5 id="class_information">`);
                                     cards.push(`<b>Class ${eachclass.class_id}</b>
                                                 <br><br>
