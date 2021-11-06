@@ -17,36 +17,36 @@ class TestCourse(unittest.TestCase):
             'prerequisite': ''
             }
         )
-# Test for class Class
-class TestClass(unittest.TestCase):
-    def test_to_json(self):
-        class1 = Class('Course 111', 1, 40, datetime.date(2021, 1, 1),
-                        datetime.date(2021, 4, 1), datetime.time(8, 15),
-                        datetime.time(11, 30), 'Deez')
+# # Test for class Class
+# class TestClass(unittest.TestCase):
+#     def test_to_json(self):
+#         class1 = Class('Course 111', 1, 40, datetime.date(2021, 1, 1),
+#                         datetime.date(2021, 4, 1), datetime.time(8, 15),
+#                         datetime.time(11, 30), 'Deez')
         
-        self.assertEqual(class1.json(), {
-                'course_name': 'Course 111',
-                'class_id': 1,
-                'class_size': 40,
-                'start_date': '2021-01-01',
-                'end_date': '2021-04-01',
-                'start_time': '08:15:00',
-                'end_time': '11:30:00',
-                'trainer_name': 'Deez'
-            }
-        )
+#         self.assertEqual(class1.json(), {
+#                 'course_name': 'Course 111',
+#                 'class_id': 1,
+#                 'class_size': 40,
+#                 'start_date': '2021-01-01',
+#                 'end_date': '2021-04-01',
+#                 'start_time': '08:15:00',
+#                 'end_time': '11:30:00',
+#                 'trainer_name': 'Deez'
+#             }
+#         )
 
-# Test for class Lesson
-class TestLesson(unittest.TestCase):
-    def test_to_json(self):
-        lesson1 = Lesson('Course 111', 1, 1, "This is Course 111")
-        self.assertEqual(lesson1.json(), {
-                'course_name': 'Course 111',
-                'class_id': 1,
-                'lesson_id': 1,
-                "description": "This is Course 111"
-            }
-        )
+# # Test for class Lesson
+# class TestLesson(unittest.TestCase):
+#     def test_to_json(self):
+#         lesson1 = Lesson('Course 111', 1, 1, "This is Course 111")
+#         self.assertEqual(lesson1.json(), {
+#                 'course_name': 'Course 111',
+#                 'class_id': 1,
+#                 'lesson_id': 1,
+#                 "description": "This is Course 111"
+#             }
+#         )
 
 # Test for class Material
 # class TestMaterial(unittest.TestCase):
