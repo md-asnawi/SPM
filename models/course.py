@@ -19,10 +19,10 @@ class Course(db.Model):
     __tablename__ = 'course'
     __mapper_args__ = {'polymorphic_identity': 'course'}
 
-    course_name = db.Column(db.String(45), nullable=False)
-    course_id = db.Column(db.Integer, primary_key = True)
+    course_name = db.Column(db.String(45), primary_key = True)
+    course_id = db.Column(db.Integer, nullable=False)
     description = db.Column(db.String(45), nullable=False)
-    prerequisite = db.Column(db.Integer, nullable=False)
+    prerequisite = db.Column(db.String(45), nullable=False)
 
     def __init__(self, course_name = "", course_id = "", description = "", prerequisite = ""):
         self.course_name = course_name
@@ -233,6 +233,34 @@ def get_course_information(course_name):
                 }
             }
         )
+
+@app.route("/createcourse/<int:course_id>/<string:course_name>/<string:course_description>/<string:prerequisite>", methods=['POST'])
+def create_course(course_id, course_name, course_description, prerequisite):
+
+    if (prerequisite == "null"):
+        new_course = Course(course_id=course_id, course_name=course_name, description = course_description, prerequisite = None)
+
+    else:
+        new_course = Course(course_id=course_id, course_name=course_name, description = course_description, prerequisite = prerequisite)
+
+    try:
+        db.session.add(new_course)
+        db.session.commit()
+        
+        return jsonify (
+            {
+                "code": 201,
+                "data": {
+                    "new_quiz_score": new_course.json()
+                },
+                "message": "Course commited to database."
+            }
+        ), 201
+    except Exception as e:
+        return jsonify({
+            "message": "Unable to commit to database.",
+            "error": e
+        }), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001, debug=True)
