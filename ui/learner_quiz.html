@@ -196,6 +196,8 @@
                 document.getElementById("passfailstatus").innerHTML = `<h4>Status: Fail</h4>`
                 document.getElementById("buttonchange").innerHTML = `<button class="btn btn-primary border-success align-items-center btn-success" type="button" onclick="window.location.reload();">Re-attempt Section<i class="fa fa-angle-right ml-2"></i></button></div>`
             } else {
+                $("#alertModal").modal('toggle'); 
+                document.getElementById("courseNameBadge").innerHTML = course_name
                 document.getElementById("finalresult").innerHTML = `<h3>Result: ${score}/${question_count} (${percentage}%)</h3>`
                 document.getElementById("passfailstatus").innerHTML = `<h4>Status: Pass</h4>`
                 document.getElementById("buttonchange").innerHTML = `<button class="btn btn-primary border-success align-items-center btn-success" type="button" onclick="">Completed Section!<i class="fa fa-angle-right ml-2"></i></button></div>`
@@ -564,6 +566,27 @@ QUIZ BEGINS HERE -->
                 <div id="buttonchange">
                     <button class="btn btn-primary border-success align-items-center btn-success" type="button" onclick="calculate_score(learner_id); show_answer()">Submit<i class="fa fa-angle-right ml-2"></i></button></div>
                 </div>
+
+                <!-- Alert Modal Here-->
+                <div class="modal fade" id="alertModal" role="dialog">
+                    <div class="modal-dialog">
+    
+                    <div class="modal-content">
+                        <div class="modal-header" style="display:block">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Congrats!</h4>
+                        </div>
+                        <div class="modal-body">
+                            <img src="images/badge.jpg" style="width: 50%; display: block; margin: auto;">
+                            <p style="text-align: center;">You are awarded a <span id="courseNameBadge"></span> badge!</p>
+                        </div>
+                        <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                    
+                    </div>
+                </div>
                 
                 
 <!--**********************************
@@ -614,7 +637,7 @@ Scripts
     updateTimer();
 }
 
-countdown( "demo", 0, 10 ); //input min and seconds
+countdown( "demo", 0, 20 ); //input min and seconds
 
 </script>
 
