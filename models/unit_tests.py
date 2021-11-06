@@ -16,7 +16,7 @@ class TestCourse(unittest.TestCase):
             'description': 'This is Course 111',
             'prerequisite': ''
             }
-#         )
+        )
 # # Test for class Class
 # class TestClass(unittest.TestCase):
 #     def test_to_json(self):
