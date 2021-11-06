@@ -6,13 +6,23 @@
 
     window.onload = function (e) {
 
-        course_name = "Ink Course";
-        class_id = 1;
-        lesson_id = 3;
-        quiz_id = 3;
-        learner_id = 999;
+        // course_name = "Ink Course";
+        // class_id = 1;
+        // lesson_id = 3;
+        // quiz_id = 3;
+        // learner_id = 999;
+
+        course_name = getParam('course_name');
+        class_id = getParam('class_id');
+        lesson_id = getParam('lesson_id');
+        quiz_id = getParam('lesson_id');
+        learner_id = getParam('learner_id');
 
         display_g_quiz(course_name, class_id, lesson_id, quiz_id)
+    }
+
+    function getParam(param){
+        return new URLSearchParams(window.location.search).get(param);
     }
 
     async function display_g_quiz(course_name, class_id, lesson_id, quiz_id) {
@@ -198,7 +208,7 @@
             } else {
                 document.getElementById("finalresult").innerHTML = `<h3>Result: ${score}/${question_count} (${percentage}%)</h3>`
                 document.getElementById("passfailstatus").innerHTML = `<h4>Status: Pass</h4>`
-                document.getElementById("buttonchange").innerHTML = `<button class="btn btn-primary border-success align-items-center btn-success" type="button" onclick="">Completed Section!<i class="fa fa-angle-right ml-2"></i></button></div>`
+                document.getElementById("buttonchange").innerHTML = `<button class="btn btn-primary border-success align-items-center btn-success" type="button" onclick="backToCourse()">Completed Section!<i class="fa fa-angle-right ml-2"></i></button></div>`
             }
   
             
@@ -248,6 +258,13 @@
                 document.getElementById("correctanswer"+question.question_number).innerHTML = `<h4>Correct Answer: ${eachquestion.data.questions.answer}</h4>`
             }
         }   
+    }
+
+    async function backToCourse() {
+        update_url = `http://localhost:5013/learner_lesson/update_completion/` + course_name + `/` + learner_id + `/` + lesson_id;
+        var update_response = await fetch(update_url, { method: "PUT" }).then(res => res.json());
+        console.log(update_response);
+        window.location.href = "course.html";
     }
 </script>
 

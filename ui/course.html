@@ -19,9 +19,15 @@
 
         completed_lesson_id_arr = [];
         completed_lessons = await progressUpdate(course_name, learner_id);
-        for (completed_lesson of completed_lessons) {
-            completed_lesson_id_arr.push(completed_lesson.lesson_id);
+        if (completed_lessons) {
+            for (completed_lesson of completed_lessons) {
+                completed_lesson_id_arr.push(completed_lesson.lesson_id);
+            }
         }
+        else {
+            document.getElementById("checkbox1").disabled = false;
+        }
+        
 
         for (lesson_id of lesson_id_arr) {
             one_lesson_material = await display_material_of_lesson(course_name, class_id, lesson_id);
@@ -37,7 +43,7 @@
         }
 
         // TODO
-        lessonQuizTaken(lesson_id_from_quiz);
+        // lessonQuizTaken(lesson_id_from_quiz);
 
         // 
 
@@ -117,7 +123,7 @@
                                     <!-- Quiz shown only after learner checked material completed -->
                                     <!-- TO-DO: Quiz currently hardcoded, should be retrieved from DB -->
                                     <div id="quiz${lesson.lesson_id}" style="display:none">
-                                        <a href="learner_quiz_ug.html?course_name=${course_name}&class_id=${class_id}&lesson_id=${lesson.lesson_id}" target="_blank" onclick="lessonQuizTaken(${lesson.lesson_id})">Quiz ${lesson.lesson_id}</a>
+                                        <a href="learner_quiz_ug.html?course_name=${course_name}&class_id=${class_id}&lesson_id=${lesson.lesson_id}&learner_id=${learner_id}">Quiz ${lesson.lesson_id}</a>
                                     </div>
                                 </div>
                             </div>
@@ -274,7 +280,7 @@
             }
 
             else {
-                quizDiv.innerHTML = `<a href="learner_quiz.html?course_name=${course_name}&class_id=${class_id}&lesson_id=${lesson.lesson_id}" target="_blank" onclick="lessonQuizTaken(${lesson.lesson_id})">Final Quiz</a>`;
+                quizDiv.innerHTML = `<a href="learner_quiz.html?course_name=${course_name}&class_id=${class_id}&lesson_id=${lesson.lesson_id}&learner_id=${learner_id}">Final Quiz</a>`;
                 quizDiv.style.display = "block";
                 document.getElementById("checkbox" + lesson_id).disabled = true;
             }
@@ -324,7 +330,11 @@
                 .catch(error => console.log(error));
         // console.log(completed_lesson_response);
 
-        return completed_lesson_response.data.learner_lesson;
+        if (completed_lesson_response.code == 200) {
+            return completed_lesson_response.data.learner_lesson;
+        }
+
+        return;
 
     }
 

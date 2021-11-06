@@ -9,6 +9,7 @@
         class_id = getParam('class_id');
         lesson_id = getParam('lesson_id');
         quiz_id = getParam('lesson_id');
+        learner_id = getParam('learner_id');
 
         // console.log(getParam('course_name'));
         // console.log(getParam('class_id'));
@@ -185,11 +186,11 @@
             if (percentage < 85) {
                 document.getElementById("finalresult").innerHTML = `<h3>Result: ${score}/${question_count} (${percentage}%)</h3>`
                 document.getElementById("passfailstatus").innerHTML = `<h4>Status: Fail</h4>`
-                document.getElementById("buttonchange").innerHTML = `<a href="course.html?lesson_id=${lesson_id}" target="_blank" class="btn btn-primary border-success align-items-center btn-success" type="button" onclick="backToCourse">Continue<i class="fa fa-angle-right ml-2"></i></a></div>`
+                document.getElementById("buttonchange").innerHTML = `<button class="btn btn-primary border-success align-items-center btn-success" type="button" onclick="backToCourse()">Continue<i class="fa fa-angle-right ml-2"></i></button></div>`
             } else {
                 document.getElementById("finalresult").innerHTML = `<h3>Result: ${score}/${question_count} (${percentage}%)</h3>`
                 document.getElementById("passfailstatus").innerHTML = `<h4>Status: Pass</h4>`
-                document.getElementById("buttonchange").innerHTML = `<a href="course.html?lesson_id=${lesson_id}" target="_blank" class="btn btn-primary border-success align-items-center btn-success" type="button" onclick="backToCourse">Continue<i class="fa fa-angle-right ml-2"></i></a></div>`
+                document.getElementById("buttonchange").innerHTML = `<button class="btn btn-primary border-success align-items-center btn-success" type="button" onclick="backToCourse()">Continue<i class="fa fa-angle-right ml-2"></i></button></div>`
             }
         }
     }
@@ -227,6 +228,7 @@
         update_url = `http://localhost:5013/learner_lesson/update_completion/` + course_name + `/` + learner_id + `/` + lesson_id;
         var update_response = await fetch(update_url, { method: "PUT" }).then(res => res.json());
         console.log(update_response);
+        window.location.href = "course.html";
     }
 
 </script>
