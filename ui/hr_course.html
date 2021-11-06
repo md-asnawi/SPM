@@ -3,6 +3,226 @@
 
 <script>
 
+    window.onload = function (e) {
+        trainer_dropdown();
+        course_dropdown();
+    }
+
+     async function trainer_dropdown() {
+
+        // Create empty array
+        all = []
+        dropdown = []
+
+        all_url = `http://127.0.0.1:5006/all`;
+        var all_trainer = await fetch(all_url, {method: "GET"}).then(res => res.json());
+
+        if (all_trainer.code == 200) {
+
+            all_trainer_array = all_trainer.data.trainer;
+
+            for (i=0; i < all_trainer_array.length; i++ ) {
+                all.push(all_trainer_array[i]);
+            }
+
+            for (let i = 0; i < all.length; i++) {
+                let trainer = all[i]
+
+                dropdown.push(`<option value="${trainer.engineer_name}">${trainer.engineer_name}</option>`)
+            }
+        }
+
+        else {
+            dropdown.push(`<option value="notrainer">No Trainer</option>`);
+        }
+
+        document.getElementById("trainer_dropdown").innerHTML = dropdown;
+    }
+    
+    async function course_dropdown() {
+
+        all1 = []
+        dropdown1 = []
+
+        all1_url = `http://127.0.0.1:5001/course`;
+        var all_course = await fetch(all1_url, {method: "GET"}).then(res => res.json());
+
+        if (all_course.code == 200) {
+
+            all_course_array = all_course.data.course;
+
+            for (i=0; i < all_course_array.length; i++ ) {
+                all1.push(all_course_array[i]);
+            }
+
+            for (let i = 0; i < all1.length; i++) {
+                let course = all1[i]
+                
+                dropdown1.push(`<option value="${course.course_name}">${course.course_name}</option>`)
+            }
+
+            dropdown1.push(`<option value="newcourse">Create New Course</option>`)
+            dropdown1.push(`<option value="selectacourse" selected>Please Select a Course</option>`)
+        }
+        document.getElementById("course_dropdown").innerHTML = dropdown1;
+    }
+
+    async function selected_course(value) {
+        if (document.getElementById('course_dropdown').value == "newcourse") {
+            document.getElementById("courseform").innerHTML = `<div class="form-group row">
+                                            <label class="col-lg-4 col-form-label">Course ID</label>
+                                            <div class="col-lg-6">
+                                                <input type="number" class="form-control" id="courseid" name="courseid" placeholder="Enter Course ID">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <label class="col-lg-4 col-form-label">Course Name</label>
+                                            <div class="col-lg-6">
+                                                <input type="text" class="form-control" id="coursename" name="coursename" placeholder="Enter Course Name">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <label class="col-lg-4 col-form-label">Course Description</label>
+                                            <div class="col-lg-6">
+                                                <input type="text" class="form-control" id="coursedescription" name="coursedescription" placeholder="Enter Course Description">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <label class="col-lg-4 col-form-label">Prerequisite</label>
+                                            <div class="col-lg-6">
+                                                <input type="text" class="form-control" id="prerequisite" name="prerequisite" placeholder="Enter Prerequisite (if any)">
+                                            </div>
+                                        </div>`
+        }
+
+        else {
+            // get information of selected
+            course_url = `http://127.0.0.1:5001/course/` + value;
+            console.log(course_url)
+            var get_course = await fetch(course_url, {method: "GET"}).then(res => res.json());
+
+            single = []
+            single_course_a = get_course.data.course;
+
+            // console.log(single_course_a)
+
+            // for (i=0; i < single_course_a.length; i++ ) {
+            //     single.push(single_course_a[i]);
+            // }
+
+            // console.log(single)
+
+            // single_course
+            // for (let i = 0; i < single.length; i++) {
+            //     let course = single[i]
+            //     console.log(course)
+
+            document.getElementById("courseform").innerHTML = `<div class="form-group row">
+                                    <label class="col-lg-4 col-form-label">Course ID</label>
+                                    <div class="col-lg-6">
+                                        <input type="number" class="form-control" id="courseid" name="courseid" value="${single_course_a.course_id}" placeholder="${single_course_a.course_id}" disabled> 
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label class="col-lg-4 col-form-label">Course Name</label>
+                                    <div class="col-lg-6">
+                                        <input type="text" class="form-control" id="coursename" name="coursename" value="${single_course_a.course_name}" placeholder="${single_course_a.course_name}" disabled>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label class="col-lg-4 col-form-label">Course Description</label>
+                                    <div class="col-lg-6">
+                                        <input type="text" class="form-control" id="coursedescription" name="coursedescription" value="${single_course_a.description}" placeholder="${single_course_a.description}" disabled>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label class="col-lg-4 col-form-label">Prerequisite</label>
+                                    <div class="col-lg-6">
+                                        <input type="text" class="form-control" id="prerequisite" name="prerequisite" value="${single_course_a.prerequisite}" placeholder="${single_course_a.prerequisite}" disabled>
+                                    </div>
+                                </div>`
+        }
+    }
+
+    async function add_class() {
+
+        if (document.getElementById('course_dropdown').value == "selectacourse") {
+            alert("Please select a course before proceeding.")
+        }
+
+        var courseid = document.getElementById("courseid").value
+        var coursename = document.getElementById("coursename").value
+        var coursedescription = document.getElementById("coursedescription").value
+        var prerequisite = document.getElementById("prerequisite").value
+        
+        if (prerequisite == "") {
+            prerequisite = "null"
+        }
+
+        var classid = document.getElementById("classid").value
+        var classsize = document.getElementById("classsize").value
+        var enrollmentstartdate = document.getElementById("enrollmentstartdate").value
+        var enrollmentenddate = document.getElementById("enrollmentenddate").value
+        var classstartdate = document.getElementById("classstartdate").value
+        var classenddate = document.getElementById("classenddate").value
+        var starttime = document.getElementById("starttime").value
+        var endtime = document.getElementById("endtime").value
+        var trainer = document.getElementById("trainer_dropdown").value
+        
+        // check if course exist
+        check_course_url = `http://127.0.0.1:5001/course/` + coursename;
+        var check_course = await fetch(check_course_url, {method: "GET"}).then(res => res.json());
+
+        // if course doesnt exist, create course
+        if (check_course.code != 200) {
+            course_url = `http://127.0.0.1:5001/createcourse/` + courseid + `/` + coursename + `/` + coursedescription + `/` + prerequisite;
+            var new_course = await fetch(course_url, {method: "POST"}).then(res => res.json());
+        }
+    
+        // check if class exist
+        check_class_url = `http://127.0.0.1:5004/class/` + coursename + `/` + classid;
+        var check_class = await fetch(check_class_url, {method: "GET"}).then(res => res.json());
+
+        // if class doesnt exist, , create class
+        if (check_class.code != 200) {
+            class_request_body = {"course_name" : coursename, 
+                                "class_id" : classid,
+                                "class_size" : classsize,
+                                "enrolment_start_date" : enrollmentstartdate,
+                                "enrolment_end_date" : enrollmentenddate,
+                                "class_start_date" : classstartdate,
+                                "class_end_date" : classenddate,
+                                "start_time" : starttime,
+                                "end_time" : endtime,
+                                "trainer_name" : trainer};
+        
+            class_url = `http://127.0.0.1:5004/class`;
+            var class_response = await fetch(class_url,{
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(class_request_body)
+            })
+            .then(res => res.json());
+
+            // create one lesson for the class
+            lesson_url = `http://127.0.0.1:5007/lesson/` + coursename + `/` + classid + `/` + 1
+            var createlesson = await fetch(lesson_url, {method: "POST"}).then(res => res.json());
+            
+            alert("Class successfully created!")
+            window.location.reload()
+        }
+
+        else {
+            alert("Class already exist for the course!")
+        }
+    }
+
 </script>
 
 <head>
@@ -322,92 +542,85 @@
                     <div class="col-lg-12">
                         <div class="card">
                             <div class="card-body">
-                                <h6 class="card-title">Course Creation</h6>
+                                <h6 class="card-title">Course</h6>
                                 <div class="basic-form">
                                     <form>
-                                        <div class="form-group row">
-                                            <label class="col-lg-4 col-form-label">Course Name</label>
-                                            <div class="col-lg-6">
-                                                <input type="text" class="form-control" id="courseName" name="courseName" placeholder="Enter Course Name">
-                                            </div>
-                                        </div>
+                                        <label for="course">Choose a Course:</label>
+                                            <select name="course" id="course_dropdown"  onchange="selected_course(value)">
+                                            </select>
 
-                                        <div class="form-group row">
-                                            <label class="col-lg-4 col-form-label">Enrollment Start and End Date</label>
-                                            <div class="col-lg-6">
-                                                <input type="text" class="form-control input-daterange-timepicker" name="daterange" value="#">
-                                            </div>
-                                        </div>
+                                        <div id="courseform"></div>
+                                        
                     
                                         <h3 class="card-title">Add Class</h3>
 
                                         <div class="form-group row">
                                             <label class="col-lg-4 col-form-label">Class</label>
                                             <div class="col-lg-6">
-                                                <input type="text" class="form-control" id="className" name="className" placeholder="Enter Class Name">
+                                                <input type="number" class="form-control" id="classid" name="classid" placeholder="Enter Class ID">
                                             </div>
                                         </div>
 
                                         <div class="form-group row">
-                                            <label class="col-lg-4 col-form-label">Capacity</label>
+                                            <label class="col-lg-4 col-form-label">Class Size</label>
                                             <div class="col-lg-6">
-                                                <input type="text" class="form-control" id="capacity" name="capacity" placeholder="Enter Class Capacity">
+                                                <input type="number" class="form-control" id="classsize" name="classSize" placeholder="Enter Class Size">
                                             </div>
                                         </div>
 
                                         <div class="form-group row">
-                                            <label class="col-lg-4 col-form-label">Instructor</label>
+                                            <label class="col-lg-4 col-form-label">Enrollment Start Date</label>
                                             <div class="col-lg-6">
-                                                <!--Pull instructor list here-->
-                                                <select class="form-control" id="instructor" name="instructor">
-                                                    <option value="">Please select</option>
-                                                    <option value="name">Name of Instructor</option>
-                                                </select>
+                                                <input type="date" class="form-control input-group date" id="enrollmentstartdate" name="enrollmentstartdate" value="#">
                                             </div>
                                         </div>
 
                                         <div class="form-group row">
-                                            <label class="col-lg-4 col-form-label">Day</label>
+                                            <label class="col-lg-4 col-form-label">Enrollment End Date</label>
                                             <div class="col-lg-6">
-                                                <!--Pull instructor list here-->
-                                                <select class="form-control" id="classDay" name="classDay">
-                                                    <option value="">Please select</option>
-                                                    <option value="Monday">Monday</option>
-                                                    <option value="Tuesday">Tuesday</option>
-                                                    <option value="Wednesday">Wednesday</option>
-                                                    <option value="Thursday">Thursday</option>
-                                                    <option value="Friday">Friday</option>
-                                                </select>
+                                                <input type="date" class="form-control input-group date" id="enrollmentenddate" name="enrollmentenddate" value="#">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <label class="col-lg-4 col-form-label">Class Start Date</label>
+                                            <div class="col-lg-6">
+                                                <input type="date" class="form-control input-group date" id="classstartdate" name="classstartdate" value="#">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <label class="col-lg-4 col-form-label">Class End Date</label>
+                                            <div class="col-lg-6">
+                                                <input type="date" class="form-control input-group date" id="classenddate" name="classenddate" value="#">
                                             </div>
                                         </div>
 
                                         <div class="form-group row">
                                             <label class="col-lg-4 col-form-label">Start Time</label>
                                             <div class="col-lg-6">
-                                                <!--Pull instructor list here-->
-                                                <select class="form-control" id="classTime" name="classTime">
-                                                    <option value="">Please select</option>
-                                                    <option value="8:15AM">8:15 AM</option>
-                                                    <option value="12PM">12 PM</option>
-                                                    <option value="3:30PM">3:30 PM</option>
-                                                </select>
+                                                <input type="time" class="form-control input-group time" id="starttime" name="starttime" value="#">
                                             </div>
                                         </div>
 
                                         <div class="form-group row">
-                                            <label class="col-lg-4 col-form-label">Class Duration</label>
+                                            <label class="col-lg-4 col-form-label">End Time</label>
+                                            <div class="col-lg-6">
+                                                <input type="time" class="form-control input-group time" id="endtime"name="endtime" value="#">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <label class="col-lg-4 col-form-label">Trainer Name</label>
                                             <div class="col-lg-6">
                                                 <!--Pull instructor list here-->
-                                                <select class="form-control" id="classTime" name="classTime">
-                                                    <option value="">Please select</option>
-                                                    <option value="1">1 hour</option>
-                                                    <option value="2">2 hours</option>
-                                                    <option value="3">3 hours</option>
+                                                <select class="form-control" id="trainer_dropdown" name="trainer_name">
+                                                    <option value="">Please select Trainer</option>
                                                 </select>
                                             </div>
                                         </div>
 
-                                        <button id="add" class="btn btn-info btn-rounded" onclick="" type="button">Add Class</button>
+                                        <button id="addclass" class="btn btn-info btn-rounded" onclick="add_class();" type="button">Create Class</button>
 
                                     </form>
                                 </div>
@@ -415,51 +628,6 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="card">
-                            <div class="card-body">
-                                <h6 class="card-title">Classes Added</h6>
-                                <div class="basic-list-group">
-                                    <ul class="list-group">
-                                        <!--Insert Added class in here-->
-                                        <li class="list-group-item">
-                                            <ul>
-                                                <li>Class Name:</li>
-                                                <li>Instructor:</li>
-                                                <li>Day:</li>
-                                                <li>Time:</li> <!--To show start time + duration-->
-                                                <button id="remove" class="btn btn-danger btn-rounded" onclick="" type="button">Remove Class</button>
-                                            </ul>
-                                        </li>
-
-                                        <li class="list-group-item">
-                                            <ul>
-                                                <li>Class Name:</li>
-                                                <li>Instructor:</li>
-                                                <li>Day:</li>
-                                                <li>Time:</li> <!--To show start time + duration-->
-                                                <button id="remove" class="btn btn-danger btn-rounded" onclick="" type="button">Remove Class</button>
-                                            </ul>
-                                        </li>
-
-                                    </ul>
-                                    
-                                    <div class="submit">
-                                        <button id="submit" class="btn btn-success btn-rounded" onclick="" type="button">Confirm Class Creation</button>
-
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-                        
-                    </div>
-                </div>
-
-
-
             </div>
             <!-- #/ container -->
         </div>

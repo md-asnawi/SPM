@@ -220,10 +220,11 @@ def create_class():
     try:
         db.session.add(new_class)
         db.session.commit()
-        return jsonify(new_class.to_dict()), 201
-    except Exception:
+        return jsonify(new_class.json()), 201
+    except Exception as e:
         return jsonify({
-            "message": "Unable to commit to database."
+            "message": "Unable to commit to database.",
+            "error" : e
         }), 500
 
 if __name__ == '__main__':

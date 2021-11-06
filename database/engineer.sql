@@ -15,8 +15,8 @@ INSERT INTO `engineer` (`engineer_id`, `engineer_name`) VALUES
 (100003, 'Rachel'),
 (100004, 'Clare'),
 (100005, 'Nat'),
-(100006, 'Ping'),
-(100007, 'Min'),
-(100008, 'Noi'),
-(100009, 'Nom'),
-(100010, 'Igle');
+(100006, 'Kook'),
+(100007, 'Soo'),
+(100008, 'Woo'),
+(100009, 'Mong'),
+(100010, 'Dong');
