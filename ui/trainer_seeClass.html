@@ -98,7 +98,7 @@
             inclass_count = inclasscount.data.inclass_count;
             // console.log(inclass_count)
 
-            classprogress = (inclasscompleted_count/inclass_count)*100
+            classprogress = Math.round((inclasscompleted_count/inclass_count)*100, 2)
             // console.log(classprogress)
 
             inclasslist.push(`<tr>

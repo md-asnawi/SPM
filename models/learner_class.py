@@ -160,17 +160,17 @@ def get_inprogress_courses_by_learner_id(learner_id):
     if len(learner_class_list):
         for eachrow in learner_class_list:
         # if in the learner_class and progress less than 100, means in progress
-            if eachrow.json()["progress"] != 100:
+            if eachrow.json()["progress"] < 100:
                 class_inprogress.append(eachrow)
 
-            return jsonify(
-                        {
-                            "code": 200,
-                            "data": {
-                                "learner_class": [learner_class.json() for learner_class in class_inprogress]
-                            }
+        return jsonify(
+                    {
+                        "code": 200,
+                        "data": {
+                            "learner_class": [learner_class.json() for learner_class in class_inprogress]
                         }
-                    )
+                    }
+                )
 
 # learner_class/update_withdrawal/
 # update withdrawal status

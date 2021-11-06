@@ -22,7 +22,11 @@ CREATE TABLE IF NOT EXISTS `learner_class` (
 INSERT INTO `learner_class` (`course_name`, `class_id`, `learner_id`, `date_assigned`, `progress`, `enrolment_status`, `preassigned`, `withdrawal`, `withdrawal_message`) VALUES
 ('Ink Course', 1, 456, '2021-04-01', 30, 'Enrolled', 'TRUE', 'FALSE', NULL),
 ('Ink Course', 2, 909, '2021-04-01', 10, 'Enrolled', 'TRUE', 'FALSE', NULL),
-('Ink Course', 1, 999, '2021-04-01', 100, 'Enrolled', 'TRUE', 'FALSE', NULL),
+('Ink Course', 1, 999, '2021-04-01', 80, 'Enrolled', 'TRUE', 'FALSE', NULL),
+('Ink Course', 1, 808, '2021-04-01', 0, 'Enrolled', 'FALSE', 'FALSE', NULL),
 ('Data Course', 1, 999, '2021-04-01', 0, 'Pending', 'FALSE', 'FALSE', NULL),
-('Printer Course', 1, 999, '2021-04-01', 50, 'Enrolled', 'FALSE', 'FALSE', NULL),
+('Design Course', 1, 999, '2021-04-01', 0, 'Enrolled', 'FALSE', 'FALSE', NULL),
+('Drawing Course', 1, 999, '2021-04-01', 30, 'Enrolled', 'TRUE', 'FALSE', NULL),
+('Drawing Course', 2, 909, '2021-04-01', 30, 'Enrolled', 'FALSE', 'FALSE', NULL),
+('Drawing Course', 2, 456, '2021-04-01', 30, 'Enrolled', 'TRUE', 'FALSE', NULL),
 ('Ink Course', 2, 808, '2021-04-01', 50, 'Pending', 'FALSE', 'FALSE', NULL);

@@ -16,5 +16,5 @@
   (111, 'Ink Course', 'You will learn about ink', NULL),
   (222, 'Data Course', 'You will learn about data', NULL),
   (333, 'Printer Course', 'You will learn about printer', 'Ink Course'),
-  (444, 'Design Course', 'You will learn about design', 'Printer Course'),
+  (444, 'Design Course', 'You will learn about design', NULL),
   (555, 'Drawing Course', 'You will learn about drawing', NULL);
