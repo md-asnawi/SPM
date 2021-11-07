@@ -29,4 +29,4 @@ INSERT INTO `learner_class` (`course_name`, `class_id`, `learner_id`, `date_assi
 ('Drawing Course', 1, 999, '2021-04-01', 80, 'Enrolled', FALSE, FALSE, NULL),
 ('Drawing Course', 2, 909, '2021-04-01', 30, 'Enrolled', FALSE, FALSE, NULL),
 ('Drawing Course', 2, 456, '2021-04-01', 30, 'Enrolled', TRUE, FALSE, NULL),
-('Ink Course', 2, 808, '2021-04-01', 50, 'Pending', FALSE, FALSE, NULL);
+('Data Course', 2, 808, '2021-04-01', 0, 'Pending', FALSE, FALSE, NULL);
