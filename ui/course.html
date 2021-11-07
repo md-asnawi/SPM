@@ -7,6 +7,11 @@
         course_name = 'Ink Course';
         class_id = 1;
         learner_id = 999;
+        document.getElementById("uncompleted_course").style.display = "none"
+
+        // TODO
+
+        lesson_id_from_quiz = getParam('lesson_id');
 
         document.getElementById("course-title").innerText = course_name;
         lesson_id_arr = await display_lessons(course_name, class_id);
@@ -15,9 +20,15 @@
 
         completed_lesson_id_arr = [];
         completed_lessons = await progressUpdate(course_name, learner_id);
-        for (completed_lesson of completed_lessons) {
-            completed_lesson_id_arr.push(completed_lesson.lesson_id);
+        if (completed_lessons) {
+            for (completed_lesson of completed_lessons) {
+                completed_lesson_id_arr.push(completed_lesson.lesson_id);
+            }
         }
+        else {
+            document.getElementById("checkbox1").disabled = false;
+        }
+        
 
         for (lesson_id of lesson_id_arr) {
             one_lesson_material = await display_material_of_lesson(course_name, class_id, lesson_id);
@@ -30,7 +41,10 @@
                 materialChecked(lesson_id);
                 lessonQuizTaken(lesson_id);
             }
-        }
+        } 
+
+        // TODO
+        // lessonQuizTaken(lesson_id_from_quiz);
 
         // 
 
@@ -42,6 +56,11 @@
         //     materialChecked(completed_lesson.lesson_id);
         // }
         
+    }
+
+    // TODO
+    function getParam(param){
+        return new URLSearchParams(window.location.search).get(param);
     }
 
     async function display_lessons(course_name, class_id) {
@@ -57,18 +76,25 @@
                 .catch(error => console.log(error));
             // console.log(lesson_response);
 
+            class_information_url = `http://127.0.0.1:5003/class/` + course_name + `/` + class_id + `/` + learner_id;
+            var class_information = await fetch(class_information_url, { method: "GET" }).then(res => res.json());
+            // var isEnrolled = class_information.data.inclass.enrolment_status
+
             if (lesson_response.code == 200) {
             
                 lesson_array = lesson_response.data.lesson;
                 // console.log(lesson_array);
-
-
-                for (i=0; i < lesson_array.length; i++ ) {
+                if (class_information.code == 200) { 
+                    var isEnrolled = class_information.data.inclass.enrolment_status
+                if (isEnrolled == 'Enrolled') {
+                    for (i=0; i < lesson_array.length; i++ ) {
                     lesson = lesson_array[i];
                     // console.log(lesson);
                     lesson_id_array.push(lesson.lesson_id);
 
                     // forming the html string for lessons accordion items
+                    // if (lesson.lesson_id < lesson_array.length) {
+                        
                     lessons_html.push(`
 
                         <div class="card">
@@ -103,7 +129,7 @@
                                     <!-- Quiz shown only after learner checked material completed -->
                                     <!-- TO-DO: Quiz currently hardcoded, should be retrieved from DB -->
                                     <div id="quiz${lesson.lesson_id}" style="display:none">
-                                        <a href="#" onclick="lessonQuizTaken(${lesson.lesson_id})">Quiz ${lesson.lesson_id}</a>
+                                        <a href="learner_quiz_ug.html?course_name=${course_name}&class_id=${class_id}&lesson_id=${lesson.lesson_id}&learner_id=${learner_id}">Quiz ${lesson.lesson_id}</a>
                                     </div>
                                 </div>
                             </div>
@@ -111,62 +137,97 @@
 
                     `);
 
-                    // forming the html string for materials in each lesson
+                    // }
 
-                    // console.log(lesson.lesson_id);
+                    // else {
 
-                    // await new Promise(next => {
+                    //     lessons_html.push(`
 
-                    //     material_of_lesson = display_material_of_lesson(course_name, class_id, lesson.lesson_id);
-                    //     all_materials_html.push(material_of_lesson);
-                    //     next();
+                    //         <div class="card">
+                    //             <div class="card-header">
+                    //                 <h5 class="mb-0" data-toggle="collapse" data-target="#collapse${lesson.lesson_id}" aria-expanded="false" aria-controls="collapseOne4">
+                    //                     <i class="fa" aria-hidden="true"></i> 
+                    //                     ${lesson.description}
+                    //                     <!--Completion Status-->
+                    //                     <span class="badge badge-light" id="completion${lesson.lesson_id}">Uncompleted</span>
+                    //                 </h5>
+                    //             </div>
+                    //             <div id="collapse${lesson.lesson_id}" class="collapse" data-parent="#accordion-three">
+                    //                 <!--Display materials in here-->
+                    //                 <div class="card-body">
 
-                    // })
+                    //                     <ul id="material${lesson.lesson_id}">
+                    //                         <li>Lecture Slides: <a href="#" class="text-primary">View</a> | <a href="#" class="text-primary">Download</a> </li>
+                    //                         <br>
+                    //                         <li>Tutorial Pack: <a href="#" class="text-primary">View</a> | <a href="#" class="text-primary">Download</a> </li>
+                    //                         <br>
+                    //                         <li><a href="#" class="text-primary">Quiz</a></li>
+                    //                     </ul>
+                                        
+                    //                     <!--Student Completion Confirmation, input to include "checked" after checking-->
+                    //                     <div class="form-check mb-3">
+                    //                         <label class="form-check-label">
+                    //                             <input type="checkbox" class="form-check-input" id="checkbox${lesson.lesson_id}" onclick="materialChecked(${lesson.lesson_id})" disabled>
+                    //                             <label for="">Lesson ${lesson.lesson_id} Material(s) Completed</label>
+                    //                         </label>
+                    //                     </div>
 
-                    // material_of_lesson.then((value) => {
-                    // console.log(material_of_lesson);
-                        // value.forEach(element => {
-                        //     console.log(element);
-                        // });
-                        // console.log(value);
+                    //                     <!-- Quiz shown only after learner checked material completed -->
+                    //                     <!-- TO-DO: Quiz currently hardcoded, should be retrieved from DB -->
+                    //                     <div id="quiz${lesson.lesson_id}" style="display:none">
+                    //                         <a href="#" onclick="lessonQuizTaken(${lesson.lesson_id})">Final Quiz</a>
+                    //                     </div>
+                    //                 </div>
+                    //             </div>
+                    //         </div>
 
-                    // })
-                    // all_materials_html[lesson.lesson_id] = display_material_of_lesson(course_name, class_id, lesson.lesson_id);
+                    //     `);
+
+                    // }
+                    
                     
                 }
+                add_timer(course_name, class_id)
+                }  else {
+                    lessons_html.push(`
+            <div class="card">You are not enrolled in this course.</div>
+            `);
+            document.getElementById("timer").innerHTML = "N/A"
+                }
 
-                // all_materials_html.forEach(material => {
-                //     console.log(material);   
-                // });
-
-
-
-                // for (var material in all_materials_html) {
-                //     console.log(all_materials_html[material]);
-                // }
-
+                } 
+                else {
                 lessons_html.push(`
+            <div class="card">You are not enrolled in this course.</div>
+            `);
+            document.getElementById("timer").innerHTML = "N/A"
+            }
 
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="mb-0" data-toggle="collapse" data-target="#collapseQuiz" aria-expanded="false" aria-controls="collapseOne4">
-                                <i class="fa" aria-hidden="true"></i> 
-                                Final Graded Quiz
-                                <!--Completion Status-->
-                                <span class="badge badge-light" id="completionQuiz">Uncompleted</span>
-                            </h5>
-                        </div>
-                        <div id="collapseQuiz" class="collapse" data-parent="#accordion-three">
-                            <!--Display materials in here-->
-                            <div class="card-body">
 
-                                <span id="finalQuiz">Lessons not completed.</span>
+              
 
-                            </div>
-                        </div>
-                    </div>
+                // lessons_html.push(`
 
-                `);
+                //     <div class="card">
+                //         <div class="card-header">
+                //             <h5 class="mb-0" data-toggle="collapse" data-target="#collapseQuiz" aria-expanded="false" aria-controls="collapseOne4">
+                //                 <i class="fa" aria-hidden="true"></i> 
+                //                 Final Graded Quiz
+                //                 <!--Completion Status-->
+                //                 <span class="badge badge-light" id="completionQuiz">Uncompleted</span>
+                //             </h5>
+                //         </div>
+                //         <div id="collapseQuiz" class="collapse" data-parent="#accordion-three">
+                //             <!--Display materials in here-->
+                //             <div class="card-body">
+
+                //                 <span id="finalQuiz">Lessons not completed.</span>
+
+                //             </div>
+                //         </div>
+                //     </div>
+
+                // `);
 
                 document.getElementById("accordion-three").innerHTML = lessons_html.join("");
 
@@ -205,19 +266,32 @@
         // Create empty array
         material_of_lesson_html = []
 
+        //view links
+        view_links = ["https://drive.google.com/file/d/1lbZzUt81Ng2UNlcQUi6sfl0KNlJyPAZs/view?usp=sharing", "https://drive.google.com/file/d/1ajjlqYbELVJa37DfnfcDp_M0IYri45wV/view?usp=sharing", "https://drive.google.com/file/d/1DUBGDSk8YGCkEFCGlssH-sEVDbNXwN3Y/view?usp=sharing"]
+
+        //download links
+        download_links=["https://drive.google.com/u/0/uc?id=1lbZzUt81Ng2UNlcQUi6sfl0KNlJyPAZs&export=download","https://drive.google.com/u/0/uc?id=1ajjlqYbELVJa37DfnfcDp_M0IYri45wV&export=download","https://drive.google.com/u/0/uc?id=1DUBGDSk8YGCkEFCGlssH-sEVDbNXwN3Y&export=download"]
+        
         if (material_response.code == 200) {
 
             material_array = material_response.data.material;
-            // console.log(material_array);
+            console.log(material_array);
+
+                    
+            material_of_lesson_html.push(`<li>${material_array[0].material_name} <a href="${view_links[lesson_id-1]}" class="text-primary">View</a> | <a href="${download_links[lesson_id-1]}" class="text-primary">Download</a> </li>`)
+            // for (i=0; i < view_links.length; i++) {
+            //     material_of_lesson_html.push(`<li>material ${material_array[0].material_id} <a href="${view_links[i]}" class="text-primary">View</a> | <a href="#" class="text-primary">Download</a> </li>`)
+            // }
 
 
-            for (i=0; i < material_array.length; i++ ) {
-                material = material_array[i];
-                // console.log(material.material_id);
+            // for (i=0; i < material_array.length; i++ ) {
+            //     material = material_array[i];
+            //     // console.log(material.material_id);
 
-                material_of_lesson_html.push(`<h1>${material.material_id + "." + material.format}</h1>`);
+            //     // material_of_lesson_html.push(`<h1>${material.material_id + "." + material.format}</h1>`);
+            //     material_of_lesson_html.push(`<li>material ${material.material_id} <a href="#" class="text-primary">View</a> | <a href="#" class="text-primary">Download</a> </li>`)
 
-            }
+            // }
 
         }
 
@@ -236,8 +310,19 @@
         var quizDiv = document.getElementById("quiz" + lesson_id);
 
         if (materialCheckbox.checked == true) {
-            quizDiv.style.display = "block";
-            document.getElementById("checkbox" + lesson_id).disabled = true;
+
+            if (document.getElementById("checkbox" + (lesson_id + 1) ) != null) {
+                quizDiv.style.display = "block";
+                document.getElementById("checkbox" + lesson_id).disabled = true;
+            }
+
+            else {
+                quizDiv.innerHTML = `<a href="learner_quiz.html?course_name=${course_name}&class_id=${class_id}&lesson_id=${lesson.lesson_id}&learner_id=${learner_id}">Final Quiz</a>`;
+                quizDiv.style.display = "block";
+                document.getElementById("checkbox" + lesson_id).disabled = true;
+            }
+            
+            // <a href="#" onclick="lessonQuizTaken(${lesson.lesson_id})">Final Quiz</a>
         }
 
     }
@@ -249,23 +334,30 @@
         document.getElementById("completion" + lesson_id).classList.add('badge-primary');
 
         // check if last lesson
-        if (document.getElementById("checkbox" + (lesson_id + 1) ) == null) {
-            document.getElementById("finalQuiz").innerHTML = `<a href="#" onclick='finalQuizTaken()'>Final Quiz</a>`;            
-        }
-        else {
+        // if (document.getElementById("checkbox" + (lesson_id + 1) ) == null) {
+        //     document.getElementById("finalQuiz").style.display = "block";          
+        // }
+        // else {
+        //     document.getElementById("checkbox" + (lesson_id + 1) ).disabled = false;
+        // }
+
+        if (document.getElementById("checkbox" + (lesson_id + 1) ) != null) {
             document.getElementById("checkbox" + (lesson_id + 1) ).disabled = false;
         }
+        else {
+            alert(`Congratulations, you have completed ${course_name}!`);
+        }
 
     }
 
-    function finalQuizTaken() {
+    // function finalQuizTaken(lesson_id) {
 
-        document.getElementById("completionQuiz").innerText = "Completed";
-        document.getElementById("completionQuiz").classList.remove('badge-light');
-        document.getElementById("completionQuiz").classList.add('badge-primary');
-        alert(`Congratulations, you have completed ${course_name}!`);
+    //     document.getElementById("completion" + lesson_id).innerText = "Completed";
+    //     document.getElementById("completion" + lesson_id).classList.remove('badge-light');
+    //     document.getElementById("completion" + lesson_id).classList.add('badge-primary');
+    //     alert(`Congratulations, you have completed ${course_name}!`);
 
-    }
+    // }
 
     async function progressUpdate(course_name, learner_id) {
 
@@ -275,7 +367,55 @@
                 .catch(error => console.log(error));
         // console.log(completed_lesson_response);
 
-        return completed_lesson_response.data.learner_lesson;
+        if (completed_lesson_response.code == 200) {
+            return completed_lesson_response.data.learner_lesson;
+        }
+
+        return;
+
+    }
+
+    async function add_timer(course_name, class_id) {
+        class_information_url = `http://127.0.0.1:5004/class/` + course_name + `/` + class_id;
+        var class_information = await fetch(class_information_url, { method: "GET" }).then(res => res.json());
+        var end_date = class_information.data.single_class.class_end_date;
+
+
+        // Set the date we're counting down to
+        var countDownDate = new Date(end_date).getTime();
+        console.log(countDownDate)
+
+        // Update the count down every 1 second
+        var x = setInterval(function () {
+            // Get today's date and time
+            var now = new Date().getTime();
+
+            // Find the distance between now and the count down date
+            var distance = countDownDate - now;
+
+            // Time calculations for days, hours, minutes and seconds
+            var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Display the result in the element with id="demo"
+            document.getElementById("timer").innerHTML = days + "d " + hours + "h "
+                + minutes + "m " + seconds + "s ";
+
+            // If the count down is finished, write some text
+            if (distance < 0) {
+                clearInterval(x);
+                document.getElementById("timer").innerHTML = "Expired";
+                var completionQuiz = document.getElementById("completion3");
+                if (completionQuiz.textContent == "Uncompleted") {
+                    document.getElementById("course_materials").style.display = "none";
+                    document.getElementById("uncompleted_course").style.display = "flex";
+                    document.getElementById("timer").innerHTML = "N/A";
+                }
+
+            }
+        }, 1000); 
 
     }
 
@@ -572,13 +712,16 @@
 
             <div class="container-fluid">
                 
-                <!--Course Title-->
-                <h1 id="course-title"> Art of Ink 101</h1>
+                  <!--Course Title-->
+                  <div class="row" style="display: flex; align-items: center;">
+                    <h1 id="course-title"> Art of Ink 101</h1>
+                    <h5 class="ml-auto" id="timer"></h5>
+                </div>
                 <div class="row">
                     <div class="col-lg-12">
 
                         <!--Course Materials-->
-                        <div class="card">
+                        <div class="card" id="course_materials">
                             <div class="card-body">
                                 <h4 class="card-title">Course Materials</h4>
                                 <p class="text-muted"><code></code>
@@ -654,6 +797,13 @@
                                 </div>
                             </div>
                         </div>
+                          <!--Uncompleted course-->
+                          <div class="card" id="uncompleted_course"
+                          style="text-align:center;height:100%;display:flex;justify-content:center;">
+                          <h5>Course Not Completed</h5>
+                          <a href="allCourses.html" class="btn btn-dark" style="margin:0 auto;">Enrol for more
+                              courses</a>
+                      </div>
                     </div>
                 </div>
             </div>
