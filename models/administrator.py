@@ -1,5 +1,5 @@
 # Administrator
-# jenkintest18
+# jenkintest1
 class Administrator:
 
     def __init__(self, name="", administrator_id=""):
