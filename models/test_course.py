@@ -76,16 +76,16 @@ class TestCourse(TestApp):
                 "data": {
                     "course": [
                         {
-                            "course_id": 111,
-                            "course_name": 'Ink Course',
-                            "description": 'This is Course 111',
-                            "prerequisite": 'Data Course'
-                        },
-                        {
                             "course_id": 222,
                             "course_name": 'Data Course',
                             "description": 'This is Course 222',
                             "prerequisite": 'null'
+                        },
+                        {
+                            "course_id": 111,
+                            "course_name": 'Ink Course',
+                            "description": 'This is Course 111',
+                            "prerequisite": 'Data Course'
                         }
                     ]
                 }
