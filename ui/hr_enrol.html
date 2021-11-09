@@ -22,7 +22,7 @@
         all = []
         dropdown = []
 
-        all_url = `http://127.0.0.1:5001/course`;
+        all_url = `http://3.15.181.194:5001/course`;
         var all_course = await fetch(all_url, {method: "GET"}).then(res => res.json());
 
         if (all_course.code == 200) {
@@ -59,7 +59,7 @@
         all1 = []
         dropdown1 = []
 
-        course_class_url = `http://127.0.0.1:5004/class/` + course_name;
+        course_class_url = `http://3.15.181.194:5004/class/` + course_name;
     
         var all_course_class = await fetch(course_class_url, {method: "GET"}).then(res => res.json());
 
@@ -77,13 +77,13 @@
                 let course_class = all1[i]
                 
                 // check capacity of class
-                single_class_url = `http://127.0.0.1:5004/class/` + course_class.course_name + `/` + course_class.class_id;
+                single_class_url = `http://3.15.181.194:5004/class/` + course_class.course_name + `/` + course_class.class_id;
                 var single_class = await fetch(single_class_url, {method: "GET"}).then(res => res.json());
                 class_size = single_class.data.single_class.class_size;
             
 
                 // check current class size
-                class_count_url = `http://127.0.0.1:5003/class/count/` + course_class.course_name + `/` + course_class.class_id
+                class_count_url = `http://3.15.181.194:5003/class/count/` + course_class.course_name + `/` + course_class.class_id
                 var class_count = await fetch(class_count_url, {method: "GET"}).then(res => res.json());
                 class_cap = class_count.data.inclass_count;
 
@@ -112,16 +112,16 @@
         available = []
         
         // get the current course list and learner list
-        course_list_url = `http://127.0.0.1:5003/class/` + course_name;
-        all_learner_url = `http://127.0.0.1:5005/all`;
-        course_completed_url = `http://127.0.0.1:5003/course_completed/` + course_name;
+        course_list_url = `http://3.15.181.194:5003/class/` + course_name;
+        all_learner_url = `http://3.15.181.194:5005/all`;
+        course_completed_url = `http://3.15.181.194:5003/course_completed/` + course_name;
         
         var course_list = await fetch(course_list_url, {method: "GET"}).then(res => res.json());
         var all_learner = await fetch(all_learner_url, {method: "GET"}).then(res => res.json());
         var course_completed = await fetch(course_completed_url, {method: "GET"}).then(res => res.json());
 
         // check for prereq
-        all_courses_url = `http://127.0.0.1:5001/course`;
+        all_courses_url = `http://3.15.181.194:5001/course`;
         var all_course_list = await fetch(all_courses_url, {method: "GET"}).then(res => res.json());
         all_course_list_array = all_course_list.data.course;
 
@@ -134,7 +134,7 @@
         }
 
         if (prereq != null) {
-            prereq_course_completed_url = `http://127.0.0.1:5003/course_completed/` + prereq;
+            prereq_course_completed_url = `http://3.15.181.194:5003/course_completed/` + prereq;
             var prereq_course_completed_list = await fetch(prereq_course_completed_url, {method: "GET"}).then(res => res.json());
 
             if (prereq_course_completed_list.code == 200) {
@@ -275,13 +275,13 @@
             for (let i = 0; i < enrol_learner.length; i++) {
 
                 // check capacity of class
-                single_class_url = `http://127.0.0.1:5004/class/` + course_name + `/` + class_id;
+                single_class_url = `http://3.15.181.194:5004/class/` + course_name + `/` + class_id;
                 var single_class = await fetch(single_class_url, {method: "GET"}).then(res => res.json());
                 class_size = single_class.data.single_class.class_size;
                 // console.log(class_size);
 
                 // check current class size
-                class_count_url = `http://127.0.0.1:5003/class/count/` + course_name + `/` + class_id
+                class_count_url = `http://3.15.181.194:5003/class/count/` + course_name + `/` + class_id
                 var class_count = await fetch(class_count_url, {method: "GET"}).then(res => res.json());
                 class_cap = class_count.data.inclass_count;
                 // console.log(class_cap);
@@ -292,7 +292,7 @@
                     console.log(learner_id);
                     console.log(course_name);
 
-                    enrolment_url = `http://127.0.0.1:5003/enrol/` + course_name + `/` + class_id + `/` + learner_id;
+                    enrolment_url = `http://3.15.181.194:5003/enrol/` + course_name + `/` + class_id + `/` + learner_id;
                     console.log(enrolment_url);
                     var enrol = await fetch(enrolment_url, {method: "POST"}).then(res => res.json());
                     // console.log(enrol);

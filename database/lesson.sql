@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS `lesson` (
   `lesson_id` INT NOT NULL,
   `description`  VARCHAR(45) NOT NULL, 
   PRIMARY KEY (`course_name`, `class_id`, `lesson_id`),
-  FOREIGN KEY (`course_name`, `class_id`) REFERENCES `class`(`course_name`, `class_id`)
+  FOREIGN KEY (`course_name`, `class_id`) REFERENCES `Class`(`course_name`, `class_id`)
 );
 
 INSERT INTO `lesson` (`course_name`, `class_id`, `lesson_id`, `description`) VALUES

@@ -12,7 +12,7 @@
         // Create empty array
         dropdown = [`<option value="unselected">--- Select course ---</option>`]
 
-        course_url = `http://127.0.0.1:5003/learner_class/withdrawal/` + learner_id;
+        course_url = `http://3.15.181.194:5003/learner_class/withdrawal/` + learner_id;
         var course_response = await fetch(course_url, {method: "GET"}).then(res => res.json());
 
         if (course_response.code == 200) {
@@ -67,7 +67,7 @@
         // console.log(message)
         message_request_body = { "withdrawal_message" : message };
 
-        message_url = `http://127.0.0.1:5003/learner_class/withdrawal_message/` + learner_id + `/` + course_name;
+        message_url = `http://3.15.181.194:5003/learner_class/withdrawal_message/` + learner_id + `/` + course_name;
         var message_response = await fetch(message_url,{
             method: "PUT",
             headers: { 'Content-Type': 'application/json' },
@@ -77,7 +77,7 @@
 
         console.log(message_response);
 
-        // status_url = `http://127.0.0.1:5003/learner_class/update_withdrawal/` + learner_id + `/` + course_name;
+        // status_url = `http://3.15.181.194:5003/learner_class/update_withdrawal/` + learner_id + `/` + course_name;
         // var withdrawal_response = await fetch(status_url, {method: "PUT", headers: { 'Content-Type': 'application/json' }}).then(res => res.json());  
         
         alert("Learner " + learner_id + ", you have submitted your withdrawal from " + course_name + "!");

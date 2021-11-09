@@ -70,13 +70,13 @@
             lesson_id_array = [];
             // all_materials_html = [];
 
-            lesson_url = `http://127.0.0.1:5007/lesson/` + course_name + `/` + class_id;
+            lesson_url = `http://3.15.181.194:5007/lesson/` + course_name + `/` + class_id;
             var lesson_response = await fetch(lesson_url, {method: "GET"})
                 .then(res => res.json())
                 .catch(error => console.log(error));
             // console.log(lesson_response);
 
-            class_information_url = `http://127.0.0.1:5003/class/` + course_name + `/` + class_id + `/` + learner_id;
+            class_information_url = `http://3.15.181.194:5003/class/` + course_name + `/` + class_id + `/` + learner_id;
             var class_information = await fetch(class_information_url, { method: "GET" }).then(res => res.json());
             // var isEnrolled = class_information.data.inclass.enrolment_status
 
@@ -257,7 +257,7 @@
     // materials for 1 lesson only
     async function display_material_of_lesson(course_name, class_id, lesson_id) {
 
-        material_url = `http://127.0.0.1:5008/material/` + course_name + `/` + class_id + `/` + lesson_id;
+        material_url = `http://3.15.181.194:5008/material/` + course_name + `/` + class_id + `/` + lesson_id;
         // var material_fetch = await fetch(material_url, {method: "GET"}).then(res => res.json());
         var material_fetch = await fetch(material_url, {method: "GET"});
         // console.log(material_response);
@@ -361,7 +361,7 @@
 
     async function progressUpdate(course_name, learner_id) {
 
-        completed_lessons_url = `http://127.0.0.1:5013/learner_lesson/completed/` + course_name + `/` + learner_id;
+        completed_lessons_url = `http://3.15.181.194:5013/learner_lesson/completed/` + course_name + `/` + learner_id;
         var completed_lesson_response = await fetch(completed_lessons_url, {method: "GET"})
                 .then(res => res.json())
                 .catch(error => console.log(error));
@@ -376,7 +376,7 @@
     }
 
     async function add_timer(course_name, class_id) {
-        class_information_url = `http://127.0.0.1:5004/class/` + course_name + `/` + class_id;
+        class_information_url = `http://3.15.181.194:5004/class/` + course_name + `/` + class_id;
         var class_information = await fetch(class_information_url, { method: "GET" }).then(res => res.json());
         var end_date = class_information.data.single_class.class_end_date;
 

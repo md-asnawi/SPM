@@ -46,9 +46,9 @@
         available = []
         cards = []
 
-        all_url = `http://127.0.0.1:5001/course`;
-        available_url = `http://127.0.0.1:5001/course/available/` + learner_id;
-        class_url = `http://127.0.0.1:5004/class`;
+        all_url = `http://3.15.181.194:5001/course`;
+        available_url = `http://3.15.181.194:5001/course/available/` + learner_id;
+        class_url = `http://3.15.181.194:5004/class`;
 
         var all_course = await fetch(all_url, { method: "GET" }).then(res => res.json());
         var available_course = await fetch(available_url, { method: "GET" }).then(res => res.json());
@@ -85,7 +85,7 @@
                                     <p class="card-text">${course.description}</p>`)
 
                     // get class_info (count and capacity)... if count less than cap means class available + 1
-                    class_information_url = `http://127.0.0.1:5004/class/` + course.course_name;
+                    class_information_url = `http://3.15.181.194:5004/class/` + course.course_name;
                     var class_information = await fetch(class_information_url, { method: "GET" }).then(res => res.json());
 
                     if (class_information.code == 200) {
@@ -96,7 +96,7 @@
                             let eachclass = classes[i]
                             
                             // check learner course status.. only show course classes that are not enrolled (pending, rejected don't show)
-                            class_status_url = `http://127.0.0.1:5003/learner_class/status/` + course.course_name + "/" + eachclass.class_id + "/" + learner_id;
+                            class_status_url = `http://3.15.181.194:5003/learner_class/status/` + course.course_name + "/" + eachclass.class_id + "/" + learner_id;
                             var class_status = await fetch(class_status_url, { method: "GET" }).then(res => res.json());
 
                             status = class_status.data.learner_class_status
@@ -113,10 +113,10 @@
                                                 Trainer Name: ${eachclass.trainer_name}
                                                 <br><br>`);
 
-                                    class_cap_url = `http://127.0.0.1:5003/class/count/` + course.course_name + `/` + eachclass.class_id;
+                                    class_cap_url = `http://3.15.181.194:5003/class/count/` + course.course_name + `/` + eachclass.class_id;
                                     var class_cap = await fetch(class_cap_url, { method: "GET" }).then(res => res.json());
 
-                                    enrolment_info_url = `http://127.0.0.1:5001/course/` + course.course_name;
+                                    enrolment_info_url = `http://3.15.181.194:5001/course/` + course.course_name;
                                     var enrolment_info = await fetch(enrolment_info_url, { method: "GET" }).then(res => res.json());
 
                                     cards.push(`Current Capacity: ${class_cap.data.inclass_count}/${eachclass.class_size}<br><br>`); 
@@ -190,7 +190,7 @@
         available_course = []
         cards = []
 
-        url = `http://127.0.0.1:5001/course/available/` + learner_id;
+        url = `http://3.15.181.194:5001/course/available/` + learner_id;
         var course = await fetch(url, { method: "GET" }).then(res => res.json());
         if (course.code == 200) {
             course_array = course.data.course;
@@ -213,7 +213,7 @@
 
                     // get class_info (count and capacity)... if count less than cap means class available + 1
 
-                    class_information_url = `http://127.0.0.1:5004/class/` + course.course_name;
+                    class_information_url = `http://3.15.181.194:5004/class/` + course.course_name;
                     var class_information = await fetch(class_information_url, { method: "GET" }).then(res => res.json());
 
                     if (class_information.code == 200) {
@@ -223,7 +223,7 @@
                         for (let i = 0; i < classes.length; i++) {
                             let eachclass = classes[i]
                             // check learner course status.. only show course classes that are not enrolled (pending, rejected don't show)
-                            class_status_url = `http://127.0.0.1:5003/learner_class/status/` + course.course_name + "/" + eachclass.class_id + "/" + learner_id;
+                            class_status_url = `http://3.15.181.194:5003/learner_class/status/` + course.course_name + "/" + eachclass.class_id + "/" + learner_id;
                             var class_status = await fetch(class_status_url, { method: "GET" }).then(res => res.json());
 
                             status = class_status.data.learner_class_status
@@ -240,10 +240,10 @@
                                                 Trainer Name: ${eachclass.trainer_name}
                                                 <br><br>`);
 
-                                    class_cap_url = `http://127.0.0.1:5003/class/count/` + course.course_name + `/` + eachclass.class_id;
+                                    class_cap_url = `http://3.15.181.194:5003/class/count/` + course.course_name + `/` + eachclass.class_id;
                                     var class_cap = await fetch(class_cap_url, { method: "GET" }).then(res => res.json());
 
-                                    enrolment_info_url = `http://127.0.0.1:5001/course/` + course.course_name;
+                                    enrolment_info_url = `http://3.15.181.194:5001/course/` + course.course_name;
                                     var enrolment_info = await fetch(enrolment_info_url, { method: "GET" }).then(res => res.json());
 
                                     cards.push(`Current Capacity: ${class_cap.data.inclass_count}/${eachclass.class_size}<br><br>`); 
@@ -290,7 +290,7 @@
         completed_course = []
         cards = []
 
-        url = `http://127.0.0.1:5001/course/completed/` + learner_id;
+        url = `http://3.15.181.194:5001/course/completed/` + learner_id;
 
         var course = await fetch(url, { method: "GET" }).then(res => res.json());
 
@@ -337,7 +337,7 @@
         enrolled_course = []
         cards = []
 
-        url = `http://127.0.0.1:5003/learner_class/inprogress/` + learner_id;
+        url = `http://3.15.181.194:5003/learner_class/inprogress/` + learner_id;
 
         var enrolled_courses = await fetch(url, { method: "GET" }).then(res => res.json());
 
@@ -352,7 +352,7 @@
                 for (let i = 0; i < enrolled_course.length; i++) {
                     let enrolled = enrolled_course[i]
 
-                    url = `http://127.0.0.1:5001/course/` + enrolled.course_name;
+                    url = `http://3.15.181.194:5001/course/` + enrolled.course_name;
                     var courses = await fetch(url, { method: "GET" }).then(res => res.json());
                     single_course = courses.data.course;
 
@@ -407,7 +407,7 @@
                             enrolment_status: 'Pending',
                         },
                         type:'POST',
-                        url: 'http://127.0.0.1:5003/enrol'
+                        url: 'http://3.15.181.194:5003/enrol'
                     })
                 })
                 addToList.clear()

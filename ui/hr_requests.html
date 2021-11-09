@@ -12,7 +12,7 @@
         // Create empty array for the pending requests
         pending_html = []
 
-        url = `http://127.0.0.1:5003/pending`;
+        url = `http://3.15.181.194:5003/pending`;
 
         var pending_response = await fetch(url, {method: "GET"}).then(res => res.json());
 
@@ -28,7 +28,7 @@
             
             for (pending_object of pending_array) {
 
-                url = `http://127.0.0.1:5005/learner/` + pending_object.learner_id;
+                url = `http://3.15.181.194:5005/learner/` + pending_object.learner_id;
 
                 var learner_response = await fetch(url, {method: "GET"}).then(res => res.json());
 
@@ -46,7 +46,7 @@
 
                         // get class information
 
-                        url = `http://127.0.0.1:5004/class/` + pending_object.course_name + `/` + pending_object.class_id
+                        url = `http://3.15.181.194:5004/class/` + pending_object.course_name + `/` + pending_object.class_id
 
                         console.log(url)
 
@@ -90,7 +90,7 @@
         }
         
 
-        url = `http://127.0.0.1:5003/pending/` + learner_id + `/` + course_name;
+        url = `http://3.15.181.194:5003/pending/` + learner_id + `/` + course_name;
 
 
         var interact_response = await fetch(url, {method: "PUT", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)}).then(res => res.json());

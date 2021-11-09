@@ -29,7 +29,7 @@
         questions = []
         each = []
 
-        quiz_url = `http://localhost:5011/quiz/question/` + course_name + `/` + class_id + `/` + lesson_id + `/` + quiz_id;
+        quiz_url = `http://3.15.181.194:5011/quiz/question/` + course_name + `/` + class_id + `/` + lesson_id + `/` + quiz_id;
 
         var quiz_questions = await fetch(quiz_url, { method: "GET" }).then(res => res.json());
 
@@ -121,7 +121,7 @@
         questions = []
         each = []
 
-        quiz_url = `http://localhost:5011/quiz/question/` + course_name + `/` + class_id + `/` + lesson_id + `/` + quiz_id;
+        quiz_url = `http://3.15.181.194:5011/quiz/question/` + course_name + `/` + class_id + `/` + lesson_id + `/` + quiz_id;
         var quiz_questions = await fetch(quiz_url, { method: "GET" }).then(res => res.json());
 
         if (quiz_questions.code == 200) {
@@ -200,7 +200,7 @@
         questions = []
         each = []
 
-        quiz_url = `http://localhost:5011/quiz/question/` + course_name + `/` + class_id + `/` + lesson_id + `/` + quiz_id;
+        quiz_url = `http://3.15.181.194:5011/quiz/question/` + course_name + `/` + class_id + `/` + lesson_id + `/` + quiz_id;
         var quiz_questions = await fetch(quiz_url, { method: "GET" }).then(res => res.json());
 
         if (quiz_questions.code == 200) {
@@ -215,7 +215,7 @@
                 let question = questions[i]
                 
                 // get question answer
-                eachquestion_url = `http://localhost:5011/question/` + course_name + `/` + class_id + `/` + lesson_id + `/` + quiz_id + `/` + question.question_number
+                eachquestion_url = `http://3.15.181.194:5011/question/` + course_name + `/` + class_id + `/` + lesson_id + `/` + quiz_id + `/` + question.question_number
                 var eachquestion = await fetch(eachquestion_url, { method: "GET" }).then(res => res.json());
 
                 document.getElementById("correctanswer"+question.question_number).innerHTML = `<h4>Correct Answer: ${eachquestion.data.questions.answer}</h4>`
@@ -225,7 +225,7 @@
 
     // TODO
     async function backToCourse() {
-        update_url = `http://localhost:5013/learner_lesson/update_completion/` + course_name + `/` + learner_id + `/` + lesson_id;
+        update_url = `http://3.15.181.194:5013/learner_lesson/update_completion/` + course_name + `/` + learner_id + `/` + lesson_id;
         var update_response = await fetch(update_url, { method: "PUT" }).then(res => res.json());
         console.log(update_response);
         window.location.href = "course.html";
