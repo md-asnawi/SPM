@@ -14,7 +14,7 @@
         all = []
         dropdown = []
 
-        all_url = `http://127.0.0.1:5006/all`;
+        all_url = `http://3.15.181.194:5006/all`;
         var all_trainer = await fetch(all_url, {method: "GET"}).then(res => res.json());
 
         if (all_trainer.code == 200) {
@@ -44,7 +44,7 @@
         all1 = []
         dropdown1 = []
 
-        all1_url = `http://127.0.0.1:5001/course`;
+        all1_url = `http://3.15.181.194:5001/course`;
         var all_course = await fetch(all1_url, {method: "GET"}).then(res => res.json());
 
         if (all_course.code == 200) {
@@ -100,7 +100,7 @@
 
         else {
             // get information of selected
-            course_url = `http://127.0.0.1:5001/course/` + value;
+            course_url = `http://3.15.181.194:5001/course/` + value;
             console.log(course_url)
             var get_course = await fetch(course_url, {method: "GET"}).then(res => res.json());
 
@@ -176,17 +176,17 @@
         var trainer = document.getElementById("trainer_dropdown").value
         
         // check if course exist
-        check_course_url = `http://127.0.0.1:5001/course/` + coursename;
+        check_course_url = `http://3.15.181.194:5001/course/` + coursename;
         var check_course = await fetch(check_course_url, {method: "GET"}).then(res => res.json());
 
         // if course doesnt exist, create course
         if (check_course.code != 200) {
-            course_url = `http://127.0.0.1:5001/createcourse/` + courseid + `/` + coursename + `/` + coursedescription + `/` + prerequisite;
+            course_url = `http://3.15.181.194:5001/createcourse/` + courseid + `/` + coursename + `/` + coursedescription + `/` + prerequisite;
             var new_course = await fetch(course_url, {method: "POST"}).then(res => res.json());
         }
     
         // check if class exist
-        check_class_url = `http://127.0.0.1:5004/class/` + coursename + `/` + classid;
+        check_class_url = `http://3.15.181.194:5004/class/` + coursename + `/` + classid;
         var check_class = await fetch(check_class_url, {method: "GET"}).then(res => res.json());
 
         // if class doesnt exist, , create class
@@ -202,7 +202,7 @@
                                 "end_time" : endtime,
                                 "trainer_name" : trainer};
         
-            class_url = `http://127.0.0.1:5004/class`;
+            class_url = `http://3.15.181.194:5004/class`;
             var class_response = await fetch(class_url,{
                 method: "POST",
                 headers: { 'Content-Type': 'application/json' },
@@ -211,7 +211,7 @@
             .then(res => res.json());
 
             // create one lesson for the class
-            lesson_url = `http://127.0.0.1:5007/lesson/` + coursename + `/` + classid + `/` + 1
+            lesson_url = `http://3.15.181.194:5007/lesson/` + coursename + `/` + classid + `/` + 1
             var createlesson = await fetch(lesson_url, {method: "POST"}).then(res => res.json());
             
             alert("Class successfully created!")

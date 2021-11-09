@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS `learner_class` (
   `withdrawal_message` VARCHAR(255) NULL,
   
   PRIMARY KEY (`course_name`, `class_id`, `learner_id`),
-  FOREIGN KEY (`course_name`, `class_id`) REFERENCES `class`(`course_name`, `class_id`),
+  FOREIGN KEY (`course_name`, `class_id`) REFERENCES `Class`(`course_name`, `class_id`),
   FOREIGN KEY (`learner_id`) REFERENCES `learner`(`learner_id`)
 );
 
@@ -29,4 +29,4 @@ INSERT INTO `learner_class` (`course_name`, `class_id`, `learner_id`, `date_assi
 ('Drawing Course', 1, 999, '2021-04-01', 80, 'Enrolled', FALSE, FALSE, NULL),
 ('Drawing Course', 2, 909, '2021-04-01', 30, 'Enrolled', FALSE, FALSE, NULL),
 ('Drawing Course', 2, 456, '2021-04-01', 30, 'Enrolled', TRUE, FALSE, NULL),
-('Data Course', 2, 808, '2021-04-01', 0, 'Pending', FALSE, FALSE, NULL);
+('Data Course', 1, 808, '2021-04-01', 0, 'Pending', FALSE, FALSE, NULL);

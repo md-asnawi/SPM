@@ -10,7 +10,7 @@
     }
 
     async function course_count() {
-        course_count_url = `http://127.0.0.1:5001/course/count`;
+        course_count_url = `http://3.15.181.194:5001/course/count`;
         var course_count = await fetch(course_count_url, {method: "GET"}).then(res => res.json());
 
         document.getElementById("course_count").innerHTML = course_count.data.course_count;
@@ -22,7 +22,7 @@
         all = []
         cards = []
 
-        pending_count_url = `http://127.0.0.1:5003/pending/count`;
+        pending_count_url = `http://3.15.181.194:5003/pending/count`;
         var pending_count = await fetch(pending_count_url, {method: "GET"}).then(res => res.json());
 
         document.getElementById("pending_count").innerHTML = "New : " + pending_count.data.pending_count;
@@ -32,7 +32,7 @@
 
         all = []
         rows = []
-        course_class_url = `http://127.0.0.1:5004/class`;
+        course_class_url = `http://3.15.181.194:5004/class`;
 
         var course_class = await fetch(course_class_url, {method: "GET"}).then(res => res.json());
 
@@ -47,7 +47,7 @@
             for (let i = 0; i < all.length; i++) {
                 let course = all[i]
 
-                inclass_count_url = `http://127.0.0.1:5003/class/count/${course.course_name}/${course.class_id}`;
+                inclass_count_url = `http://3.15.181.194:5003/class/count/${course.course_name}/${course.class_id}`;
                 var inclass_count = await fetch(inclass_count_url, {method: "GET"}).then(res => res.json());
 
                 rows.push(`
